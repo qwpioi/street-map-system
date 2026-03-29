@@ -80,6 +80,8 @@ export default {
 
           // 保存用户信息到 localStorage
           localStorage.setItem('user', JSON.stringify(user))
+          localStorage.setItem('userId', user.id)  // ← 加上这行
+          localStorage.setItem('token', user.token)  // ← 加上这行（如果后端返回 token 的话）
 
           this.$message.success('登录成功')
 
