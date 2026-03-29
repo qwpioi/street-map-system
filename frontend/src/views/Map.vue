@@ -40,6 +40,7 @@
 import { initAmap, addMarkers, locateCurrentPosition } from '@/utils/amap.js'
 import { vendorApi } from '@/api/vendor.js'
 import { favoriteApi } from '@/api/favorite.js'
+import { reviewApi } from '@/api/review.js'
 import NavBar from '@/components/NavBar.vue'
 
 export default {
@@ -53,9 +54,11 @@ export default {
       vendors: [],
       isFavorited: false,
       currentVendorId: null,
+      averageRating: 0,
+      reviews: [],
       mockVendors: [
         { 
-          id: 10, 
+          id: 10,
           lng: 113.625368, 
           lat: 34.746378, 
           stallName: '老王烧烤', 
@@ -64,7 +67,7 @@ export default {
           distance: '50m' 
         },
         { 
-          id: 11, 
+          id: 11,
           lng: 113.626368, 
           lat: 34.747378, 
           stallName: '李姐麻辣烫', 
@@ -73,7 +76,7 @@ export default {
           distance: '120m' 
         },
         { 
-          id: 12, 
+          id: 12,
           lng: 113.627368, 
           lat: 34.745378, 
           stallName: '张师傅煎饼果子', 
@@ -205,13 +208,11 @@ export default {
       this.currentVendorId = vendor.id
       const userId = localStorage.getItem('userId')
       
-      console.log('showVendor 调试:', { userId, vendorId: vendor.id })
-      
+      // 检查收藏状态
       if (userId) {
         try {
           const res = await favoriteApi.checkFavorite(userId, vendor.id)
           this.isFavorited = res.data
-          console.log('收藏状态检查:', this.isFavorited)
         } catch (error) {
           console.error('检查收藏状态失败:', error)
           this.isFavorited = false
@@ -219,15 +220,28 @@ export default {
       } else {
         this.isFavorited = false
       }
+      
+      // 获取平均评分
+      try {
+        const ratingRes = await reviewApi.getAverageRating(vendor.id)
+        if (ratingRes.code === 200) {
+          this.averageRating = ratingRes.data || 0
+        }
+      } catch (error) {
+        console.error('获取评分失败:', error)
+        this.averageRating = 0
+      }
 
       const favoriteText = this.isFavorited ? '❤️ 已收藏' : '🤍 收藏'
       const favoriteType = this.isFavorited ? 'danger' : 'primary'
+      const stars = this.averageRating > 0 ? '⭐'.repeat(Math.round(this.averageRating)) : '暂无评分'
 
       this.$alert(`
         <div><strong>摊位名称：</strong>${vendor.stallName}</div>
         <div><strong>地址：</strong>${vendor.address}</div>
         <div><strong>热销产品：</strong>${vendor.hotProducts}</div>
         <div><strong>距离：</strong>${vendor.distance}</div>
+        <div><strong>评分：</strong>${stars} (${this.averageRating.toFixed(1)}分)</div>
         <div style="margin-top: 15px;">
           <el-button 
             type="${favoriteType}" 
@@ -235,8 +249,11 @@ export default {
             onclick="window.toggleFavoriteClick()">
             ${favoriteText}
           </el-button>
-          <el-button type="success" size="small" style="margin-left: 10px;" onclick="window.showReviewClick()">
+          <el-button type="success" size="small" style="margin-left: 10px;" onclick="window.showReviewDialog()">
             📝 评价
+          </el-button>
+          <el-button type="info" size="small" style="margin-left: 10px;" onclick="window.showReviewsList()">
+            💬 查看评价 (${this.reviews.length})
           </el-button>
         </div>
       `, '摊位详情', {
@@ -246,13 +263,12 @@ export default {
       })
       
       window.toggleFavoriteClick = () => this.toggleFavorite(vendor.id)
-      window.showReviewClick = () => this.showReviewDialog(vendor)
+      window.showReviewDialog = () => this.showReviewDialog(vendor)
+      window.showReviewsList = () => this.showReviewsList(vendor)
     },
 
     async toggleFavorite(vendorId) {
       const userId = localStorage.getItem('userId')
-      console.log('toggleFavorite 调试:', { userId, vendorId, isFavorited: this.isFavorited })
-      
       if (!userId) {
         this.$message.warning('请先登录')
         this.$router.push('/login')
@@ -262,15 +278,13 @@ export default {
       try {
         if (this.isFavorited) {
           const res = await favoriteApi.removeFavorite(userId, vendorId)
-          console.log('取消收藏返回:', res)
-          if (res.code === 200 || res.code === '200') {
+          if (res.code === 200) {
             this.$message.success('已取消收藏')
             this.isFavorited = false
           }
         } else {
           const res = await favoriteApi.addFavorite(userId, vendorId)
-          console.log('添加收藏返回:', res)
-          if (res.code === 200 || res.code === '200') {
+          if (res.code === 200) {
             this.$message.success('收藏成功')
             this.isFavorited = true
           }
@@ -282,9 +296,145 @@ export default {
     },
 
     showReviewDialog(vendor) {
-      this.$alert('评价功能开发中...', '提示', {
-        confirmButtonText: '确定'
+      const userId = localStorage.getItem('userId')
+      if (!userId) {
+        this.$message.warning('请先登录')
+        this.$router.push('/login')
+        return
+      }
+      
+      let currentRating = 5
+      
+      this.$alert(`
+        <div style="padding: 10px 0;">
+          <div style="margin-bottom: 15px;">
+            <strong>评分：</strong>
+            <div style="display: inline-block;">
+              <span style="cursor: pointer; font-size: 24px;" onclick="window.setRating(1)">⭐</span>
+              <span style="cursor: pointer; font-size: 24px;" onclick="window.setRating(2)">⭐</span>
+              <span style="cursor: pointer; font-size: 24px;" onclick="window.setRating(3)">⭐</span>
+              <span style="cursor: pointer; font-size: 24px;" onclick="window.setRating(4)">⭐</span>
+              <span style="cursor: pointer; font-size: 24px;" onclick="window.setRating(5)">⭐</span>
+            </div>
+            <span id="rating-text" style="margin-left: 10px; color: #409EFF;">5 星</span>
+          </div>
+          <div>
+            <strong>评价内容：</strong>
+            <textarea 
+              id="review-content"
+              placeholder="写下您的评价..."
+              rows="4"
+              style="width: 100%; margin-top: 10px; padding: 8px; border: 1px solid #ddd; border-radius: 4px;">
+            </textarea>
+          </div>
+        </div>
+      `, '发表评价', {
+        dangerouslyUseHTMLString: true,
+        confirmButtonText: '提交评价',
+        cancelButtonText: '取消',
+        showCancelButton: true,
+        closeOnClickModal: false,
+        callback: async (action) => {
+          // 不等待这个 promise，直接处理
+          if (action === 'confirm') {
+            try {
+              const content = document.getElementById('review-content')?.value || ''
+              await this.submitReview(vendor.id, currentRating, content)
+            } catch (e) {
+              console.error('评价提交错误:', e)
+            }
+          }
+          // 忽略 cancel 错误
+        }
       })
+      
+      window.setRating = (rating) => {
+        currentRating = rating
+        document.getElementById('rating-text').innerText = rating + '星'
+      }
+    },
+
+    async submitReview(vendorId, rating, content) {
+      const userId = localStorage.getItem('userId')
+      if (!userId) {
+        this.$message.warning('请先登录')
+        return
+      }
+      
+      try {
+        const review = {
+          userId: parseInt(userId),
+          vendorId: vendorId,
+          rating: rating,
+          content: content
+        }
+        
+        console.log('提交评价:', review)
+        
+        const res = await reviewApi.addReview(review)
+        if (res.code === 200) {
+          this.$message.success('评价提交成功！')
+          // 重新加载评分
+          const ratingRes = await reviewApi.getAverageRating(vendorId)
+          if (ratingRes.code === 200) {
+            this.averageRating = ratingRes.data || 0
+          }
+          // 重新打开弹窗更新显示
+          const vendorObj = this.vendors.find(v => v.id === vendorId)
+          if (vendorObj) {
+            setTimeout(() => this.showVendor(vendorObj), 500)
+          }
+        } else {
+          this.$message.error(res.message || '评价提交失败')
+        }
+      } catch (error) {
+        console.error('提交评价失败:', error)
+        this.$message.error('提交评价失败，请重试')
+      }
+    },
+
+    async showReviewsList(vendor) {
+      try {
+        const res = await reviewApi.getReviewsByVendorId(vendor.id)
+        if (res.code === 200) {
+          this.reviews = res.data || []
+          
+          if (this.reviews.length === 0) {
+            this.$alert('暂无评价，快来成为第一个评价的人吧！', '评价列表', {
+              confirmButtonText: '关闭'
+            })
+            return
+          }
+          
+          const reviewsHtml = this.reviews.map(r => {
+            const userStars = '⭐'.repeat(r.rating)
+            const time = r.createTime ? new Date(r.createTime).toLocaleString('zh-CN') : '未知时间'
+            return `
+              <div style="border-bottom: 1px solid #eee; padding: 10px 0;">
+                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
+                  <span>${userStars}</span>
+                  <span style="color: #999; font-size: 12px;">${time}</span>
+                </div>
+                <div style="color: #666;">${r.content || '暂无内容'}</div>
+              </div>
+            `
+          }).join('')
+          
+          this.$alert(`
+            <div style="max-height: 300px; overflow-y: auto;">
+              ${reviewsHtml}
+            </div>
+          `, `${vendor.stallName} - 评价列表`, {
+            dangerouslyUseHTMLString: true,
+            confirmButtonText: '关闭'
+          })
+        } else {
+          this.$message.error('加载评价失败')
+        }
+      } catch (error) {
+        console.error('加载评价失败:', error)
+        this.$message.error('加载评价失败')
+      }
     }
   }
 }
