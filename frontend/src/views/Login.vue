@@ -1,46 +1,58 @@
 <template>
   <div class="login">
-    <el-card class="login-form" style="width: 400px;">
-      <h2 style="text-align: center; margin-bottom: 30px;">用户登录</h2>
+    <el-container>
+      <el-header>
+        <NavBar />
+      </el-header>
 
-      <el-form :model="form" :rules="rules" ref="loginForm">
-        <el-form-item prop="username">
-          <el-input
-            v-model="form.username"
-            placeholder="用户名"
-            prefix-icon="User"
-          />
-        </el-form-item>
+      <el-main>
+        <el-card class="login-form" style="width: 400px;">
+          <h2 style="text-align: center; margin-bottom: 30px;">用户登录</h2>
 
-        <el-form-item prop="password">
-          <el-input
-            v-model="form.password"
-            type="password"
-            placeholder="密码"
-            prefix-icon="Lock"
-          />
-        </el-form-item>
+          <el-form :model="form" :rules="rules" ref="loginForm">
+            <el-form-item prop="username">
+              <el-input
+                v-model="form.username"
+                placeholder="用户名"
+                prefix-icon="User"
+              />
+            </el-form-item>
 
-        <el-form-item>
-          <el-button type="primary" @click="handleLogin" style="width: 100%;">
-            登录
-          </el-button>
-        </el-form-item>
+            <el-form-item prop="password">
+              <el-input
+                v-model="form.password"
+                type="password"
+                placeholder="密码"
+                prefix-icon="Lock"
+              />
+            </el-form-item>
 
-        <div style="text-align: center;">
-          <span>还没有账号？</span>
-          <el-link type="primary" @click="$router.push('/register')">立即注册</el-link>
-        </div>
-      </el-form>
-    </el-card>
+            <el-form-item>
+              <el-button type="primary" @click="handleLogin" style="width: 100%;">
+                登录
+              </el-button>
+            </el-form-item>
+
+            <div style="text-align: center;">
+              <span>还没有账号？</span>
+              <el-link type="primary" @click="$router.push('/register')">立即注册</el-link>
+            </div>
+          </el-form>
+        </el-card>
+      </el-main>
+    </el-container>
   </div>
 </template>
 
 <script>
+import NavBar from '@/components/NavBar.vue'
 import axios from 'axios'
 
 export default {
   name: 'Login',
+  components: {
+    NavBar
+  },
   data() {
     return {
       form: {
@@ -87,10 +99,17 @@ export default {
 
 <style scoped>
 .login {
+  min-height: 100vh;
+}
+.el-header {
+  background-color: #409EFF;
+  color: white;
+  padding: 0;
+}
+.el-main {
   display: flex;
   justify-content: center;
   align-items: center;
-  min-height: 100vh;
   background-color: #f5f5f5;
 }
 .login-form {

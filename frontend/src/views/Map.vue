@@ -2,12 +2,7 @@
   <div class="map">
     <el-container>
       <el-header>
-        <el-menu mode="horizontal" default-active="2">
-          <el-menu-item index="1" @click="$router.push('/')">首页</el-menu-item>
-          <el-menu-item index="2">地图</el-menu-item>
-          <el-menu-item index="3" @click="$router.push('/login')" style="float: right;">登录</el-menu-item>
-          <el-menu-item index="4" @click="$router.push('/register')" style="float: right;">注册</el-menu-item>
-        </el-menu>
+        <NavBar @logout="refreshPage" />
       </el-header>
 
       <el-main>
@@ -44,9 +39,13 @@
 <script>
 import { initAmap, addMarkers, locateCurrentPosition } from '@/utils/amap.js'
 import { vendorApi } from '@/api/vendor.js'
+import NavBar from '@/components/NavBar.vue'
 
 export default {
   name: 'Map',
+  components: {
+    NavBar
+  },
   data() {
     return {
       map: null,
@@ -92,6 +91,9 @@ export default {
     }
   },
   methods: {
+    refreshPage() {
+      this.$forceUpdate()
+    },
     async locateMe() {
       if (!this.map) {
         this.$message.warning('地图尚未初始化')
@@ -173,37 +175,37 @@ export default {
 
     loadMockVendors() {
       if (!this.map) {
-        console.error('地图实例未初始化')
-        return
-      }
+      console.error('地图实例未初始化')
+      return
+    }
 
-      console.log('开始加载模拟摊位数据:', this.mockVendors)
-      
-      // 清除现有标记
-      this.map.clearMap()
-      
-      // 验证数据
-      const validMarkers = this.mockVendors.filter(vendor => {
-        const isValid = !isNaN(parseFloat(vendor.lng)) && !isNaN(parseFloat(vendor.lat))
-        if (!isValid) {
-          console.error('无效的摊位坐标:', vendor)
-        }
-        return isValid
-      })
-      
-      console.log('有效的标记点:', validMarkers)
-      
-      // 添加模拟摊位标记
-      addMarkers(this.map, validMarkers.map(vendor => ({
-        lng: parseFloat(vendor.lng),
-        lat: parseFloat(vendor.lat),
-        title: vendor.stallName
-      })))
-      
-      // 更新列表
-      this.vendors = this.mockVendors
-      
-      this.$message.success('模拟摊位加载完成')
+    console.log('开始加载模拟摊位数据:', this.mockVendors)
+    
+    // 清除现有标记
+    this.map.clearMap()
+    
+    // 验证数据
+    const validMarkers = this.mockVendors.filter(vendor => {
+      const isValid = !isNaN(parseFloat(vendor.lng)) && !isNaN(parseFloat(vendor.lat))
+      if (!isValid) {
+        console.error('无效的摊位坐标:', vendor)
+      }
+      return isValid
+    })
+    
+    console.log('有效的标记点:', validMarkers)
+    
+    // 添加模拟摊位标记
+    addMarkers(this.map, validMarkers.map(vendor => ({
+      lng: parseFloat(vendor.lng),
+      lat: parseFloat(vendor.lat),
+      title: vendor.stallName
+    })))
+    
+    // 更新列表
+    this.vendors = this.mockVendors
+    
+    this.$message.success('模拟摊位加载完成')
     },
 
     refreshMap() {
