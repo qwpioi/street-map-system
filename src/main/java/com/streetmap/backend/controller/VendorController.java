@@ -39,6 +39,16 @@ public class VendorController {
     }
 
     /**
+     * 根据 ID 查询摊位
+     * GET /api/vendor/{id}
+     */
+    @GetMapping("/{id}")
+    public Result<Vendor> getById(@PathVariable Long id) {
+        Vendor vendor = vendorService.getById(id);
+        return Result.success(vendor);
+    }
+
+    /**
      * 查询所有开摊的摊位
      * GET /api/vendor/open
      */
