@@ -39,6 +39,7 @@
 <script>
 import { initAmap, addMarkers, locateCurrentPosition } from '@/utils/amap.js'
 import { vendorApi } from '@/api/vendor.js'
+import { favoriteApi } from '@/api/favorite.js'
 import NavBar from '@/components/NavBar.vue'
 
 export default {
@@ -50,6 +51,8 @@ export default {
     return {
       map: null,
       vendors: [],
+      isFavorited: false,
+      currentVendorId: null,
       mockVendors: [
         { 
           id: 1, 
@@ -78,7 +81,7 @@ export default {
           hotProducts: '煎饼果子、豆浆', 
           distance: '200m' 
         }
-]
+      ]
     }
   },
   async mounted() {
@@ -175,52 +178,133 @@ export default {
 
     loadMockVendors() {
       if (!this.map) {
-      console.error('地图实例未初始化')
-      return
-    }
-
-    console.log('开始加载模拟摊位数据:', this.mockVendors)
-    
-    // 清除现有标记
-    this.map.clearMap()
-    
-    // 验证数据
-    const validMarkers = this.mockVendors.filter(vendor => {
-      const isValid = !isNaN(parseFloat(vendor.lng)) && !isNaN(parseFloat(vendor.lat))
-      if (!isValid) {
-        console.error('无效的摊位坐标:', vendor)
+        console.error('地图实例未初始化')
+        return
       }
-      return isValid
-    })
-    
-    console.log('有效的标记点:', validMarkers)
-    
-    // 添加模拟摊位标记
-    addMarkers(this.map, validMarkers.map(vendor => ({
-      lng: parseFloat(vendor.lng),
-      lat: parseFloat(vendor.lat),
-      title: vendor.stallName
-    })))
-    
-    // 更新列表
-    this.vendors = this.mockVendors
-    
-    this.$message.success('模拟摊位加载完成')
+
+      console.log('开始加载模拟摊位数据:', this.mockVendors)
+      
+      // 清除现有标记
+      this.map.clearMap()
+      
+      // 验证数据
+      const validMarkers = this.mockVendors.filter(vendor => {
+        const isValid = !isNaN(parseFloat(vendor.lng)) && !isNaN(parseFloat(vendor.lat))
+        if (!isValid) {
+          console.error('无效的摊位坐标:', vendor)
+        }
+        return isValid
+      })
+      
+      console.log('有效的标记点:', validMarkers)
+      
+      // 添加模拟摊位标记
+      addMarkers(this.map, validMarkers.map(vendor => ({
+        lng: parseFloat(vendor.lng),
+        lat: parseFloat(vendor.lat),
+        title: vendor.stallName
+      })))
+      
+      // 更新列表
+      this.vendors = this.mockVendors
+      
+      this.$message.success('模拟摊位加载完成')
     },
 
     refreshMap() {
       this.loadNearbyVendors()
     },
 
-    showVendor(vendor) {
+    async showVendor(vendor) {
+      this.currentVendorId = vendor.id
+      const userId = localStorage.getItem('userId')
+      
+      // 检查是否已收藏
+      if (userId) {
+        try {
+          const res = await favoriteApi.checkFavorite(userId, vendor.id)
+          this.isFavorited = res.data
+        } catch (error) {
+          console.error('检查收藏状态失败:', error)
+          this.isFavorited = false
+        }
+      } else {
+        this.isFavorited = false
+      }
+
       this.$alert(`
         <div><strong>摊位名称：</strong>${vendor.stallName}</div>
         <div><strong>地址：</strong>${vendor.address}</div>
         <div><strong>热销产品：</strong>${vendor.hotProducts}</div>
         <div><strong>距离：</strong>${vendor.distance}</div>
+        <div style="margin-top: 15px;">
+          <el-button 
+            type="${this.isFavorited ? 'danger' : 'primary'}" 
+            size="small"
+            onclick="window.toggleFavoriteClick()">
+            ${this.isFavorited ? '❤️ 已收藏' : '🤍 收藏'}
+          </el-button>
+          <el-button type="success" size="small" style="margin-left: 10px;" onclick="window.showReviewClick()">
+            📝 评价
+          </el-button>
+        </div>
       `, '摊位详情', {
-        dangerouslyUseHTMLString: true
+        dangerouslyUseHTMLString: true,
+        confirmButtonText: '关闭',
+        closeOnClickModal: true
       })
+      
+      // 绑定全局函数供弹窗按钮调用
+      window.toggleFavoriteClick = () => this.toggleFavorite(vendor.id)
+      window.showReviewClick = () => this.showReviewDialog(vendor)
+    },
+
+    async toggleFavorite(vendorId) {
+      const userId = localStorage.getItem('userId')
+      if (!userId) {
+        this.$message.warning('请先登录')
+        this.$router.push('/login')
+        return
+      }
+      
+      try {
+        if (this.isFavorited) {
+          // 取消收藏
+          const res = await favoriteApi.removeFavorite(userId, vendorId)
+          if (res.code === 200) {
+            this.$message.success('已取消收藏')
+            this.isFavorited = false
+          }
+        } else {
+          // 添加收藏
+          const res = await favoriteApi.addFavorite(userId, vendorId)
+          if (res.code === 200) {
+            this.$message.success('收藏成功')
+            this.isFavorited = true
+          }
+        }
+        // 关闭当前弹窗，重新打开更新状态
+        this.$alert('操作成功', '提示', {
+          confirmButtonText: '确定',
+          callback: () => {
+            const vendor = this.vendors.find(v => v.id === vendorId)
+            if (vendor) {
+              this.showVendor(vendor)
+            }
+          }
+        })
+      } catch (error) {
+        console.error('收藏操作失败:', error)
+        this.$message.error('操作失败，请重试')
+      }
+    },
+
+    showReviewDialog(vendor) {
+      // 关闭当前的 alert
+      this.$alert('评价功能开发中...', '提示', {
+        confirmButtonText: '确定'
+      })
+      // TODO: 后续实现评价弹窗
     }
   }
 }
@@ -253,7 +337,7 @@ export default {
   height: 60vh !important;
   min-height: 400px;
   border: 1px solid #ddd;
-  position: relative;  /* 确保地图容器有定位 */
+  position: relative;
 }
 .map-info {
   margin-top: 20px;
