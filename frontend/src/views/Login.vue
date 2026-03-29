@@ -37,6 +37,8 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   name: 'Login',
   data() {
@@ -51,16 +53,33 @@ export default {
         ],
         password: [
           { required: true, message: '请输入密码', trigger: 'blur' },
-          { min: 6, message: '密码至少6位', trigger: 'blur' }
+          { min: 6, message: '密码至少 6 位', trigger: 'blur' }
         ]
       }
     }
   },
   methods: {
-    handleLogin() {
-      // 这里后续会调用后端 API
-      console.log('登录信息:', this.form)
-      this.$message.success('登录功能待实现')
+    async handleLogin() {
+      try {
+        const response = await axios.post('http://localhost:8081/api/user/login', this.form)
+
+        if (response.data.code === 200) {
+          const user = response.data.data
+
+          // 保存用户信息到 localStorage
+          localStorage.setItem('user', JSON.stringify(user))
+
+          this.$message.success('登录成功')
+
+          // 跳转到首页
+          this.$router.push('/')
+        } else {
+          this.$message.error(response.data.message || '登录失败')
+        }
+      } catch (error) {
+        console.error('登录失败:', error)
+        this.$message.error('登录失败，请检查用户名和密码')
+      }
     }
   }
 }

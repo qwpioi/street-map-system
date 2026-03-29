@@ -55,6 +55,8 @@
 </template>
 
 <script>
+import axios from 'axios'
+
 export default {
   name: 'Register',
   data() {
@@ -65,7 +67,7 @@ export default {
         callback();
       }
     };
-    
+
     return {
       form: {
         username: '',
@@ -76,7 +78,7 @@ export default {
       rules: {
         username: [
           { required: true, message: '请输入用户名', trigger: 'blur' },
-          { min: 3, max: 15, message: '用户名长度为3-15位', trigger: 'blur' }
+          { min: 3, max: 15, message: '用户名长度为 3-15 位', trigger: 'blur' }
         ],
         email: [
           { required: true, message: '请输入邮箱', trigger: 'blur' },
@@ -84,7 +86,7 @@ export default {
         ],
         password: [
           { required: true, message: '请输入密码', trigger: 'blur' },
-          { min: 6, message: '密码至少6位', trigger: 'blur' }
+          { min: 6, message: '密码至少 6 位', trigger: 'blur' }
         ],
         confirmPassword: [
           { required: true, message: '请确认密码', trigger: 'blur' },
@@ -94,10 +96,24 @@ export default {
     }
   },
   methods: {
-    handleRegister() {
-      // 这里后续会调用后端 API
-      console.log('注册信息:', this.form)
-      this.$message.success('注册功能待实现')
+    async handleRegister() {
+      try {
+        // 移除 confirmPassword 再发送
+        const { confirmPassword, ...registerData } = this.form
+
+        const response = await axios.post('http://localhost:8081/api/user/register', registerData)
+
+        if (response.data.code === 200) {
+          this.$message.success('注册成功，请登录')
+          // 跳转到登录页
+          this.$router.push('/login')
+        } else {
+          this.$message.error(response.data.message || '注册失败')
+        }
+      } catch (error) {
+        console.error('注册失败:', error)
+        this.$message.error(error.response?.data?.message || '注册失败')
+      }
     }
   }
 }
