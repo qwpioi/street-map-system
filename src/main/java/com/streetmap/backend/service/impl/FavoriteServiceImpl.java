@@ -1,8 +1,9 @@
-package com.streetmap.backend.service;
+package com.streetmap.backend.service.imlp;
 
 import com.streetmap.backend.entity.Favorite;
 import com.streetmap.backend.mapper.FavoriteMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.streetmap.backend.service.FavoriteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
