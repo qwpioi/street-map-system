@@ -1,54 +1,71 @@
 <template>
-  <el-menu mode="horizontal" default-active="1" background-color="#409EFF" text-color="#fff" active-text-color="#ffd04b">
-    <el-menu-item index="1" @click="$router.push('/')">首页</el-menu-item>
-    <el-menu-item index="2" @click="$router.push('/map')">地图</el-menu-item>
-
-    <!-- 登录后显示 -->
-    <template v-if="isLoggedIn">
-      <el-menu-item index="3" @click="$router.push('/profile')" style="float: right;">
-        <el-badge :is-dot="hasUnread">个人中心</el-badge>
-      </el-menu-item>
-      <el-menu-item index="4" @click="handleLogout" style="float: right;">退出登录</el-menu-item>
-    </template>
-
-    <!-- 未登录显示 -->
-    <template v-else>
-      <el-menu-item index="5" @click="$router.push('/login')" style="float: right;">登录</el-menu-item>
-      <el-menu-item index="6" @click="$router.push('/register')" style="float: right;">注册</el-menu-item>
-    </template>
+  <el-menu 
+    :default-active="activeIndex" 
+    mode="horizontal" 
+    background-color="#409EFF" 
+    text-color="#fff" 
+    active-text-color="#ffd04b"
+    router
+  >
+    <el-menu-item index="/" @click="$router.push('/')">首页</el-menu-item>
+    <el-menu-item index="/map" @click="$router.push('/map')">地图</el-menu-item>
+    <el-menu-item index="/profile" @click="$router.push('/profile')" style="float: right; display: flex; align-items: center; gap: 8px;">
+      <el-avatar :size="30" :icon="User" />
+      <span>{{ username }}</span>
+    </el-menu-item>
+    <el-menu-item index="/logout" @click="handleLogout" style="float: right;">退出登录</el-menu-item>
   </el-menu>
 </template>
 
 <script>
+import { User } from '@element-plus/icons-vue'
+
 export default {
   name: 'NavBar',
+  components: {
+    User
+  },
   data() {
     return {
-      hasUnread: false
+      activeIndex: this.$route.path,
+      username: ''
     }
   },
-  computed: {
-    isLoggedIn() {
-      return !!localStorage.getItem('user')
+  watch: {
+    $route(to) {
+      this.activeIndex = to.path  // 路由变化时更新高亮
     }
   },
   methods: {
     handleLogout() {
       localStorage.removeItem('user')
-      this.$message.success('已退出登录')
+      localStorage.removeItem('userId')
+      localStorage.removeItem('token')
+      this.$message.success('退出成功')
       this.$router.push('/login')
-      // 通知其他组件更新状态
-      this.$emit('logout')
+    },
+    updateUsername() {
+      const userStr = localStorage.getItem('user')
+      if (userStr) {
+        const user = JSON.parse(userStr)
+        this.username = user.username || ''
+      } else {
+        this.username = ''
+      }
     }
   },
   mounted() {
-    // 监听存储变化，实现多页面同步
+    this.updateUsername()
     window.addEventListener('storage', () => {
+      this.updateUsername()
       this.$forceUpdate()
     })
-  },
-  beforeUnmount() {
-    window.removeEventListener('storage', () => {})
   }
 }
 </script>
+
+<style scoped>
+.el-menu {
+  border-bottom: none;
+}
+</style>

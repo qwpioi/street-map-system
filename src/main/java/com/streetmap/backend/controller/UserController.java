@@ -5,6 +5,9 @@ import com.streetmap.backend.entity.User;
 import com.streetmap.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+import com.streetmap.backend.util.JwtUtil;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * 用户 Controller
@@ -31,9 +34,18 @@ public class UserController {
      * POST /api/user/login
      */
     @PostMapping("/login")
-    public Result<User> login(@RequestBody User user) {
+    public Result<Map<String, Object>> login(@RequestBody User user) {
         User loginUser = userService.login(user.getUsername(), user.getPassword());
-        return Result.success(loginUser);
+
+        // 生成 token
+        String token = JwtUtil.generateToken(loginUser.getId(), loginUser.getUsername());
+
+        // 返回用户信息和 token
+        Map<String, Object> data = new HashMap<>();
+        data.put("user", loginUser);
+        data.put("token", token);
+
+        return Result.success(data);
     }
 
     /**

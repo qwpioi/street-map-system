@@ -1,4 +1,4 @@
-package com.streetmap.backend.service.imlp;
+package com.streetmap.backend.service.impl;
 
 import com.streetmap.backend.entity.User;
 import com.streetmap.backend.mapper.UserMapper;

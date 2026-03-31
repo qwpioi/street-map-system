@@ -4,53 +4,30 @@
       <el-header>
         <NavBar />
       </el-header>
-
       <el-main>
         <el-card class="register-form" style="width: 400px;">
           <h2 style="text-align: center; margin-bottom: 30px;">用户注册</h2>
-
           <el-form :model="form" :rules="rules" ref="registerForm">
             <el-form-item prop="username">
-              <el-input
-                v-model="form.username"
-                placeholder="用户名"
-                prefix-icon="User"
-              />
+              <el-input v-model="form.username" placeholder="用户名" prefix-icon="User" />
             </el-form-item>
-
+            <el-form-item prop="phone">
+              <el-input v-model="form.phone" placeholder="手机号" maxlength="11" prefix-icon="Phone" />
+            </el-form-item>
             <el-form-item prop="email">
-              <el-input
-                v-model="form.email"
-                type="email"
-                placeholder="邮箱"
-                prefix-icon="Message"
-              />
+              <el-input v-model="form.email" type="email" placeholder="邮箱" prefix-icon="Message" />
             </el-form-item>
-
             <el-form-item prop="password">
-              <el-input
-                v-model="form.password"
-                type="password"
-                placeholder="密码"
-                prefix-icon="Lock"
-              />
+              <el-input v-model="form.password" type="password" placeholder="密码" prefix-icon="Lock" />
             </el-form-item>
-
             <el-form-item prop="confirmPassword">
-              <el-input
-                v-model="form.confirmPassword"
-                type="password"
-                placeholder="确认密码"
-                prefix-icon="Lock"
-              />
+              <el-input v-model="form.confirmPassword" type="password" placeholder="确认密码" prefix-icon="Lock" />
             </el-form-item>
-
             <el-form-item>
               <el-button type="primary" @click="handleRegister" style="width: 100%;">
                 注册
               </el-button>
             </el-form-item>
-
             <div style="text-align: center;">
               <span>已有账号？</span>
               <el-link type="primary" @click="$router.push('/login')">立即登录</el-link>
@@ -83,6 +60,7 @@ export default {
     return {
       form: {
         username: '',
+        phone: '',
         email: '',
         password: '',
         confirmPassword: ''
@@ -91,6 +69,10 @@ export default {
         username: [
           { required: true, message: '请输入用户名', trigger: 'blur' },
           { min: 3, max: 15, message: '用户名长度为 3-15 位', trigger: 'blur' }
+        ],
+        phone: [
+          { required: true, message: '请输入手机号', trigger: 'blur' },
+          { pattern: /^1[3-9]\d{9}$/, message: '手机号格式不正确', trigger: 'blur' }
         ],
         email: [
           { required: true, message: '请输入邮箱', trigger: 'blur' },
@@ -110,14 +92,10 @@ export default {
   methods: {
     async handleRegister() {
       try {
-        // 移除 confirmPassword 再发送
         const { confirmPassword, ...registerData } = this.form
-
         const response = await axios.post('http://localhost:8081/api/user/register', registerData)
-
         if (response.data.code === 200) {
           this.$message.success('注册成功，请登录')
-          // 跳转到登录页
           this.$router.push('/login')
         } else {
           this.$message.error(response.data.message || '注册失败')

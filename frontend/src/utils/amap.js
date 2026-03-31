@@ -1,6 +1,5 @@
 import AMapLoader from '@amap/amap-jsapi-loader'
 
-let amapInstance = null
 
 /**
  * 初始化高德地图
@@ -8,29 +7,23 @@ let amapInstance = null
  * @returns {Promise<Object>} 地图实例
  */
 export async function initAmap(containerId) {
-  if (amapInstance) {
-    return amapInstance
-  }
-
+  // 每次都重新创建地图实例
   try {
     const AMap = await AMapLoader.load({
-      key: '3dcbfe14ab2f11f3cae0717fb592ae86', // 你的 API Key
+      key: '3dcbfe14ab2f11f3cae0717fb592ae86',
       version: '2.0',
       plugins: ['AMap.Scale', 'AMap.ToolBar', 'AMap.Geolocation']
     })
-
+    
     const map = new AMap.Map(containerId, {
       zoom: 15,
-      center: [116.397428, 39.90923], // 默认北京坐标
+      center: [116.397428, 39.90923],
       mapStyle: 'amap://styles/normal'
     })
-
-    // 添加比例尺
+    
     map.addControl(new AMap.Scale())
-    // 添加工具条
     map.addControl(new AMap.ToolBar())
-
-    amapInstance = map
+    
     return map
   } catch (error) {
     console.error('地图初始化失败:', error)

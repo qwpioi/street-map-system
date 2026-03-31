@@ -72,20 +72,19 @@ export default {
   },
   methods: {
     async handleLogin() {
+      // 先进行表单验证，不通过则直接返回
+      const valid = await this.$refs.loginForm.validate().catch(() => false)
+      if (!valid) {
+        return  // 验证失败，不发送请求
+      }
       try {
         const response = await axios.post('http://localhost:8081/api/user/login', this.form)
-
         if (response.data.code === 200) {
-          const user = response.data.data
-
-          // 保存用户信息到 localStorage
+          const { user, token } = response.data.data  // ← 修改这里，解构 user 和 token
           localStorage.setItem('user', JSON.stringify(user))
-          localStorage.setItem('userId', user.id)  // ← 加上这行
-          localStorage.setItem('token', user.token)  // ← 加上这行（如果后端返回 token 的话）
-
+          localStorage.setItem('userId', user.id)
+          localStorage.setItem('token', token)  // ← 现在有 token 了
           this.$message.success('登录成功')
-
-          // 跳转到首页
           this.$router.push('/')
         } else {
           this.$message.error(response.data.message || '登录失败')

@@ -45,6 +45,13 @@ import NavBar from '@/components/NavBar.vue'
 
 export default {
   name: 'Map',
+  beforeUnmount() {
+    // 组件销毁前清理地图
+    if (this.map) {
+      this.map.destroy()
+      this.map = null
+    }
+  },
   components: {
     NavBar
   },
@@ -94,6 +101,27 @@ export default {
     } catch (error) {
       console.error('地图初始化失败:', error)
       this.$message.error('地图初始化失败，请检查网络或联系管理员')
+    }
+  },
+  watch: {
+    // 监听路由变化
+    $route(to, from) {
+      if (to.path === '/' || to.path === '/map') {
+        // 进入地图页时重新调整地图
+        setTimeout(() => {
+          if (this.map) {
+            this.map.resize()
+          }
+        }, 100)
+      }
+    }
+  },
+  activated() {
+    // 路由返回时重新调整地图尺寸
+    if (this.map) {
+      setTimeout(() => {
+        this.map.resize()
+      }, 100)
     }
   },
   methods: {
