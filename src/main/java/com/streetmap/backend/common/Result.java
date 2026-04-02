@@ -9,7 +9,7 @@ import lombok.AllArgsConstructor;
  */
 @Data
 @NoArgsConstructor
-@AllArgsConstructor
+// 注意：暂时移除@AllArgsConstructor，手动实现全参构造
 public class Result<T> {
 
     /**
@@ -27,6 +27,13 @@ public class Result<T> {
      */
     private T data;
 
+    // 手动实现全参构造函数
+    public Result(Integer code, String message, T data) {
+        this.code = code;
+        this.message = message;
+        this.data = data;
+    }
+
     /**
      * 成功返回
      */
@@ -37,21 +44,21 @@ public class Result<T> {
     /**
      * 成功返回（无数据）
      */
-    public static <T> Result<T> success() {
+    public static Result<Void> success() {
         return new Result<>(200, "success", null);
     }
 
     /**
      * 失败返回
      */
-    public static <T> Result<T> error(String message) {
+    public static Result<Void> error(String message) {
         return new Result<>(500, message, null);
     }
 
     /**
      * 失败返回（带状态码）
      */
-    public static <T> Result<T> error(Integer code, String message) {
+    public static Result<Void> error(Integer code, String message) {
         return new Result<>(code, message, null);
     }
 }

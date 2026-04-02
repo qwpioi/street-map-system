@@ -67,50 +67,48 @@ export function addMarkers(map, markers) {
 /**
  * 定位到当前位置
  * @param {Object} map - 地图实例
+ * @returns {Promise<{longitude: number, latitude: number}>} 定位结果
  */
 export function locateCurrentPosition(map) {
-  if (!map) {
-    console.error('地图实例未初始化')
-    return
-  }
+  return new Promise((resolve, reject) => {
+    if (!map) {
+      console.error('地图实例未初始化')
+      reject(new Error('地图未初始化'))
+      return
+    }
 
-  const geolocation = new AMap.Geolocation({
-    enableHighAccuracy: true,
-    timeout: 10000,
-    maximumAge: 0
-  })
+    const geolocation = new AMap.Geolocation({
+      enableHighAccuracy: true,
+      timeout: 10000,
+      maximumAge: 0
+    })
 
-  geolocation.getCurrentPosition((status, result) => {
-    if (status === 'complete') {
-      // 正确的获取坐标方式
-      const longitude = result.position.lng
-      const latitude = result.position.lat
-      
-      console.log('定位成功:', longitude, latitude)
-      
-      // 验证坐标是否有效
-      if (isNaN(longitude) || isNaN(latitude)) {
-        console.error('定位坐标无效')
-        return
-      }
-      
-      // 设置地图中心
-      map.setCenter([longitude, latitude])
-      map.setZoom(16)
-      
-      // 添加当前位置标记
-      try {
+    geolocation.getCurrentPosition((status, result) => {
+      if (status === 'complete') {
+        const longitude = result.position.lng
+        const latitude = result.position.lat
+        
+        if (isNaN(longitude) || isNaN(latitude)) {
+          console.error('定位坐标无效')
+          reject(new Error('定位坐标无效'))
+          return
+        }
+        
+        map.setCenter([longitude, latitude])
+        map.setZoom(16)
+        
         const currentMarker = new AMap.Marker({
           position: [longitude, latitude],
           title: '当前位置'
         })
         map.add(currentMarker)
+        
         console.log('当前位置标记已添加')
-      } catch (error) {
-        console.error('添加当前位置标记失败:', error)
+        resolve({ longitude, latitude })
+      } else {
+        console.error('定位失败:', result)
+        reject(new Error(result?.message || '定位失败'))
       }
-    } else {
-      console.error('定位失败:', result)
-    }
+    })
   })
 }

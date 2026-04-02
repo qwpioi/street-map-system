@@ -37,6 +37,11 @@ api.interceptors.response.use(
 
 // 摊主相关 API
 export const vendorApi = {
+  // 获取所有开摊的摊位
+  getOpenVendors() {
+    return api.get(`/vendor/open`)
+  },
+
   // 获取附近摊位
   getNearbyVendors(latitude, longitude, range = 0.1) {
     return api.get(`/vendor/nearby`, {
