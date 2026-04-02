@@ -46,6 +46,14 @@
                   </el-tag>
                   <div class="action-buttons">
                     <el-button
+                      type="primary"
+                      size="large"
+                      @click="editVendor"
+                      class="action-btn"
+                      icon="el-icon-edit">
+                      ✏️ 编辑
+                    </el-button>
+                    <el-button
                       v-if="vendorInfo.status === 0"
                       type="success"
                       size="large"
@@ -109,6 +117,50 @@
             <el-empty v-if="favorites.length === 0 && !favoritesLoading" description="还没有收藏的摊位哦~"></el-empty>
           </div>
         </el-card>
+
+        <!-- 编辑摊位对话框 -->
+        <el-dialog
+          v-model="editDialogVisible"
+          title="编辑摊位"
+          width="500px"
+          :close-on-click-modal="false"
+        >
+          <el-form :model="editForm" label-width="100px">
+            <el-form-item label="摊位名称" required>
+              <el-input 
+                v-model="editForm.stallName" 
+                placeholder="请输入摊位名称" 
+              />
+            </el-form-item>
+            <el-form-item label="地址" required>
+              <el-input 
+                v-model="editForm.address" 
+                placeholder="请输入摊位地址" 
+              />
+            </el-form-item>
+            <el-form-item label="描述">
+              <el-input 
+                v-model="editForm.description" 
+                type="textarea" 
+                :rows="3" 
+                placeholder="摊位描述" 
+              />
+            </el-form-item>
+            <el-form-item label="热销产品" required>
+              <el-input 
+                v-model="editForm.hotProducts" 
+                type="textarea" 
+                :rows="3" 
+                placeholder="请输入热销产品，用顿号分隔" 
+              />
+            </el-form-item>
+          </el-form>
+          
+          <template #footer>
+            <el-button @click="editDialogVisible = false">取消</el-button>
+            <el-button type="primary" @click="saveEdit" :loading="saving">保存</el-button>
+          </template>
+        </el-dialog>
       </el-main>
     </el-container>
   </div>
@@ -148,7 +200,16 @@ export default {
         description: '',
         hotProducts: ''
       },
-      registerFormVisible: false
+      registerFormVisible: false,
+      editDialogVisible: false,
+      editForm: {
+        id: null,
+        stallName: '',
+        address: '',
+        description: '',
+        hotProducts: ''
+      },
+      saving: false
     }
   },
   async mounted() {
@@ -435,6 +496,55 @@ export default {
       } catch (error) {
         console.error('收摊失败:', error)
         this.$message.error('收摊失败，请重试')
+      }
+    },
+
+    editVendor() {
+      console.log('编辑摊位:', this.vendorInfo)
+      
+      this.editForm = {
+        id: this.vendorInfo.id,
+        stallName: this.vendorInfo.stallName,
+        address: this.vendorInfo.address,
+        description: this.vendorInfo.description || '',
+        hotProducts: this.vendorInfo.hotProducts || ''
+      }
+      
+      this.editDialogVisible = true
+    },
+
+    async saveEdit() {
+      if (!this.editForm.stallName || !this.editForm.address) {
+        this.$message.warning('请填写完整信息')
+        return
+      }
+      
+      try {
+        this.saving = true
+        
+        const response = await axios.put('http://localhost:8081/api/vendor', {
+          id: this.editForm.id,
+          stallName: this.editForm.stallName,
+          address: this.editForm.address,
+          description: this.editForm.description,
+          hotProducts: this.editForm.hotProducts,
+          latitude: this.vendorInfo.latitude,
+          longitude: this.vendorInfo.longitude,
+          status: this.vendorInfo.status
+        })
+        
+        if (response.data && response.data.code === 200) {
+          this.$message.success('摊位信息已更新')
+          this.editDialogVisible = false
+          await this.loadVendorInfo()
+        } else {
+          this.$message.error('更新失败：' + (response.data?.msg || '未知错误'))
+        }
+      } catch (error) {
+        console.error('更新摊位失败:', error)
+        this.$message.error('更新失败：' + (error.response?.data?.message || error.message))
+      } finally {
+        this.saving = false
       }
     },
 

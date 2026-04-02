@@ -23,8 +23,24 @@
               <el-table-column prop="stallName" label="摊位名称" width="200"></el-table-column>
               <el-table-column prop="address" label="地址" width="300"></el-table-column>
               <el-table-column prop="distance" label="距离" width="100"></el-table-column>
-              <el-table-column label="操作" width="250">
+              <el-table-column prop="isOwner" label="是否摊主" width="80" align="center">
                 <template #default="{ row }">
+                  <span v-if="row.isOwner" style="color: #67C23A;">✅</span>
+                  <span v-else style="color: #F56C6C;">❌</span>
+                </template>
+              </el-table-column>
+              
+              <el-table-column label="操作" width="350">
+                <template #default="{ row }">
+                  <el-button 
+                    v-if="row.isOwner" 
+                    size="small" 
+                    type="warning" 
+                    icon="el-icon-edit" 
+                    @click="editVendor(row)"
+                  >
+                    编辑
+                  </el-button>
                   <el-button 
                     size="small" 
                     type="primary" 
@@ -45,6 +61,59 @@
           </div>
         </div>
       </el-main>
+
+      <!-- 编辑摊位对话框 -->
+      <el-dialog
+        v-model="editDialogVisible"
+        title="编辑摊位"
+        width="500px"
+        :close-on-click-modal="false"
+      >
+        <el-form :model="editForm" label-width="100px">
+          <el-form-item label="摊位名称" required>
+            <el-input 
+              v-model="editForm.stallName" 
+              placeholder="请输入摊位名称" 
+            />
+          </el-form-item>
+          <el-form-item label="地址" required>
+            <el-input 
+              v-model="editForm.address" 
+              placeholder="请输入摊位地址" 
+            />
+          </el-form-item>
+          <el-form-item label="热销产品" required>
+            <el-input 
+              v-model="editForm.hotProducts" 
+              type="textarea" 
+              :rows="3"
+              placeholder="请输入热销产品，用顿号分隔" 
+            />
+          </el-form-item>
+          <el-form-item label="位置坐标">
+            <el-input 
+              v-model="editForm.latitude" 
+              placeholder="纬度" 
+              disabled 
+              style="width: 45%; margin-right: 5px;" 
+            />
+            <el-input 
+              v-model="editForm.longitude" 
+              placeholder="经度" 
+              disabled 
+              style="width: 45%;" 
+            />
+            <div style="margin-top: 5px; font-size: 12px; color: #999;">
+              坐标需要在地图上点击选择，或联系管理员修改
+            </div>
+          </el-form-item>
+        </el-form>
+        
+        <template #footer>
+          <el-button @click="editDialogVisible = false">取消</el-button>
+          <el-button type="primary" @click="saveEdit" :loading="saving">保存</el-button>
+        </template>
+      </el-dialog>
     </el-container>
   </div>
 </template>
@@ -83,18 +152,41 @@ export default {
       userPosition: null,
       vendorMarkers: [],
       locationMarker: null,
-      vendorsLoaded: false
+      vendorsLoaded: false,
+      editDialogVisible: false,
+      editForm: {
+        stallName: '',
+        address: '',
+        hotProducts: '',
+        latitude: '',
+        longitude: ''
+      },
+      saving: false,
+      currentLocation: {
+        lat: null,
+        lng: null
+      }
     }
   },
   async mounted() {
+    console.log('🔧 mounted 执行，开始初始化地图...')
+    
     try {
       this.map = await initAmap('mapContainer')
-      this.autoLocate()
+      console.log('✅ 地图实例创建成功:', this.map)
+      
+      // 等待地图完全加载
+      this.map.on('complete', () => {
+        console.log('✅ 地图加载完成，开始自动定位...')
+        this.autoLocate()
+      })
+      
+      this.map.on('error', () => {
+        console.error('❌ 地图加载失败')
+      })
     } catch (error) {
       console.error('地图初始化失败:', error)
       this.$message.error('地图初始化失败，请检查网络或联系管理员')
-      this.map.setCenter([113.625368, 34.746378])
-      this.map.setZoom(13)
     }
   },
   watch: {
@@ -124,6 +216,14 @@ export default {
     },
 
     async autoLocate() {
+      console.log('📍 autoLocate 执行，检查地图实例:', this.map)
+      
+      if (!this.map) {
+        console.error('❌ 地图实例为 null，等待 500ms 后重试...')
+        setTimeout(() => this.autoLocate(), 500)
+        return
+      }
+      
       if (!navigator.geolocation) {
         console.warn('浏览器不支持定位，使用郑州作为默认位置')
         this.map.setCenter([113.625368, 34.746378])
@@ -139,28 +239,36 @@ export default {
             const latitude = position.coords.latitude
 
             console.log('📍 自动定位成功:', latitude, longitude)
+            console.log('🗺️ 地图实例:', this.map)
 
-            this.map.setCenter([longitude, latitude])
-            this.map.setZoom(16)
+            try {
+              this.map.setCenter([longitude, latitude])
+              this.map.setZoom(16)
 
-            this.locationMarker = new AMap.Marker({
-              position: [longitude, latitude],
-              title: '当前位置',
-              icon: 'https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png'
-            })
-            this.map.add(this.locationMarker)
+              this.locationMarker = new AMap.Marker({
+                position: [longitude, latitude],
+                title: '当前位置',
+                icon: 'https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png'
+              })
+              this.map.add(this.locationMarker)
 
-            this.userPosition = { lng: longitude, lat: latitude }
+              this.userPosition = { lng: longitude, lat: latitude }
 
-            await this.loadVendorsFromApi(latitude, longitude)
-            this.vendorsLoaded = true
+              await this.loadVendorsFromApi(latitude, longitude)
+              this.vendorsLoaded = true
 
-            console.log('✅ 自动定位完成，摊位距离已在 loadVendorsFromApi 中计算')
+              console.log('✅ 自动定位完成，摊位距离已在 loadVendorsFromApi 中计算')
+            } catch (mapError) {
+              console.error('地图操作失败:', mapError)
+              this.$message.error('地图操作失败')
+            }
           },
           (error) => {
             console.error('自动定位失败:', error)
-            this.map.setCenter([113.625368, 34.746378])
-            this.map.setZoom(13)
+            if (this.map) {
+              this.map.setCenter([113.625368, 34.746378])
+              this.map.setZoom(13)
+            }
             this.$message.warning('定位失败，显示默认位置（郑州）')
           },
           {
@@ -171,8 +279,10 @@ export default {
         )
       } catch (error) {
         console.error('定位错误:', error)
-        this.map.setCenter([113.625368, 34.746378])
-        this.map.setZoom(13)
+        if (this.map) {
+          this.map.setCenter([113.625368, 34.746378])
+          this.map.setZoom(13)
+        }
       }
     },
 
@@ -307,7 +417,20 @@ export default {
     },
 
     async loadVendorsFromApi(latitude, longitude) {
+      console.log('📍 loadVendorsFromApi 执行，检查地图实例:', this.map)
+      
+      if (!this.map) {
+        console.error('❌ 地图实例为 null，无法加载摊位')
+        this.$message.error('地图未初始化，请刷新页面')
+        return
+      }
+      
       console.log('📍 加载摊位，用户坐标:', latitude, longitude)
+      
+      this.currentLocation = { lat: latitude, lng: longitude }
+      
+      const currentUserId = localStorage.getItem('userId')
+      console.log('🆔 当前用户 ID:', currentUserId)
       
       try {
         const response = await vendorApi.getOpenVendors()
@@ -317,32 +440,37 @@ export default {
             v.latitude && v.longitude && v.status === 1
           )
           
+          console.log('📋 原始摊位数据:', response.data)
+          
           this.vendors = validVendors.map(vendor => {
             const distance = this.calculateDistance(
               latitude, longitude,
               vendor.latitude, vendor.longitude
             )
             
-            console.log(`摊位：${vendor.stallName}, 坐标：${vendor.latitude},${vendor.longitude}, 距离：${distance}`)
+            const vendorUserId = vendor.userId
+            const isOwner = currentUserId && vendorUserId && vendorUserId.toString() === currentUserId.toString()
+            
+            console.log('📋 摊位:', vendor.stallName, '| 摊主 ID:', vendorUserId, '| 当前用户:', currentUserId, '| isOwner:', isOwner)
             
             return {
               id: vendor.id,
+              userId: vendorUserId,
               lng: parseFloat(vendor.longitude),
               lat: parseFloat(vendor.latitude),
               stallName: vendor.stallName,
               address: vendor.address,
               hotProducts: vendor.hotProducts || '暂无',
-              distance: distance
+              distance: distance,
+              isOwner: isOwner
             }
           })
           
-          console.log('第一个摊位距离详情:', {
+          console.log('✅ 处理后的摊位列表:', this.vendors)
+          console.log('第一个摊位详情:', {
             stallName: this.vendors[0].stallName,
-            userLat: latitude,
-            userLng: longitude,
-            vendorLat: this.vendors[0].lat,
-            vendorLng: this.vendors[0].lng,
-            distance: this.vendors[0].distance
+            userId: this.vendors[0].userId,
+            isOwner: this.vendors[0].isOwner
           })
           
           this.addVendorMarkers(this.vendors)
@@ -681,6 +809,57 @@ export default {
       this.$message.success(`已定位到：${vendor.stallName}`)
       
       console.log('定位到摊位:', vendor.stallName, vendor.lng, vendor.lat)
+    },
+
+    editVendor(vendor) {
+      console.log('编辑摊位:', vendor)
+      
+      this.currentVendorId = vendor.id
+      this.editForm = {
+        id: vendor.id,
+        stallName: vendor.stallName,
+        address: vendor.address,
+        hotProducts: vendor.hotProducts || '',
+        latitude: vendor.lat,
+        longitude: vendor.lng
+      }
+      this.editDialogVisible = true
+    },
+
+    async saveEdit() {
+      if (!this.editForm.stallName || !this.editForm.address) {
+        this.$message.warning('请填写完整信息')
+        return
+      }
+      
+      try {
+        this.saving = true
+        
+        const response = await axios.put('http://localhost:8081/api/vendor', {
+          id: this.currentVendorId,
+          stallName: this.editForm.stallName,
+          address: this.editForm.address,
+          hotProducts: this.editForm.hotProducts,
+          latitude: parseFloat(this.editForm.latitude),
+          longitude: parseFloat(this.editForm.longitude)
+        })
+        
+        if (response.data && response.data.code === 200) {
+          this.$message.success('摊位信息已更新')
+          this.editDialogVisible = false
+          
+          if (this.currentLocation.lat && this.currentLocation.lng) {
+            await this.loadVendorsFromApi(this.currentLocation.lat, this.currentLocation.lng)
+          }
+        } else {
+          this.$message.error('更新失败：' + (response.data?.msg || '未知错误'))
+        }
+      } catch (error) {
+        console.error('更新摊位失败:', error)
+        this.$message.error('更新失败：' + (error.response?.data?.message || error.message))
+      } finally {
+        this.saving = false
+      }
     },
 
     async showVendor(vendor) {
