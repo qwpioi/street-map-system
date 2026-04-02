@@ -89,13 +89,12 @@ export default {
   async mounted() {
     try {
       this.map = await initAmap('mapContainer')
-      const center = this.map.getCenter()
-      this.userPosition = { lng: center.lng, lat: center.lat }
-      await this.loadVendorsFromApi(center.lng, center.lat)
+      this.autoLocate()
     } catch (error) {
       console.error('地图初始化失败:', error)
       this.$message.error('地图初始化失败，请检查网络或联系管理员')
-      this.loadMockVendors({ lng: center.lng, lat: center.lat })
+      this.map.setCenter([113.625368, 34.746378])
+      this.map.setZoom(13)
     }
   },
   watch: {
@@ -123,6 +122,78 @@ export default {
     refreshPage() {
       this.$forceUpdate()
     },
+
+    async autoLocate() {
+      if (!navigator.geolocation) {
+        console.warn('浏览器不支持定位，使用郑州作为默认位置')
+        this.map.setCenter([113.625368, 34.746378])
+        this.map.setZoom(13)
+        this.loadVendorsFromApi(34.746378, 113.625368)
+        return
+      }
+
+      try {
+        navigator.geolocation.getCurrentPosition(
+          async (position) => {
+            const longitude = position.coords.longitude
+            const latitude = position.coords.latitude
+
+            console.log('📍 自动定位成功:', latitude, longitude)
+
+            this.map.setCenter([longitude, latitude])
+            this.map.setZoom(16)
+
+            this.locationMarker = new AMap.Marker({
+              position: [longitude, latitude],
+              title: '当前位置',
+              icon: 'https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png'
+            })
+            this.map.add(this.locationMarker)
+
+            this.userPosition = { lng: longitude, lat: latitude }
+
+            await this.loadVendorsFromApi(latitude, longitude)
+            this.vendorsLoaded = true
+
+            console.log('✅ 自动定位完成，摊位距离已在 loadVendorsFromApi 中计算')
+          },
+          (error) => {
+            console.error('自动定位失败:', error)
+            this.map.setCenter([113.625368, 34.746378])
+            this.map.setZoom(13)
+            this.$message.warning('定位失败，显示默认位置（郑州）')
+          },
+          {
+            enableHighAccuracy: true,
+            timeout: 10000,
+            maximumAge: 0
+          }
+        )
+      } catch (error) {
+        console.error('定位错误:', error)
+        this.map.setCenter([113.625368, 34.746378])
+        this.map.setZoom(13)
+      }
+    },
+
+    updateVendorDistances(latitude, longitude) {
+      if (!this.vendors || this.vendors.length === 0) {
+        console.log('⚠️ 没有摊位可更新距离')
+        return
+      }
+
+      console.log('📏 更新摊位距离，用户位置:', latitude, longitude)
+
+      this.vendors.forEach(vendor => {
+        vendor.distance = this.calculateDistance(
+          latitude, longitude,
+          vendor.lat, vendor.lng
+        )
+      })
+
+      console.log('✅ 摊位距离已更新:', this.vendors.length, '个')
+    },
+
     async locateMe() {
       if (!this.map) {
         this.$message.warning('地图尚未初始化')
@@ -235,7 +306,9 @@ export default {
       }
     },
 
-    async loadVendorsFromApi(lng, lat) {
+    async loadVendorsFromApi(latitude, longitude) {
+      console.log('📍 加载摊位，用户坐标:', latitude, longitude)
+      
       try {
         const response = await vendorApi.getOpenVendors()
         
@@ -244,33 +317,59 @@ export default {
             v.latitude && v.longitude && v.status === 1
           )
           
-          this.vendors = validVendors.map(vendor => ({
-            id: vendor.id,
-            lng: parseFloat(vendor.longitude),
-            lat: parseFloat(vendor.latitude),
-            stallName: vendor.stallName,
-            address: vendor.address,
-            hotProducts: vendor.hotProducts || '暂无',
-            distance: this.calculateDistance(lat, lng, vendor.latitude, vendor.longitude)
-          }))
+          this.vendors = validVendors.map(vendor => {
+            const distance = this.calculateDistance(
+              latitude, longitude,
+              vendor.latitude, vendor.longitude
+            )
+            
+            console.log(`摊位：${vendor.stallName}, 坐标：${vendor.latitude},${vendor.longitude}, 距离：${distance}`)
+            
+            return {
+              id: vendor.id,
+              lng: parseFloat(vendor.longitude),
+              lat: parseFloat(vendor.latitude),
+              stallName: vendor.stallName,
+              address: vendor.address,
+              hotProducts: vendor.hotProducts || '暂无',
+              distance: distance
+            }
+          })
+          
+          console.log('第一个摊位距离详情:', {
+            stallName: this.vendors[0].stallName,
+            userLat: latitude,
+            userLng: longitude,
+            vendorLat: this.vendors[0].lat,
+            vendorLng: this.vendors[0].lng,
+            distance: this.vendors[0].distance
+          })
           
           this.addVendorMarkers(this.vendors)
           
-          console.log('加载摊位成功:', this.vendors.length, '个')
+          console.log('✅ 加载摊位成功:', this.vendors.length, '个')
           this.$message.success(`加载 ${this.vendors.length} 个真实摊位`)
         } else {
           console.log('没有开摊的摊位，使用模拟数据')
-          this.loadMockVendors({ lng, lat })
+          this.loadMockVendors({ lng: longitude, lat: latitude })
         }
       } catch (error) {
         console.error('加载摊位失败:', error)
         this.$message.error('加载摊位失败，使用模拟数据')
-        this.loadMockVendors({ lng, lat })
+        this.loadMockVendors({ lng: longitude, lat: latitude })
       }
     },
 
     calculateDistance(lat1, lng1, lat2, lng2) {
+      if (!AMap || !AMap.GeometryUtil) {
+        console.error('AMap.GeometryUtil 不可用！')
+        return '未知'
+      }
+      
       const distance = AMap.GeometryUtil.distance([lng1, lat1], [lng2, lat2])
+      
+      console.log(`距离计算：用户 (${lat1},${lng1}) -> 摊位 (${lat2},${lng2}) = ${distance}米`)
+      
       return distance < 1000 ? `${Math.round(distance)}m` : `${(distance/1000).toFixed(2)}km`
     },
 
