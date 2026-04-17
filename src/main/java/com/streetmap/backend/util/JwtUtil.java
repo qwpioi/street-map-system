@@ -49,17 +49,6 @@ public class JwtUtil {
     }
 
     /**
-     * 解析 token
-     */
-    public Claims parseToken(String token) {
-        return Jwts.parser()
-                .verifyWith(getSigningKey())
-                .build()
-                .parseSignedClaims(token)
-                .getPayload();
-    }
-
-    /**
      * 验证 token 是否有效
      */
     public boolean validateToken(String token) {
