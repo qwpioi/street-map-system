@@ -28,4 +28,12 @@ public interface UserMapper extends BaseMapper<User> {
      */
     @Select("SELECT * FROM user WHERE phone = #{phone}")
     User findByPhone(String phone);
+
+    /**
+     * 根据 openid 查询用户
+     * @param openid 微信 openid
+     * @return 用户对象
+     */
+    @Select("SELECT * FROM user WHERE openid = #{openid}")
+    User findByOpenid(String openid);
 }

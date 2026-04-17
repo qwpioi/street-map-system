@@ -66,6 +66,16 @@ public class User {
     private Integer status = 1;
 
     /**
+     * 微信 openid
+     */
+    private String openid;
+
+    /**
+     * 微信 unionid
+     */
+    private String unionid;
+
+    /**
      * 创建时间
      */
     @TableField(fill = FieldFill.INSERT)

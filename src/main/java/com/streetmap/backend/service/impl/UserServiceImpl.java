@@ -73,4 +73,9 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         user.setPassword(null);
         return user;
     }
+
+    @Override
+    public User findByOpenid(String openid) {
+        return userMapper.findByOpenid(openid);
+    }
 }

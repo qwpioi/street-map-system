@@ -8,15 +8,22 @@
       <el-main>
         <div class="map-container">
           <div class="map-header">
-            <h2>地摊地图</h2>
+            <h2>🗺️ 地摊地图</h2>
             <div class="map-actions">
-              <el-button type="primary" @click="locateMe">定位我</el-button>
               <el-button type="success" @click="loadNearbyVendors">查找附近摊位</el-button>
               <el-button @click="refreshMap">刷新地图</el-button>
             </div>
           </div>
 
           <div id="mapContainer" class="map-canvas"></div>
+
+          <div class="position-info">
+            <h4>📍 位置信息</h4>
+            <p>自动定位：<span class="pos-value">{{ autoPosition ? autoPosition.lat.toFixed(6) + ', ' + autoPosition.lng.toFixed(6) + ' (±' + autoPosition.accuracy + '米)' : '未定位' }}</span></p>
+            <p>手动定位：<span class="pos-value">{{ manualPosition ? manualPosition.lat.toFixed(6) + ', ' + manualPosition.lng.toFixed(6) : '未定位' }}</span></p>
+            <p v-if="autoPosition && manualPosition">偏差：<span class="pos-value">{{ (calculateDistanceInMeters(autoPosition.lat, autoPosition.lng, manualPosition.lat, manualPosition.lng) / 1000).toFixed(2) }} km</span></p>
+            <el-button size="small" @click="copyCoordinates">复制坐标</el-button>
+          </div>
 
           <div class="map-info">
             <el-table :data="vendors" style="width: 100%">
@@ -61,6 +68,21 @@
           </div>
         </div>
       </el-main>
+
+      <!-- 底部定位提示栏 -->
+      <div class="location-tip-bar">
+        <div class="tip-content">
+          <span class="tip-icon">📍</span>
+          <span class="tip-text">
+            <span v-if="isMobile">✅ 手机访问，定位准确</span>
+            <span v-else>⚠️ 电脑访问定位可能不准，可拖动地图或点击"手动定位"调整</span>
+          </span>
+        </div>
+        <div class="tip-actions">
+          <el-button size="small" type="primary" @click="locateMe">定位我</el-button>
+          <el-button size="small" type="warning" @click="enableManualPosition">手动定位</el-button>
+        </div>
+      </div>
 
       <!-- 编辑摊位对话框 -->
       <el-dialog
@@ -162,6 +184,10 @@ export default {
         longitude: ''
       },
       saving: false,
+      isManualMode: false,
+      isMobile: false,
+      autoPosition: null,
+      manualPosition: null,
       currentLocation: {
         lat: null,
         lng: null
@@ -170,6 +196,14 @@ export default {
   },
   async mounted() {
     console.log('🔧 mounted 执行，开始初始化地图...')
+    
+    // 检测设备类型
+    this.isMobile = /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)
+    console.log('📱 设备类型:', this.isMobile ? '手机' : '电脑')
+    
+    if (!this.isMobile) {
+      this.$message.info('电脑端定位可能不准，建议使用手机访问')
+    }
     
     try {
       this.map = await initAmap('mapContainer')
@@ -183,6 +217,19 @@ export default {
       
       this.map.on('error', () => {
         console.error('❌ 地图加载失败')
+      })
+      
+      // 拖动地图结束后更新摊位距离
+      this.map.on('dragend', () => {
+        const center = this.map.getCenter()
+        const lng = center.getLng()
+        const lat = center.getLat()
+        console.log('🗺️ 地图拖动结束，新中心:', lat, lng)
+        
+        if (this.vendors && this.vendors.length > 0) {
+          this.updateVendorDistances(lat, lng)
+          console.log('✅ 摊位距离已更新')
+        }
       })
     } catch (error) {
       console.error('地图初始化失败:', error)
@@ -211,15 +258,119 @@ export default {
     }
   },
   methods: {
+    isMobileDevice() {
+      return /Android|iPhone|iPad|iPod|Mobile/i.test(navigator.userAgent)
+    },
+    
     refreshPage() {
       this.$forceUpdate()
+    },
+    
+    getOnePosition() {
+      const timestamp = Date.now()
+      console.log('🔵 getOnePosition: 创建新的 Geolocation 实例（时间戳:', timestamp, ')')
+      
+      return new Promise((resolve, reject) => {
+        if (!AMap || !AMap.Geolocation) {
+          console.error('❌ AMap.Geolocation 不可用')
+          reject(new Error('AMap.Geolocation 不可用'))
+          return
+        }
+        
+        const geolocation = new AMap.Geolocation({
+          enableHighAccuracy: true,
+          timeout: 30000,
+          maximumAge: 0,
+          convert: true,
+          panToLocation: false,
+          zoomToAccuracy: false,
+          showCircle: false,
+          showButton: false,
+          noIpLocate: true,
+          noGeoLocation: false
+        })
+        
+        geolocation.getCurrentPosition((status, result) => {
+          console.log('🔍 高德定位返回:', {
+            status: status,
+            position: result?.position,
+            accuracy: result?.accuracy,
+            timestamp: Date.now(),
+            address: result?.address
+          })
+          
+          if (status === 'complete') {
+            resolve({
+              coords: {
+                latitude: result.position.lat,
+                longitude: result.position.lng,
+                accuracy: result.accuracy
+              }
+            })
+          } else {
+            console.error('❌ getOnePosition: 高德定位失败', result?.message)
+            reject(new Error(result?.message || '定位失败'))
+          }
+        })
+      })
+    },
+    
+    async locateBestPosition(maxAttempts = 3) {
+      console.log('🔵 locateBestPosition: 开始多次定位，尝试次数:', maxAttempts)
+      const positions = []
+      let minAccuracy = Infinity
+      let bestPosition = null
+      
+      for (let i = 0; i < maxAttempts; i++) {
+        console.log(`🔵 locateBestPosition: 第${i+1}次定位尝试（等待 3 秒）`)
+        
+        if (i > 0) {
+          await new Promise(resolve => setTimeout(resolve, 3000))
+        }
+        
+        try {
+          const position = await this.getOnePosition()
+          const accuracy = position.coords.accuracy
+          const lat = position.coords.latitude
+          const lng = position.coords.longitude
+          
+          console.log(`✅ locateBestPosition: 第${i+1}次成功 accuracy: ${accuracy} 坐标：${lat}, ${lng}`)
+          
+          positions.push(position)
+          
+          if (accuracy < minAccuracy) {
+            minAccuracy = accuracy
+            bestPosition = position
+          }
+          
+          if (accuracy < 100) {
+            console.log('✅ 定位精度良好，停止重试')
+            break
+          }
+          
+          if (i < maxAttempts - 1) {
+            await new Promise(resolve => setTimeout(resolve, 2000))
+          }
+        } catch (error) {
+          console.error(`❌ locateBestPosition: 第${i+1}次失败:`, error)
+        }
+      }
+      
+      console.log('🔵 locateBestPosition: 成功次数:', positions.length)
+      
+      if (!bestPosition) {
+        console.error('❌ locateBestPosition: 所有尝试均失败')
+        throw new Error('所有定位尝试都失败了')
+      }
+      
+      console.log('✅ locateBestPosition: 返回最佳结果 accuracy:', minAccuracy)
+      return bestPosition
     },
 
     async autoLocate() {
       console.log('📍 autoLocate 执行，检查地图实例:', this.map)
       
       if (!this.map) {
-        console.error('❌ 地图实例为 null，等待 500ms 后重试...')
         setTimeout(() => this.autoLocate(), 500)
         return
       }
@@ -231,58 +382,38 @@ export default {
         this.loadVendorsFromApi(34.746378, 113.625368)
         return
       }
-
+      
       try {
-        navigator.geolocation.getCurrentPosition(
-          async (position) => {
-            const longitude = position.coords.longitude
-            const latitude = position.coords.latitude
-
-            console.log('📍 自动定位成功:', latitude, longitude)
-            console.log('🗺️ 地图实例:', this.map)
-
-            try {
-              this.map.setCenter([longitude, latitude])
-              this.map.setZoom(16)
-
-              this.locationMarker = new AMap.Marker({
-                position: [longitude, latitude],
-                title: '当前位置',
-                icon: 'https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png'
-              })
-              this.map.add(this.locationMarker)
-
-              this.userPosition = { lng: longitude, lat: latitude }
-
-              await this.loadVendorsFromApi(latitude, longitude)
-              this.vendorsLoaded = true
-
-              console.log('✅ 自动定位完成，摊位距离已在 loadVendorsFromApi 中计算')
-            } catch (mapError) {
-              console.error('地图操作失败:', mapError)
-              this.$message.error('地图操作失败')
-            }
-          },
-          (error) => {
-            console.error('自动定位失败:', error)
-            if (this.map) {
-              this.map.setCenter([113.625368, 34.746378])
-              this.map.setZoom(13)
-            }
-            this.$message.warning('定位失败，显示默认位置（郑州）')
-          },
-          {
-            enableHighAccuracy: true,
-            timeout: 10000,
-            maximumAge: 0
-          }
-        )
+        const position = await this.locateBestPosition(3)
+        const longitude = position.coords.longitude
+        const latitude = position.coords.latitude
+        const accuracy = position.coords.accuracy
+        
+        console.log('📍 自动定位成功（最优）:', latitude, longitude, 'accuracy:', accuracy)
+        
+        this.map.setCenter([longitude, latitude])
+        this.map.setZoom(16)
+        
+        this.locationMarker = new AMap.Marker({
+          position: [longitude, latitude],
+          title: `当前位置 (精度:${Math.round(accuracy)}米)`,
+          icon: 'https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png'
+        })
+        this.map.add(this.locationMarker)
+        
+        this.userPosition = { lng: longitude, lat: latitude }
+        
+        await this.loadVendorsFromApi(latitude, longitude)
+        this.vendorsLoaded = true
+        
+        console.log('✅ 自动定位完成')
       } catch (error) {
-        console.error('定位错误:', error)
+        console.error('自动定位失败:', error)
         if (this.map) {
           this.map.setCenter([113.625368, 34.746378])
           this.map.setZoom(13)
         }
+        this.$message.warning('定位失败，显示默认位置')
       }
     },
 
@@ -305,78 +436,184 @@ export default {
     },
 
     async locateMe() {
+      console.log('🔵 locateMe: 开始执行')
+      
       if (!this.map) {
+        console.error('❌ locateMe: 地图未初始化')
         this.$message.warning('地图尚未初始化')
         return
       }
       
       if (!navigator.geolocation) {
+        console.error('❌ locateMe: 浏览器不支持定位')
         this.$message.error('您的浏览器不支持定位功能')
         return
       }
       
       try {
-        navigator.geolocation.getCurrentPosition(
-          async (position) => {
-            const longitude = position.coords.longitude
-            const latitude = position.coords.latitude
-            const accuracy = position.coords.accuracy
-            
-            console.log('定位成功:', latitude, longitude)
-            console.log('精度:', accuracy, '米')
-            
-            this.map.setCenter([longitude, latitude])
-            this.map.setZoom(16)
-            
-            if (this.locationMarker) {
-              this.locationMarker.setPosition([longitude, latitude])
-            } else {
-              this.locationMarker = new AMap.Marker({
-                position: [longitude, latitude],
-                title: '当前位置 (精度:' + Math.round(accuracy) + '米)',
-                icon: 'https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png'
-              })
-              this.map.add(this.locationMarker)
-            }
-            
-            this.userPosition = { lng: longitude, lat: latitude }
-            
-            if (!this.vendorsLoaded) {
-              await this.loadVendorsFromApi(longitude, latitude)
-              this.vendorsLoaded = true
-            } else {
-              this.updateVendorDistances(longitude, latitude)
-            }
-            
-            this.$message.success('定位成功！精度：' + Math.round(accuracy) + '米')
-          },
-          (error) => {
-            console.error('定位失败:', error)
-            
-            switch(error.code) {
-              case error.PERMISSION_DENIED:
-                this.$message.error('定位权限被拒绝，请在浏览器设置中开启')
-                break
-              case error.POSITION_UNAVAILABLE:
-                this.$message.error('位置信息不可用')
-                break
-              case error.TIMEOUT:
-                this.$message.warning('定位超时，请检查网络连接')
-                break
-              default:
-                this.$message.error('定位失败：' + error.message)
-            }
-          },
-          {
-            enableHighAccuracy: true,
-            timeout: 15000,
-            maximumAge: 0
-          }
-        )
+        console.log('🔵 locateMe: 准备调用 locateBestPosition')
+        this.$message.info('正在定位中，请稍候...')
+        
+        const position = await this.locateBestPosition(3)
+        const longitude = position.coords.longitude
+        const latitude = position.coords.latitude
+        const accuracy = position.coords.accuracy
+        
+        console.log('📍 locateMe: 定位成功', latitude, longitude, 'accuracy:', accuracy)
+        console.log('🔵 自动定位坐标:')
+        console.log('  纬度:', latitude)
+        console.log('  经度:', longitude)
+        console.log('  精度:', accuracy, '米')
+        
+        this.autoPosition = { lat: latitude, lng: longitude, accuracy: Math.round(accuracy) }
+        
+        if (accuracy > 1000) {
+          this.$message.warning({
+            message: '定位精度较低，建议使用手机访问或手动调整位置',
+            duration: 5000
+          })
+        } else if (accuracy > 200) {
+          this.$message.info({
+            message: '定位成功，如有偏差可拖动地图调整',
+            duration: 3000
+          })
+        } else {
+          this.$message.success('定位成功')
+        }
+        
+        this.map.setCenter([longitude, latitude])
+        this.map.setZoom(16)
+        
+        if (this.locationMarker) {
+          this.locationMarker.setPosition([longitude, latitude])
+        } else {
+          this.locationMarker = new AMap.Marker({
+            position: [longitude, latitude],
+            title: `当前位置 (精度:${Math.round(accuracy)}米)`,
+            icon: 'https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png'
+          })
+          this.map.add(this.locationMarker)
+        }
+        
+        this.userPosition = { lng: longitude, lat: latitude }
+        
+        if (!this.vendorsLoaded) {
+          await this.loadVendorsFromApi(latitude, longitude)
+          this.vendorsLoaded = true
+        } else {
+          this.updateVendorDistances(latitude, longitude)
+        }
       } catch (error) {
-        console.error('定位错误:', error)
-        this.$message.error('定位失败：' + error.message)
+        console.error('❌ locateMe: catch 捕获错误', error)
+        this.$message.error('定位失败：' + (error.message || '请检查网络连接'))
       }
+    },
+
+    async refreshLocation() {
+      this.$message.info('正在重新定位，请稍候...')
+      
+      try {
+        localStorage.removeItem('lastPosition')
+        
+        const position = await this.locateBestPosition(3)
+        
+        const longitude = position.coords.longitude
+        const latitude = position.coords.latitude
+        
+        this.map.setCenter([longitude, latitude])
+        this.map.setZoom(16)
+        
+        if (this.locationMarker) {
+          this.locationMarker.setPosition([longitude, latitude])
+        } else {
+          this.locationMarker = new AMap.Marker({
+            position: [longitude, latitude],
+            title: '当前位置',
+            icon: 'https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png'
+          })
+          this.map.add(this.locationMarker)
+        }
+        
+        this.userPosition = { lng: longitude, lat: latitude }
+        await this.loadVendorsFromApi(latitude, longitude)
+        
+        this.$message.success('重新定位成功')
+      } catch (error) {
+        this.$message.error('重新定位失败：' + error.message)
+      }
+    },
+
+    async enableManualPosition() {
+      if (!this.map) {
+        this.$message.warning('地图尚未初始化')
+        return
+      }
+
+      this.$message.info('请在地图上点击你的实际位置')
+      this.isManualMode = true
+
+      const clickHandler = (e) => {
+        const lng = e.lnglat.getLng()
+        const lat = e.lnglat.getLat()
+        
+        console.log('📍 手动定位坐标:')
+        console.log('  纬度:', lat)
+        console.log('  经度:', lng)
+        console.log('  高德地图查看：https://www.amap.com/?zoom=16&center=' + lng + ',' + lat)
+        
+        this.manualPosition = { lat, lng }
+        
+        if (this.locationMarker) {
+          this.locationMarker.setPosition([lng, lat])
+        } else {
+          this.locationMarker = new AMap.Marker({
+            position: [lng, lat],
+            title: '手动定位位置',
+            icon: 'https://webapi.amap.com/theme/v1.3/markers/n/mark_b.png'
+          })
+          this.map.add(this.locationMarker)
+        }
+
+        this.map.setCenter([lng, lat])
+        this.map.setZoom(16)
+        this.userPosition = { lng, lat }
+
+        this.map.off('click', clickHandler)
+        this.isManualMode = false
+
+        this.getAddressByPosition(lng, lat)
+
+        this.$message.success('位置已更新，请查看 Console 中的坐标')
+      }
+
+      this.map.on('click', clickHandler)
+    },
+
+    async getAddressByPosition(lng, lat) {
+      try {
+        const response = await fetch(
+          `https://restapi.amap.com/v3/geocode/regeo?location=${lng},${lat}&key=3dcbfe14ab2f11f3cae0717fb592ae86`
+        )
+        const data = await response.json()
+        
+        if (data.status === '1' && data.regeocode) {
+          const address = data.regeocode.formatted_address
+          console.log('📍 手动定位的详细地址:', address)
+          this.$message.info('位置：' + address)
+        }
+      } catch (error) {
+        console.error('逆地理编码失败:', error)
+      }
+    },
+
+    copyCoordinates() {
+      if (!this.userPosition) {
+        this.$message.warning('暂无位置信息')
+        return
+      }
+      const text = `纬度：${this.userPosition.lat.toFixed(6)}, 经度：${this.userPosition.lng.toFixed(6)}`
+      navigator.clipboard.writeText(text)
+      this.$message.success('坐标已复制')
     },
 
     async loadNearbyVendors() {
@@ -387,23 +624,11 @@ export default {
 
       try {
         if (navigator.geolocation) {
-          navigator.geolocation.getCurrentPosition(
-            async (position) => {
-              const { latitude, longitude } = position.coords
-              await this.loadVendorsFromApi(longitude, latitude)
-              this.vendorsLoaded = true
-            },
-            (error) => {
-              console.error('获取位置失败:', error)
-              const center = this.map.getCenter()
-              this.loadVendorsFromApi(center.lng, center.lat)
-            },
-            {
-              enableHighAccuracy: true,
-              timeout: 10000,
-              maximumAge: 60000
-            }
-          )
+          const position = await this.locateBestPosition(2)
+          const { latitude, longitude } = position.coords
+          console.log('📍 查找附近摊位定位:', latitude, longitude, 'accuracy:', position.coords.accuracy)
+          await this.loadVendorsFromApi(latitude, longitude)
+          this.vendorsLoaded = true
         } else {
           this.$message.warning('浏览器不支持地理定位')
           const center = this.map.getCenter()
@@ -499,6 +724,13 @@ export default {
       console.log(`距离计算：用户 (${lat1},${lng1}) -> 摊位 (${lat2},${lng2}) = ${distance}米`)
       
       return distance < 1000 ? `${Math.round(distance)}m` : `${(distance/1000).toFixed(2)}km`
+    },
+    
+    calculateDistanceInMeters(lat1, lng1, lat2, lng2) {
+      if (!AMap || !AMap.GeometryUtil) {
+        return 0
+      }
+      return AMap.GeometryUtil.distance([lng1, lat1], [lng2, lat2])
     },
 
     loadMockVendors(userCenter = null) {
@@ -1122,12 +1354,101 @@ export default {
 }
 .map-canvas {
   width: 100%;
-  height: 60vh !important;
+  height: calc(100vh - 120px) !important;
   min-height: 400px;
   border: 1px solid #ddd;
   position: relative;
 }
+
+/* 底部定位提示栏 */
+.location-tip-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to right, #f0f9ff, #e0f2fe);
+  border-top: 1px solid #bae6fd;
+  padding: 12px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  box-shadow: 0 -2px 8px rgba(0, 0, 0, 0.1);
+  z-index: 1000;
+  font-size: 14px;
+}
+
+.tip-content {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex: 1;
+}
+
+.tip-icon {
+  font-size: 18px;
+}
+
+.tip-text {
+  color: #0369a1;
+  font-weight: 500;
+}
+
+.tip-actions {
+  display: flex;
+  gap: 10px;
+}
+
+.position-info {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: rgba(255, 255, 255, 0.95);
+  padding: 12px 15px;
+  border-radius: 8px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  font-size: 13px;
+  line-height: 1.8;
+}
+.position-info h4 {
+  margin: 0 0 8px 0;
+  font-size: 14px;
+  color: #333;
+}
+.position-info p {
+  margin: 4px 0;
+  color: #666;
+}
+.position-info .pos-value {
+  color: #409EFF;
+  font-weight: 500;
+}
 .map-info {
   margin-top: 20px;
+}
+
+/* 响应式设计：手机端调整 */
+@media (max-width: 768px) {
+  .location-tip-bar {
+    flex-direction: column;
+    gap: 10px;
+    padding: 10px 15px;
+  }
+  
+  .tip-content {
+    width: 100%;
+    justify-content: center;
+    text-align: center;
+  }
+  
+  .tip-actions {
+    width: 100%;
+    justify-content: center;
+  }
+  
+  .tip-actions .el-button {
+    flex: 1;
+    max-width: 150px;
+  }
 }
 </style>

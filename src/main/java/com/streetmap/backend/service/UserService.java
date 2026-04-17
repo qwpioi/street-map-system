@@ -37,4 +37,11 @@ public interface UserService extends IService<User> {
      * @return 用户对象（登录成功）或 null（失败）
      */
     User login(String username, String password);
+
+    /**
+     * 根据 openid 查询用户
+     * @param openid 微信 openid
+     * @return 用户对象
+     */
+    User findByOpenid(String openid);
 }

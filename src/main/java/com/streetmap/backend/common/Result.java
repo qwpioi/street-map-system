@@ -51,14 +51,14 @@ public class Result<T> {
     /**
      * 失败返回
      */
-    public static Result<Void> error(String message) {
+    public static <T> Result<T> error(String message) {
         return new Result<>(500, message, null);
     }
 
     /**
      * 失败返回（带状态码）
      */
-    public static Result<Void> error(Integer code, String message) {
+    public static <T> Result<T> error(Integer code, String message) {
         return new Result<>(code, message, null);
     }
 }
