@@ -4,33 +4,36 @@ import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Component;
 import javax.crypto.SecretKey;
 import java.util.Date;
 
+@Component
 public class JwtUtil {
-    // 密钥（至少 256 位 / 32 字节）
-    private static final String SECRET = "street-map-secret-key-2026-this-is-long-enough-for-hs256-algorithm";
+    @Value("${jwt.secret}")
+    private String secret;
 
-    // 过期时间（7 天）
-    private static final long EXPIRATION = 7 * 24 * 60 * 60 * 1000;
+    @Value("${jwt.expiration}")
+    private Long expiration;
 
     /**
      * 获取签名密钥
      */
-    private static SecretKey getSigningKey() {
-        byte[] keyBytes = SECRET.getBytes();
+    private SecretKey getSigningKey() {
+        byte[] keyBytes = secret.getBytes();
         return Keys.hmacShaKeyFor(keyBytes);
     }
 
     /**
      * 生成 token
      */
-    public static String generateToken(Long userId, String username) {
+    public String generateToken(Long userId, String username) {
         return Jwts.builder()
                 .setSubject(String.valueOf(userId))
                 .claim("username", username)
                 .setIssuedAt(new Date())
-                .setExpiration(new Date(System.currentTimeMillis() + EXPIRATION))
+                .setExpiration(new Date(System.currentTimeMillis() + expiration))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
     }
@@ -38,7 +41,7 @@ public class JwtUtil {
     /**
      * 解析 token
      */
-    public static Claims parseToken(String token) {
+    public Claims parseToken(String token) {
         return Jwts.parser()
                 .verifyWith(getSigningKey())
                 .build()
@@ -49,7 +52,7 @@ public class JwtUtil {
     /**
      * 验证 token 是否有效
      */
-    public static boolean validateToken(String token) {
+    public boolean validateToken(String token) {
         try {
             parseToken(token);
             return true;
@@ -61,7 +64,7 @@ public class JwtUtil {
     /**
      * 从 token 中获取用户 ID
      */
-    public static Long getUserIdFromToken(String token) {
+    public Long getUserIdFromToken(String token) {
         Claims claims = parseToken(token);
         return Long.parseLong(claims.getSubject());
     }
@@ -69,7 +72,7 @@ public class JwtUtil {
     /**
      * 从 token 中获取用户名
      */
-    public static String getUsernameFromToken(String token) {
+    public String getUsernameFromToken(String token) {
         Claims claims = parseToken(token);
         return claims.get("username", String.class);
     }

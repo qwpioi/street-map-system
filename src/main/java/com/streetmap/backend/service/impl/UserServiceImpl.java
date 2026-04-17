@@ -5,8 +5,8 @@ import com.streetmap.backend.mapper.UserMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.streetmap.backend.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.util.DigestUtils;
 
 /**
  * 用户 Service 实现类
@@ -17,10 +17,7 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Autowired
     private UserMapper userMapper;
 
-    /**
-     * JWT 密钥（后续移到配置文件）
-     */
-    private static final String JWT_SECRET = "your-secret-key-here-must-be-at-least-32-characters-long";
+    private static final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
 
     @Override
     public User findByUsername(String username) {
@@ -40,8 +37,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
             throw new RuntimeException("用户名已存在");
         }
 
-        // 密码加密（MD5，后续改用 BCrypt）
-        user.setPassword(DigestUtils.md5DigestAsHex(user.getPassword().getBytes()));
+        // 密码加密（BCrypt）
+        user.setPassword(encoder.encode(user.getPassword()));
 
         // 设置默认值
         user.setGender(0);
@@ -56,11 +53,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
         // 查询用户
         User user = findByUsername(username);
 
-        // 密码加密
-        String encryptedPassword = DigestUtils.md5DigestAsHex(password.getBytes());
-
         // 统一验证（不区分用户名错误还是密码错误，提高安全性）
-        if (user == null || !user.getPassword().equals(encryptedPassword)) {
+        if (user == null || !encoder.matches(password, user.getPassword())) {
             throw new RuntimeException("用户名或密码错误");
         }
 
