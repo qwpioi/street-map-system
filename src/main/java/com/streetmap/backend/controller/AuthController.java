@@ -19,6 +19,9 @@ public class AuthController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
     @Value("${wechat.appid}")
     private String wechatAppid;
 
@@ -75,7 +78,7 @@ public class AuthController {
                 userService.save(user);
             }
 
-            String token = JwtUtil.generateToken(user.getId(), user.getUsername());
+            String token = jwtUtil.generateToken(user.getId(), user.getUsername());
 
             Map<String, Object> data = new HashMap<>();
             data.put("token", token);

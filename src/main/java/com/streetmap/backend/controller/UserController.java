@@ -19,6 +19,9 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @Autowired
+    private JwtUtil jwtUtil;
+
     /**
      * 用户注册
      * POST /api/user/register
@@ -38,7 +41,7 @@ public class UserController {
         User loginUser = userService.login(user.getUsername(), user.getPassword());
 
         // 生成 token
-        String token = JwtUtil.generateToken(loginUser.getId(), loginUser.getUsername());
+        String token = jwtUtil.generateToken(loginUser.getId(), loginUser.getUsername());
 
         // 返回用户信息和 token
         Map<String, Object> data = new HashMap<>();
