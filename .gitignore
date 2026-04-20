@@ -31,3 +31,11 @@ build/
 
 ### VS Code ###
 .vscode/
+
+# 敏感配置
+.env
+.env.local
+.env.*.local
+
+# 日志
+*.log

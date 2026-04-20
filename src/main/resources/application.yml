@@ -25,8 +25,8 @@ mybatis:
 
 # JWT 配置
 jwt:
-  secret: ${JWT_SECRET:your-secret-key-here-must-be-at-least-32-characters-long-for-security}
-  expiration: 86400000  # 24 小时（毫秒）
+  secret: ${JWT_SECRET:test-secret-key-must-be-at-least-32-characters-long-for-security}
+  expiration: 86400000
 
 # 微信配置
 wechat:

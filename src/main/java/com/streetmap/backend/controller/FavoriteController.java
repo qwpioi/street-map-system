@@ -1,12 +1,14 @@
 package com.streetmap.backend.controller;
 
 import com.streetmap.backend.common.Result;
+import com.streetmap.backend.dto.FavoriteWithVendorDTO;
 import com.streetmap.backend.entity.Favorite;
 import com.streetmap.backend.service.FavoriteService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * 收藏 Controller
@@ -19,12 +21,12 @@ public class FavoriteController {
     private FavoriteService favoriteService;
 
     /**
-     * 根据用户 ID 查询收藏列表
+     * 根据用户 ID 查询收藏列表（带摊位信息）
      * GET /api/favorite/user/{userId}
      */
     @GetMapping("/user/{userId}")
-    public Result<List<Favorite>> getByUserId(@PathVariable Long userId) {
-        List<Favorite> favorites = favoriteService.findByUserId(userId);
+    public Result<List<FavoriteWithVendorDTO>> getByUserId(@PathVariable Long userId) {
+        List<FavoriteWithVendorDTO> favorites = favoriteService.findByUserIdWithVendor(userId);
         return Result.success(favorites);
     }
 
@@ -33,9 +35,9 @@ public class FavoriteController {
      * POST /api/favorite/add
      */
     @PostMapping("/add")
-    public Result<Boolean> add(
-            @RequestParam Long userId,
-            @RequestParam Long vendorId) {
+    public Result<Boolean> add(@RequestBody Map<String, Long> params) {
+        Long userId = params.get("userId");
+        Long vendorId = params.get("vendorId");
         boolean success = favoriteService.addFavorite(userId, vendorId);
         return Result.success(success);
     }
@@ -45,9 +47,9 @@ public class FavoriteController {
      * DELETE /api/favorite/remove
      */
     @DeleteMapping("/remove")
-    public Result<Boolean> remove(
-            @RequestParam Long userId,
-            @RequestParam Long vendorId) {
+    public Result<Boolean> remove(@RequestBody Map<String, Long> params) {
+        Long userId = params.get("userId");
+        Long vendorId = params.get("vendorId");
         boolean success = favoriteService.removeFavorite(userId, vendorId);
         return Result.success(success);
     }

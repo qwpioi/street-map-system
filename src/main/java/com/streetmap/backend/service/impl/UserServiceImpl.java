@@ -17,7 +17,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User> implements Us
     @Autowired
     private UserMapper userMapper;
 
-    private static final BCryptPasswordEncoder encoder = new BCryptPasswordEncoder();
+    @Autowired
+    private BCryptPasswordEncoder encoder;
 
     @Override
     public User findByUsername(String username) {

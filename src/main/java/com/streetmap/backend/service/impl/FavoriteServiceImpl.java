@@ -1,5 +1,6 @@
 package com.streetmap.backend.service.impl;
 
+import com.streetmap.backend.dto.FavoriteWithVendorDTO;
 import com.streetmap.backend.entity.Favorite;
 import com.streetmap.backend.mapper.FavoriteMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -47,5 +48,10 @@ public class FavoriteServiceImpl extends ServiceImpl<FavoriteMapper, Favorite> i
     @Override
     public boolean isFavorite(Long userId, Long vendorId) {
         return favoriteMapper.findByUserIdAndVendorId(userId, vendorId) != null;
+    }
+
+    @Override
+    public List<FavoriteWithVendorDTO> findByUserIdWithVendor(Long userId) {
+        return favoriteMapper.findByUserIdWithVendor(userId);
     }
 }

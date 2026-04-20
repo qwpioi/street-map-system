@@ -1,5 +1,6 @@
 package com.streetmap.backend.service;
 
+import com.streetmap.backend.dto.FavoriteWithVendorDTO;
 import com.streetmap.backend.entity.Favorite;
 import com.baomidou.mybatisplus.extension.service.IService;
 import java.util.List;
@@ -39,4 +40,11 @@ public interface FavoriteService extends IService<Favorite> {
      * @return 是否已收藏
      */
     boolean isFavorite(Long userId, Long vendorId);
+
+    /**
+     * 根据用户 ID 查询收藏列表（带摊位信息）
+     * @param userId 用户 ID
+     * @return 收藏列表（带摊位信息）
+     */
+    List<FavoriteWithVendorDTO> findByUserIdWithVendor(Long userId);
 }
