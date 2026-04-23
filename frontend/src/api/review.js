@@ -36,14 +36,24 @@ api.interceptors.response.use(
 
 // 评价相关 API
 export const reviewApi = {
-  // 获取摊位评价列表
+  // 【新】获取摊位评价列表（含用户名和头像）
   getReviewsByVendorId(vendorId) {
-    return api.get(`/review/vendor/${vendorId}`)
+    return api.get(`/review/vendor/${vendorId}/list`)
   },
 
-  // 获取用户评价列表
-  getReviewsByUserId(userId) {
-    return api.get(`/review/user/${userId}`)
+  // 【新】获取用户评价列表
+  getMyReviews() {
+    return api.get('/review/user/my-reviews')
+  },
+
+  // 【新】获取摊位评价数量
+  getReviewCount(vendorId) {
+    return api.get(`/review/count/${vendorId}`)
+  },
+
+  // 【新】删除评价
+  deleteReview(reviewId) {
+    return api.delete(`/review/${reviewId}`)
   },
 
   // 添加评价
@@ -54,6 +64,11 @@ export const reviewApi = {
   // 获取摊位平均评分
   getAverageRating(vendorId) {
     return api.get(`/review/average/${vendorId}`)
+  },
+
+  // 【旧】保留兼容（可删除）
+  getReviewsByUserId(userId) {
+    return api.get(`/review/user/${userId}`)
   }
 }
 

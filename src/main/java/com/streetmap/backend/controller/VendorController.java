@@ -1,12 +1,18 @@
 package com.streetmap.backend.controller;
 
 import com.streetmap.backend.common.Result;
+import com.streetmap.backend.dto.ProductVO;
+import com.streetmap.backend.dto.VendorDTO;
 import com.streetmap.backend.entity.Vendor;
+import com.streetmap.backend.service.ProductService;
+import com.streetmap.backend.service.ReviewService;
 import com.streetmap.backend.service.VendorService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 /**
  * 摊主 Controller
@@ -17,6 +23,12 @@ public class VendorController {
 
     @Autowired
     private VendorService vendorService;
+
+    @Autowired
+    private ProductService productService;
+
+    @Autowired
+    private ReviewService reviewService;
 
     /**
      * 注册成为摊主
@@ -39,36 +51,42 @@ public class VendorController {
     }
 
     /**
-     * 根据 ID 查询摊位
+     * 根据 ID 查询摊位（含评价和商品数据）
      * GET /api/vendor/{id}
      */
     @GetMapping("/{id}")
-    public Result<Vendor> getById(@PathVariable Long id) {
+    public Result<VendorDTO> getById(@PathVariable Long id) {
         Vendor vendor = vendorService.getById(id);
-        return Result.success(vendor);
+        return Result.success(convertToDTO(vendor));
     }
 
     /**
-     * 查询所有开摊的摊位
+     * 查询所有开摊的摊位（含评价和商品数据）
      * GET /api/vendor/open
      */
     @GetMapping("/open")
-    public Result<List<Vendor>> getOpenVendors() {
+    public Result<List<VendorDTO>> getOpenVendors() {
         List<Vendor> vendors = vendorService.findOpenVendors();
-        return Result.success(vendors);
+        List<VendorDTO> dtos = vendors.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+        return Result.success(dtos);
     }
 
     /**
-     * 查询附近的摊位
+     * 查询附近的摊位（含评价和商品数据）
      * GET /api/vendor/nearby?latitude=xxx&longitude=xxx&range=xxx
      */
     @GetMapping("/nearby")
-    public Result<List<Vendor>> getNearbyVendors(
+    public Result<List<VendorDTO>> getNearbyVendors(
             @RequestParam Double latitude,
             @RequestParam Double longitude,
             @RequestParam(defaultValue = "0.1") Double range) {
         List<Vendor> vendors = vendorService.findNearbyVendors(latitude, longitude, range);
-        return Result.success(vendors);
+        List<VendorDTO> dtos = vendors.stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+        return Result.success(dtos);
     }
 
     /**
@@ -103,5 +121,23 @@ public class VendorController {
     public Result<Boolean> update(@RequestBody Vendor vendor) {
         boolean success = vendorService.updateById(vendor);
         return Result.success(success);
+    }
+
+    /**
+     * 转换为 DTO（含评价和商品数据）
+     */
+    private VendorDTO convertToDTO(Vendor vendor) {
+        VendorDTO dto = new VendorDTO();
+        BeanUtils.copyProperties(vendor, dto);
+        
+        // 添加评价信息
+        dto.setAverageRating(reviewService.getAverageRating(vendor.getId()));
+        dto.setReviewCount(reviewService.countByVendorId(vendor.getId()));
+        
+        // 添加商品列表
+        List<ProductVO> products = productService.getProductsByVendorId(vendor.getId());
+        dto.setProducts(products);
+        
+        return dto;
     }
 }

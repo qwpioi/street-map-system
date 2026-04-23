@@ -1,5 +1,6 @@
 package com.streetmap.backend.service.impl;
 
+import com.streetmap.backend.dto.ReviewWithUserDTO;
 import com.streetmap.backend.entity.Review;
 import com.streetmap.backend.mapper.ReviewMapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
@@ -38,5 +39,34 @@ public class ReviewServiceImpl extends ServiceImpl<ReviewMapper, Review> impleme
     @Override
     public Double getAverageRating(Long vendorId) {
         return reviewMapper.getAverageRating(vendorId);
+    }
+
+    @Override
+    public List<ReviewWithUserDTO> findByVendorIdWithUser(Long vendorId) {
+        return reviewMapper.findByVendorIdWithUser(vendorId);
+    }
+
+    @Override
+    public List<ReviewWithUserDTO> findByUserIdWithVendor(Long userId) {
+        return reviewMapper.findByUserIdWithVendor(userId);
+    }
+
+    @Override
+    public Long countByVendorId(Long vendorId) {
+        return reviewMapper.countByVendorId(vendorId);
+    }
+
+    @Override
+    public boolean deleteReview(Long reviewId, Long userId) {
+        Review review = reviewMapper.findByIdWithUser(reviewId);
+        if (review == null) {
+            throw new RuntimeException("评价不存在");
+        }
+        
+        if (!review.getUserId().equals(userId)) {
+            throw new RuntimeException("只能删除自己的评价");
+        }
+        
+        return removeById(reviewId);
     }
 }

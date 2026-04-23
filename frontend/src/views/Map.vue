@@ -1299,19 +1299,29 @@ export default {
           const reviewsHtml = this.reviews.map(r => {
             const userStars = '⭐'.repeat(r.rating)
             const time = r.createTime ? new Date(r.createTime).toLocaleString('zh-CN') : '未知时间'
+            const avatar = r.userAvatar || 'https://cube.elemecdn.com/3/7c/3ea6beec64369c2642b92c6726f1epng.png'
+            const username = r.userName || '匿名用户'
+            
             return `
               <div style="border-bottom: 1px solid #eee; padding: 10px 0;">
-                <div style="display: flex; justify-content: space-between; margin-bottom: 5px;">
-                  <span>${userStars}</span>
-                  <span style="color: #999; font-size: 12px;">${time}</span>
+                <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 8px;">
+                  <img src="${avatar}" style="width: 40px; height: 40px; border-radius: 50%; object-fit: cover;" />
+                  <div style="flex: 1;">
+                    <div style="font-weight: bold; color: #333;">${username}</div>
+                    <div style="font-size: 12px; color: #999;">${time}</div>
+                  </div>
+                  <div>${userStars}</div>
                 </div>
-                <div style="color: #666;">${r.content || '暂无内容'}</div>
+                <div style="color: #666; margin-left: 50px;">${r.content || '暂无内容'}</div>
               </div>
             `
           }).join('')
           
           this.$alert(`
-            <div style="max-height: 300px; overflow-y: auto;">
+            <div style="max-height: 400px; overflow-y: auto;">
+              <div style="padding: 10px; background: #f5f7fa; border-radius: 4px; margin-bottom: 10px;">
+                <strong>📍 摊位：</strong>${vendor.stallName}
+              </div>
               ${reviewsHtml}
             </div>
           `, `${vendor.stallName} - 评价列表`, {

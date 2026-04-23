@@ -1,5 +1,6 @@
 package com.streetmap.backend.service;
 
+import com.streetmap.backend.dto.ReviewWithUserDTO;
 import com.streetmap.backend.entity.Review;
 import com.baomidou.mybatisplus.extension.service.IService;
 import java.util.List;
@@ -36,4 +37,24 @@ public interface ReviewService extends IService<Review> {
      * @return 平均分
      */
     Double getAverageRating(Long vendorId);
+
+    /**
+     * 根据摊位 ID 查询评价列表（关联用户信息）
+     */
+    List<ReviewWithUserDTO> findByVendorIdWithUser(Long vendorId);
+
+    /**
+     * 根据用户 ID 查询评价列表（关联摊位信息）
+     */
+    List<ReviewWithUserDTO> findByUserIdWithVendor(Long userId);
+
+    /**
+     * 统计摊位评价数量
+     */
+    Long countByVendorId(Long vendorId);
+
+    /**
+     * 删除评价
+     */
+    boolean deleteReview(Long reviewId, Long userId);
 }

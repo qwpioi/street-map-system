@@ -39,13 +39,17 @@ public class SecurityConfig {
 
                 // 配置授权规则
                 .authorizeHttpRequests(auth -> auth
-                        // 白名单：无需认证即可访问
-                        .requestMatchers(
-                                "/api/auth/**",
-                                "/api/user/register",
-                                "/api/user/login",
-                                "/api/test/**"
-                        ).permitAll()
+                // 白名单：无需认证即可访问
+                .requestMatchers(
+                        "/api/auth/**",
+                        "/api/user/register",
+                        "/api/user/login",
+                        "/api/test/**",
+                        "/api/vendor/**",
+                        "/api/review/**",
+                        "/api/product/**",
+                        "/api/favorite/**"
+                ).permitAll()
 
                         // 其他所有请求需要认证
                         .anyRequest().authenticated()
