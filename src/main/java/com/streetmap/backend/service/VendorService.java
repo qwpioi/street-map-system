@@ -1,7 +1,10 @@
 package com.streetmap.backend.service;
 
 import com.streetmap.backend.entity.Vendor;
+import com.streetmap.backend.dto.ApplyVendorDTO;
+import com.streetmap.backend.dto.VendorDTO;
 import com.baomidou.mybatisplus.extension.service.IService;
+import java.math.BigDecimal;
 import java.util.List;
 
 /**
@@ -47,4 +50,19 @@ public interface VendorService extends IService<Vendor> {
      * @return 是否成功
      */
     boolean closeStall(Long userId);
+
+    /**
+     * 获取当前用户的摊位信息
+     */
+    VendorDTO getMyVendor(Long userId);
+
+    /**
+     * 修改摊位状态 (status: 1=开摊, 0=收摊)
+     */
+    void updateVendorStatus(Long userId, Integer status, BigDecimal latitude, BigDecimal longitude);
+
+    /**
+     * 申请成为摊主
+     */
+    void applyVendor(Long userId, ApplyVendorDTO dto);
 }

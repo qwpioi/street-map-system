@@ -68,6 +68,12 @@ public class Vendor {
     private String address;
 
     /**
+     * 手机号（从 user 表关联查询，vendor 表本身没有此字段）
+     */
+    @TableField(exist = false)
+    private String phone;
+
+    /**
      * 最后开摊时间
      */
     private LocalDateTime lastOpenTime;

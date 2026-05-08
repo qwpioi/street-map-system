@@ -16,7 +16,11 @@ public interface VendorMapper extends BaseMapper<Vendor> {
      * 查询所有开摊的摊位
      * @return 摊位列表
      */
-    @Select("SELECT * FROM vendor WHERE status = 1")
+    @Select("SELECT v.id, v.user_id, v.stall_name, v.description, v.hot_products, " +
+            "v.status, v.latitude, v.longitude, v.address, v.last_open_time, " +
+            "v.create_time, v.update_time, u.phone " +
+            "FROM vendor v LEFT JOIN user u ON v.user_id = u.id " +
+            "WHERE v.status = 1")
     List<Vendor> findOpenVendors();
 
     /**
@@ -24,7 +28,11 @@ public interface VendorMapper extends BaseMapper<Vendor> {
      * @param userId 用户 ID
      * @return 摊位对象
      */
-    @Select("SELECT * FROM vendor WHERE user_id = #{userId}")
+    @Select("SELECT v.id, v.user_id, v.stall_name, v.description, v.hot_products, " +
+            "v.status, v.latitude, v.longitude, v.address, v.last_open_time, " +
+            "v.create_time, v.update_time, u.phone " +
+            "FROM vendor v LEFT JOIN user u ON v.user_id = u.id " +
+            "WHERE v.user_id = #{userId}")
     Vendor findByUserId(Long userId);
 
     /**
@@ -34,8 +42,12 @@ public interface VendorMapper extends BaseMapper<Vendor> {
      * @param range 范围（度）
      * @return 摊位列表
      */
-    @Select("SELECT * FROM vendor WHERE status = 1 " +
-            "AND latitude BETWEEN #{latitude} - #{range} AND #{latitude} + #{range} " +
-            "AND longitude BETWEEN #{longitude} - #{range} AND #{longitude} + #{range}")
+    @Select("SELECT v.id, v.user_id, v.stall_name, v.description, v.hot_products, " +
+            "v.status, v.latitude, v.longitude, v.address, v.last_open_time, " +
+            "v.create_time, v.update_time, u.phone " +
+            "FROM vendor v LEFT JOIN user u ON v.user_id = u.id " +
+            "WHERE v.status = 1 " +
+            "AND v.latitude BETWEEN #{latitude} - #{range} AND #{latitude} + #{range} " +
+            "AND v.longitude BETWEEN #{longitude} - #{range} AND #{longitude} + #{range}")
     List<Vendor> findNearbyVendors(Double latitude, Double longitude, Double range);
 }

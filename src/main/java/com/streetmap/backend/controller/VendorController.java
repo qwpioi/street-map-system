@@ -3,15 +3,19 @@ package com.streetmap.backend.controller;
 import com.streetmap.backend.common.Result;
 import com.streetmap.backend.dto.ProductVO;
 import com.streetmap.backend.dto.VendorDTO;
+import com.streetmap.backend.dto.ApplyVendorDTO;
 import com.streetmap.backend.entity.Vendor;
 import com.streetmap.backend.service.ProductService;
 import com.streetmap.backend.service.ReviewService;
 import com.streetmap.backend.service.VendorService;
+import com.streetmap.backend.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.BeanUtils;
 import org.springframework.web.bind.annotation.*;
 
+import java.math.BigDecimal;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -29,6 +33,9 @@ public class VendorController {
 
     @Autowired
     private ReviewService reviewService;
+
+    @Autowired
+    private JwtUtil jwtUtil;
 
     /**
      * 注册成为摊主
@@ -124,6 +131,61 @@ public class VendorController {
     }
 
     /**
+     * 获取我的摊位信息（从 Token 解析 userId）
+     * GET /api/vendor/my
+     */
+    @GetMapping("/my")
+    public Result<VendorDTO> getMyVendor(@RequestHeader("Authorization") String token) {
+        Long userId = getUserIdFromToken(token);
+        VendorDTO vendor = vendorService.getMyVendor(userId);
+        if (vendor == null) {
+            return Result.error("您还没有摊位");
+        }
+        return Result.success(vendor);
+    }
+
+    /**
+     * 修改摊位状态 (开/收摊)
+     * PUT /api/vendor/status
+     */
+    @PutMapping("/status")
+    public Result<?> updateStatus(@RequestHeader("Authorization") String token, 
+                              @RequestBody Map<String, Object> params) {
+        try {
+            Long userId = getUserIdFromToken(token);
+            Integer status = (Integer) params.get("status");
+            
+            // 提取经纬度 (如果是开摊操作)
+            BigDecimal lat = null;
+            BigDecimal lng = null;
+            if (status == 1 && params.get("latitude") != null) {
+                lat = new BigDecimal(params.get("latitude").toString());
+                lng = new BigDecimal(params.get("longitude").toString());
+            }
+
+            vendorService.updateVendorStatus(userId, status, lat, lng);
+            return Result.success(status == 1 ? "开摊成功！位置已更新" : "收摊成功，辛苦了！");
+        } catch (Exception e) {
+            return Result.error(e.getMessage());
+        }
+    }
+
+    /**
+     * 申请成为摊主
+     */
+    @PostMapping("/apply")
+    public Result<?> applyVendor(@RequestHeader("Authorization") String token, 
+                             @RequestBody ApplyVendorDTO dto) {
+        try {
+            Long userId = getUserIdFromToken(token);
+            vendorService.applyVendor(userId, dto);
+            return Result.success("申请成功，您已成为摊主！");
+        } catch (Exception e) {
+            return Result.error(e.getMessage());
+        }
+    }
+
+    /**
      * 转换为 DTO（含评价和商品数据）
      */
     private VendorDTO convertToDTO(Vendor vendor) {
@@ -139,5 +201,15 @@ public class VendorController {
         dto.setProducts(products);
         
         return dto;
+    }
+
+    /**
+     * 从 Authorization header 中提取 userId
+     */
+    private Long getUserIdFromToken(String token) {
+        if (token != null && token.startsWith("Bearer ")) {
+            token = token.substring(7);
+        }
+        return jwtUtil.getUserIdFromToken(token);
     }
 }
