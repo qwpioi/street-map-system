@@ -147,4 +147,17 @@ public class VendorServiceImpl extends ServiceImpl<VendorMapper, Vendor> impleme
                 .set("phone", dto.getPhone())
                 .eq("id", userId));
     }
+
+    @Override
+    public void updatePhone(Long userId, String phone) {
+        // 确认用户有摊位
+        Vendor vendor = findByUserId(userId);
+        if (vendor == null) {
+            throw new RuntimeException("您还没有摊位！");
+        }
+        // 更新到 user 表
+        userMapper.update(null, new UpdateWrapper<User>()
+                .set("phone", phone)
+                .eq("id", userId));
+    }
 }

@@ -65,4 +65,11 @@ public interface VendorService extends IService<Vendor> {
      * 申请成为摊主
      */
     void applyVendor(Long userId, ApplyVendorDTO dto);
+
+    /**
+     * 更新摊主手机号（同步到 user 表）
+     * @param userId 用户ID
+     * @param phone 新手机号
+     */
+    void updatePhone(Long userId, String phone);
 }

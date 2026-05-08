@@ -174,12 +174,37 @@ public class VendorController {
      * 申请成为摊主
      */
     @PostMapping("/apply")
-    public Result<?> applyVendor(@RequestHeader("Authorization") String token, 
+    public Result<?> applyVendor(@RequestHeader("Authorization") String token,
                              @RequestBody ApplyVendorDTO dto) {
         try {
             Long userId = getUserIdFromToken(token);
             vendorService.applyVendor(userId, dto);
             return Result.success("申请成功，您已成为摊主！");
+        } catch (Exception e) {
+            return Result.error(e.getMessage());
+        }
+    }
+
+    /**
+     * 编辑摊主手机号（同步更新到 user 表）
+     * PUT /api/vendor/phone
+     */
+    @PutMapping("/phone")
+    public Result<?> updatePhone(@RequestHeader("Authorization") String token,
+                              @RequestBody Map<String, String> params) {
+        try {
+            Long userId = getUserIdFromToken(token);
+            String phone = params.get("phone");
+
+            if (phone == null || phone.trim().isEmpty()) {
+                return Result.error("请填写手机号！");
+            }
+            if (!phone.matches("^1[3-9]\\d{9}$")) {
+                return Result.error("手机号格式不正确！");
+            }
+
+            vendorService.updatePhone(userId, phone);
+            return Result.success("手机号更新成功！");
         } catch (Exception e) {
             return Result.error(e.getMessage());
         }
