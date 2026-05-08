@@ -4,6 +4,8 @@ import com.streetmap.backend.filter.JwtAuthenticationFilter;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configurers.AbstractHttpConfigurer;
@@ -16,6 +18,7 @@ import org.springframework.web.cors.CorsConfigurationSource;
 import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 import java.util.Arrays;
+import java.util.List;
 
 @Configuration
 @EnableWebSecurity
@@ -39,17 +42,27 @@ public class SecurityConfig {
 
                 // 配置授权规则
                 .authorizeHttpRequests(auth -> auth
-                // 白名单：无需认证即可访问
-                .requestMatchers(
-                        "/api/auth/**",
-                        "/api/user/register",
-                        "/api/user/login",
-                        "/api/test/**",
-                        "/api/vendor/**",
-                        "/api/review/**",
-                        "/api/product/**",
-                        "/api/favorite/**"
-                ).permitAll()
+                        // 白名单：无需认证即可访问
+                        .requestMatchers(
+                                "/api/auth/**",
+                                "/api/user/register",
+                                "/api/user/login",
+                                "/api/test/**",
+                                "/api/vendor/open",
+                                "/api/vendor/nearby",
+                                "/api/vendor/{id}",
+                                "/api/vendor/register",
+                                "/api/vendor/user/{userId}",
+                                "/api/review/vendor/**",
+                                "/api/review/count/**",
+                                "/api/review/average/**",
+                                "/api/product/vendor/**",
+                                "/api/favorite/user/**",
+                                "/api/favorite/check",
+                                "/api/favorite/count/**",
+                                "/api/upload/**",
+                                "/images/**"
+                        ).permitAll()
 
                         // 其他所有请求需要认证
                         .anyRequest().authenticated()
@@ -59,6 +72,14 @@ public class SecurityConfig {
                 .addFilterBefore(jwtAuthenticationFilter, UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
+    }
+
+    /**
+     * 显式声明 AuthenticationManager，阻止 Spring Boot 创建默认的 in-memory 用户
+     */
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authConfig) throws Exception {
+        return authConfig.getAuthenticationManager();
     }
 
     @Bean
@@ -71,11 +92,7 @@ public class SecurityConfig {
         CorsConfiguration configuration = new CorsConfiguration();
 
         // 允许的源（生产环境应该指定具体域名）
-        configuration.setAllowedOrigins(Arrays.asList(
-            "http://localhost:5173",
-            "http://localhost:3000",
-            "*"
-        ));
+        configuration.setAllowedOriginPatterns(List.of("*"));
 
         // 允许的方法
         configuration.setAllowedMethods(Arrays.asList(
