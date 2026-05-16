@@ -1,0 +1,33 @@
+<view class="page-container">
+  <view class="card">
+    <view class="form-group">
+      <text class="label">摊位名称 <text class="required">*</text></text>
+      <input class="input" placeholder="例如：老王烧烤" bindinput="onInputStallName" />
+    </view>
+
+    <view class="form-group">
+      <text class="label">联系电话 <text class="required">*</text></text>
+      <input class="input" type="number" maxlength="11" placeholder="请输入手机号" bindinput="onInputPhone" />
+    </view>
+
+    <view class="form-group">
+      <text class="label">摊位地址 <text class="required">*</text></text>
+      <view class="location-row">
+        <input class="input flex-1" placeholder="点击获取定位" value="{{address}}" disabled />
+        <button class="btn-loc" bindtap="getLocation">📍 定位</button>
+      </view>
+    </view>
+
+    <view class="form-group">
+      <text class="label">热销产品</text>
+      <input class="input" placeholder="例如：羊肉串、烤茄子" bindinput="onInputProducts" />
+    </view>
+
+    <view class="form-group">
+      <text class="label">摊位描述</text>
+      <textarea class="textarea" placeholder="介绍一下你的特色..." bindinput="onInputDesc" />
+    </view>
+
+    <button class="btn-submit" bindtap="onSubmit" loading="{{submitting}}">提交申请</button>
+  </view>
+</view>

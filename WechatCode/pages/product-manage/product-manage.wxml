@@ -1,0 +1,36 @@
+<view class="pm-page">
+  <!-- 头部 -->
+  <view class="pm-header">
+    <text class="pm-title">商品管理</text>
+    <view class="pm-add-btn" bindtap="onAdd">+ 添加</view>
+  </view>
+
+  <!-- 商品列表 -->
+  <view class="pm-list" wx:if="{{products.length > 0}}">
+    <view class="pm-card" wx:for="{{products}}" wx:key="id" hover-class="pm-card-hover">
+      <view class="pm-img-wrap">
+        <image class="pm-img" src="{{item.imageUrl}}" mode="aspectFill" lazy-load />
+        <text wx:if="{{!item.imageUrl}}" class="pm-placeholder">🍳</text>
+      </view>
+      <view class="pm-info">
+        <text class="pm-name">{{item.name}}</text>
+        <text class="pm-desc" wx:if="{{item.description && item.description.indexOf('') === -1}}">{{item.description}}</text>
+        <view class="pm-bottom">
+          <text class="pm-price">¥{{item.price}}</text>
+          <text class="pm-tag">{{item.status == 1 ? '上架' : '下架'}}</text>
+        </view>
+      </view>
+      <view class="pm-actions">
+        <view class="pm-edit" bindtap="onEdit" data-id="{{item.id}}">编辑</view>
+        <view class="pm-delete" bindtap="onDelete" data-id="{{item.id}}" data-name="{{item.name}}">删除</view>
+      </view>
+    </view>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="pm-empty" wx:else>
+    <text class="pm-empty-icon">📦</text>
+    <text class="pm-empty-text">还没有商品</text>
+    <view class="pm-empty-btn" bindtap="onAdd">+ 添加商品</view>
+  </view>
+</view>

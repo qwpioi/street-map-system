@@ -1,0 +1,180 @@
+.pm-page {
+  width: 100%;
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  padding: 0 30rpx 40rpx;
+  box-sizing: border-box;
+  font-family: "Microsoft YaHei", sans-serif;
+}
+
+/* 头部 */
+.pm-header {
+  padding: 30rpx 0;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.pm-title {
+  font-size: 36rpx;
+  font-weight: bold;
+  color: #333;
+}
+
+.pm-add-btn {
+  background: #4CAF50;
+  color: #fff;
+  padding: 12rpx 36rpx;
+  border-radius: 30rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+  box-shadow: 0 2rpx 8rpx rgba(76, 175, 80, 0.25);
+}
+
+/* 列表 */
+.pm-list {
+  margin-top: 10rpx;
+}
+
+.pm-card {
+  background: #fff;
+  border-radius: 20rpx;
+  padding: 24rpx;
+  margin-bottom: 20rpx;
+  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.06);
+}
+
+.pm-card-hover {
+  opacity: 0.9;
+}
+
+.pm-img-wrap {
+  float: left;
+  width: 120rpx;
+  height: 120rpx;
+  background: #f5f5f5;
+  border-radius: 16rpx;
+  overflow: hidden;
+  position: relative;
+}
+
+.pm-img {
+  width: 100%;
+  height: 100%;
+}
+
+.pm-placeholder {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 48rpx;
+  background: #f5f5f5;
+}
+
+.pm-info {
+  margin-left: 140rpx;
+  margin-right: 120rpx;
+}
+
+.pm-name {
+  font-size: 32rpx;
+  font-weight: bold;
+  color: #333;
+  display: block;
+}
+
+.pm-desc {
+  font-size: 24rpx;
+  color: #999;
+  display: block;
+  margin-top: 6rpx;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.pm-bottom {
+  display: flex;
+  align-items: center;
+  margin-top: 12rpx;
+}
+
+.pm-price {
+  font-size: 36rpx;
+  color: #ff6b00;
+  font-weight: bold;
+}
+
+.pm-tag {
+  font-size: 22rpx;
+  padding: 4rpx 16rpx;
+  border-radius: 20rpx;
+  background: #e6f9ef;
+  color: #4CAF50;
+  margin-left: 16rpx;
+}
+
+/* 操作按钮 */
+.pm-actions {
+  float: right;
+  width: 100rpx;
+  text-align: center;
+}
+
+.pm-edit,
+.pm-delete {
+  padding: 12rpx 0;
+  border-radius: 8rpx;
+  font-size: 24rpx;
+  margin-bottom: 8rpx;
+}
+
+.pm-edit {
+  background: #e8f4fd;
+  color: #4CAF50;
+}
+
+.pm-delete {
+  background: #fde8e8;
+  color: #e74c3c;
+}
+
+.pm-card::after {
+  content: '';
+  display: block;
+  clear: both;
+}
+
+/* 空状态 */
+.pm-empty {
+  text-align: center;
+  padding-top: 200rpx;
+}
+
+.pm-empty-icon {
+  font-size: 120rpx;
+  display: block;
+  margin-bottom: 30rpx;
+}
+
+.pm-empty-text {
+  font-size: 28rpx;
+  color: #999;
+  display: block;
+  margin-bottom: 20rpx;
+}
+
+.pm-empty-btn {
+  display: inline-block;
+  background: #e6f9ef;
+  color: #4CAF50;
+  padding: 16rpx 40rpx;
+  border-radius: 30rpx;
+  font-size: 28rpx;
+  font-weight: 600;
+}

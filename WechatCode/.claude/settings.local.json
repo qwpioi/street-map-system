@@ -1,0 +1,18 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(Get-ChildItem -Path \"D:\\\\study\\\\Java\\\\Data\\\\street-map-backend\\\\WechatCode\\\\pages\" | ForEach-Object { $_.Name })",
+      "PowerShell(Get-ChildItem -Path \"D:\\\\study\\\\Java\\\\Data\\\\street-map-backend\\\\WechatCode\\\\pages\\\\vendor\" | ForEach-Object { $_.Name })",
+      "mcp__gitnexus__query",
+      "mcp__gitnexus__list_repos",
+      "mcp__gitnexus__context",
+      "Bash(findstr /snip review docs/database.sql)",
+      "Skill(gitnexus-exploring)",
+      "PowerShell(New-Item *)",
+      "Bash(mvn compile *)",
+      "PowerShell($bytes = [System.IO.File]::ReadAllBytes\\(\"D:\\\\study\\\\Java\\\\Data\\\\street-map-backend\\\\WechatCode\\\\pages\\\\hot-ranking\\\\hot-ranking.json\"\\); if \\($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF\\) { Write-Host \"HAS BOM\" } else { Write-Host \"NO BOM, first bytes:\" $bytes[0..2] })",
+      "PowerShell(Join-Path *)",
+      "Bash(powershell *)"
+    ]
+  }
+}

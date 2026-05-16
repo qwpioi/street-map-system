@@ -1,0 +1,39 @@
+<view class="add-review-container">
+  <!-- 摊位信息 -->
+  <view wx:if="{{vendorName}}" class="vendor-info">
+    <text class="vendor-label">评价摊位：</text>
+    <text class="vendor-name">{{vendorName}}</text>
+  </view>
+
+  <!-- 评分 -->
+  <view class="rating-section">
+    <text class="section-title">评分</text>
+    <view class="rating-stars">
+      <text 
+        wx:for="{{stars}}" 
+        wx:for-item="star"
+        wx:key="*this" 
+        class="star {{star <= rating ? 'active' : ''}}"
+        bindtap="onStarTap"
+        data-star="{{star}}"
+      >⭐</text>
+    </view>
+    <text class="rating-text">{{rating}}星</text>
+  </view>
+
+  <!-- 评价内容 -->
+  <view class="content-section">
+    <text class="section-title">评价内容</text>
+    <textarea 
+      class="content-input"
+      placeholder="分享您的用餐体验..."
+      maxlength="500"
+      value="{{content}}"
+      bindinput="onContentInput"
+    ></textarea>
+    <text class="char-count">{{content.length}}/500</text>
+  </view>
+
+  <!-- 提交按钮 -->
+  <button class="submit-btn" bindtap="onSubmit" disabled="{{!rating || !content}}">提交评价</button>
+</view>

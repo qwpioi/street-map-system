@@ -1,0 +1,132 @@
+<view class="map-container">
+  <!-- 全屏地图 -->
+  <map
+    id="fullMap"
+    class="full-map"
+    latitude="{{latitude}}"
+    longitude="{{longitude}}"
+    scale="16"
+    markers="{{markers}}"
+    show-location="true"
+    bindmarkertap="onMarkerTap"
+  >
+  </map>
+
+  <!-- 定位按钮 -->
+  <view class="locate-btn" bindtap="relocate">
+    <text class="locate-icon">📍</text>
+    <text>定位</text>
+  </view>
+
+  <!-- 摊位统计 -->
+  <view class="map-stats" wx:if="{{vendors.length > 0}}">
+    <text class="stats-text">附近 {{vendors.length}} 个摊位</text>
+  </view>
+
+  <!-- 摊位详情弹窗 -->
+  <view class="vendor-detail-modal" wx:if="{{vendorDetailVisible && selectedVendor}}">
+    <view class="modal-mask" bindtap="onCloseVendorDetail"></view>
+    <view class="modal-content">
+      <view class="close-btn" bindtap="onCloseVendorDetail">✕</view>
+
+      <view class="detail-header">
+        <view class="detail-icon">🍜</view>
+        <view class="detail-info">
+          <view class="detail-name">{{selectedVendor.stallName}}</view>
+          <view class="detail-rating" wx:if="{{averageRating > 0}}">
+            <text class="stars">
+              <text wx:for="{{stars}}" wx:for-item="star" wx:key="*this" wx:if="{{star < averageRating}}">⭐</text>
+              <text wx:for="{{stars}}" wx:for-item="star" wx:key="*this" wx:if="{{star >= averageRating}}">☆</text>
+            </text>
+            <text class="rating-score">{{averageRating.toFixed(1)}}分</text>
+            <text class="review-count">({{reviewCount}}条评价)</text>
+          </view>
+          <view class="detail-rating" wx:else>
+            <text class="no-rating">暂无评分</text>
+          </view>
+        </view>
+      </view>
+
+      <view class="detail-body">
+        <view class="detail-item" wx:if="{{selectedVendor.address}}">
+          <text class="item-label">📍 地址</text>
+          <text class="item-value">{{selectedVendor.address}}</text>
+        </view>
+
+        <view class="detail-item" wx:if="{{selectedVendor.phone}}" bindtap="callPhone">
+          <text class="item-label">📞 联系电话</text>
+          <text class="item-value phone-value">{{selectedVendor.phone}}</text>
+        </view>
+
+        <view class="detail-item" wx:if="{{hotProductsArray.length > 0}}">
+          <text class="item-label">🔥 热销产品</text>
+          <view class="item-value tags">
+            <text class="tag" wx:for="{{hotProductsArray}}" wx:key="*this">{{item}}</text>
+          </view>
+        </view>
+
+        <view class="detail-item">
+          <text class="item-label">📏 距离</text>
+          <text class="item-value distance">{{selectedVendor.distance}}</text>
+        </view>
+      </view>
+
+      <!-- 商品列表 -->
+      <view class="products-section" wx:if="{{selectedVendor.products && selectedVendor.products.length > 0}}">
+        <view class="section-title">🔥 热销产品</view>
+
+        <view class="product-list">
+          <view class="product-card" wx:for="{{selectedVendor.products}}" wx:key="id">
+            <image class="product-image" src="{{item.imageUrl || '/images/default-product.png'}}" mode="aspectFill" />
+            <view class="product-info">
+              <view class="product-name">{{item.name}}</view>
+              <view class="product-desc" wx:if="{{item.description}}">{{item.description}}</view>
+              <view class="product-price">
+                <text class="price-symbol">¥</text>
+                <text class="price-value">{{item.price}}</text>
+              </view>
+            </view>
+          </view>
+        </view>
+      </view>
+
+      <view class="reviews-section" wx:if="{{recentReviews.length > 0}}">
+        <view class="section-title-with-action">
+          <text class="section-title">💬 最新评价</text>
+          <text class="view-all" bindtap="onViewAllReviews">查看全部 ></text>
+        </view>
+
+        <view class="review-list">
+          <view class="review-item" wx:for="{{recentReviews}}" wx:key="id">
+            <view class="review-header">
+              <image class="review-avatar" src="{{item.userAvatar || '/images/default-avatar.png'}}" mode="aspectFill" />
+              <view class="review-info">
+                <view class="review-user">{{item.userName || '匿名用户'}}</view>
+                <view class="review-rating">
+                  <text wx:for="{{stars}}" wx:for-item="star" wx:key="*this" wx:if="{{star < item.rating}}">⭐</text>
+                  <text wx:for="{{stars}}" wx:for-item="star" wx:key="*this" wx:if="{{star >= item.rating}}">☆</text>
+                </view>
+              </view>
+              <view class="review-time">{{item.createTime}}</view>
+            </view>
+            <view class="review-content" wx:if="{{item.content}}">{{item.content}}</view>
+          </view>
+        </view>
+      </view>
+
+      <view class="empty-reviews" wx:else>
+        <text class="empty-icon">😢</text>
+        <text class="empty-text">暂无评价，快来成为第一个评价的人吧！</text>
+      </view>
+
+      <view class="detail-actions">
+        <button class="action-btn secondary" bindtap="onAddReview">
+          <text>📝 发表评价</text>
+        </button>
+        <button class="action-btn primary" bindtap="navigateToVendor" data-item="{{selectedVendor}}">
+          <text>🧭 导航到这里</text>
+        </button>
+      </view>
+    </view>
+  </view>
+</view>

@@ -1,0 +1,67 @@
+<!-- 半屏弹窗容器 -->
+<view class="review-modal {{showModal ? 'show' : ''}}" catchtouchmove="{{true}}">
+  <!-- 顶部拖动条 -->
+  <view class="modal-drag-bar" bindtouchstart="onDragStart" bindtouchmove="onDragMove" bindtouchend="onDragEnd">
+    <view class="drag-indicator"></view>
+  </view>
+  
+  <!-- 标题栏 -->
+  <view class="modal-header">
+    <text class="modal-title">{{vendorName || '我的评价'}}</text>
+    <text class="close-btn" bindtap="closeModal">✕</text>
+  </view>
+  
+  <!-- 平均评分 -->
+  <view class="modal-average" wx:if="{{averageRating > 0}}">
+    <text class="average-score">{{averageRating.toFixed(1)}}</text>
+    <text class="average-stars">
+      <text wx:for="{{[1,2,3,4,5]}}" wx:key="*this" wx:if="{{item <= averageRating}}">⭐</text>
+      <text wx:for="{{[1,2,3,4,5]}}" wx:key="*this" wx:if="{{item > averageRating}}">☆</text>
+    </text>
+    <text class="average-text">共 {{reviews.length}} 条评价</text>
+  </view>
+  
+  <!-- 评价列表 -->
+  <scroll-view class="review-scroll" scroll-y enhanced show-scrollbar="{{true}}">
+    <view class="review-list">
+      <view class="review-item" wx:for="{{reviews}}" wx:key="id">
+        <view class="review-header">
+          <text class="review-user">{{item.userName || '匿名用户'}}</text>
+          <view class="review-header-right">
+            <text class="review-time">{{item.createTime}}</text>
+            <text
+              class="delete-btn"
+              wx:if="{{item.userId === currentUserId}}"
+              bindtap="deleteReview"
+              data-review-id="{{item.id}}"
+            >删除</text>
+          </view>
+        </view>
+        <view class="review-rating">
+          <text wx:for="{{stars}}" wx:for-item="star" wx:key="*this" wx:if="{{star <= item.rating}}">⭐</text>
+          <text wx:for="{{stars}}" wx:for-item="star" wx:key="*this" wx:if="{{star > item.rating}}">☆</text>
+        </view>
+        <text class="review-content">{{item.content}}</text>
+      </view>
+      
+      <!-- 空状态 -->
+      <view class="empty-state" wx:if="{{reviews.length === 0 && !loading}}">
+        <text class="empty-icon">💬</text>
+        <text class="empty-text">暂无评价</text>
+      </view>
+      
+      <!-- 加载状态 -->
+      <view class="loading" wx:if="{{loading}}">
+        <text>加载中...</text>
+      </view>
+    </view>
+  </scroll-view>
+  
+  <!-- 底部按钮 -->
+  <view class="modal-footer">
+    <button class="add-review-btn" bindtap="goToAddReview">✍️ 写评价</button>
+  </view>
+</view>
+
+<!-- 背景遮罩 -->
+<view class="modal-overlay {{showModal ? 'show' : ''}}" bindtap="closeModal"></view>

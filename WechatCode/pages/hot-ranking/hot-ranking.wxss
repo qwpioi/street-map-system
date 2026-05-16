@@ -1,0 +1,174 @@
+.hot-ranking-container {
+  min-height: 100vh;
+  background-color: #f5f5f5;
+  padding-bottom: 80rpx;
+}
+
+/* 加载 */
+.loading-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 200rpx;
+}
+
+.loading-text {
+  font-size: 28rpx;
+  color: #999;
+}
+
+/* 空状态 */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding-top: 200rpx;
+}
+
+.empty-icon {
+  font-size: 120rpx;
+  margin-bottom: 30rpx;
+}
+
+.empty-text {
+  font-size: 30rpx;
+  color: #333;
+  margin-bottom: 16rpx;
+}
+
+.empty-desc {
+  font-size: 26rpx;
+  color: #999;
+}
+
+/* 排行列表 */
+.ranking-list {
+  padding: 0 30rpx;
+}
+
+.rank-card {
+  display: flex;
+  align-items: flex-start;
+  background: #fff;
+  border-radius: 20rpx;
+  margin-bottom: 20rpx;
+  padding: 30rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.05);
+}
+
+/* 排名徽章 */
+.rank-badge {
+  width: 80rpx;
+  height: 80rpx;
+  border-radius: 16rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 40rpx;
+  font-weight: bold;
+  margin-right: 24rpx;
+  flex-shrink: 0;
+}
+
+.rank-badge.rank-top {
+  background: linear-gradient(135deg, #ff6b00, #f44336);
+  font-size: 50rpx;
+}
+
+.rank-badge.rank-normal {
+  background: #f0f0f0;
+  color: #999;
+  font-size: 32rpx;
+}
+
+/* 卡片主体 */
+.card-body {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 12rpx;
+}
+
+.vendor-name {
+  font-size: 30rpx;
+  font-weight: bold;
+  color: #333;
+  flex: 1;
+}
+
+.card-arrow {
+  font-size: 28rpx;
+  color: #ccc;
+  margin-left: 16rpx;
+}
+
+/* 评分行 */
+.card-rating {
+  margin-bottom: 10rpx;
+  font-size: 28rpx;
+  display: flex;
+  align-items: center;
+}
+
+.rating-num {
+  font-size: 26rpx;
+  color: #f37b1d;
+  font-weight: bold;
+  margin-left: 8rpx;
+}
+
+.review-count {
+  font-size: 24rpx;
+  color: #999;
+  margin-left: 6rpx;
+}
+
+.no-rating {
+  font-size: 24rpx;
+  color: #ccc;
+}
+
+/* 地址 */
+.card-info-row {
+  margin-bottom: 8rpx;
+}
+
+.info-text {
+  font-size: 26rpx;
+  color: #999;
+}
+
+/* 标签 */
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10rpx;
+  margin-bottom: 12rpx;
+}
+
+.tag {
+  font-size: 22rpx;
+  color: #ff6b00;
+  background: rgba(255, 107, 0, 0.08);
+  padding: 6rpx 16rpx;
+  border-radius: 20rpx;
+}
+
+/* 底部距离 */
+.card-footer {
+  margin-top: 4rpx;
+}
+
+.card-distance {
+  font-size: 24rpx;
+  color: #4CAF50;
+}

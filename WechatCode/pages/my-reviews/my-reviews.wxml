@@ -1,0 +1,67 @@
+<view class="my-reviews-container">
+
+  <!-- 加载状态 -->
+  <view class="loading-state" wx:if="{{loading}}">
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:elif="{{!loading && reviews.length === 0}}">
+    <text class="empty-icon">💬</text>
+    <text class="empty-text">暂无评价</text>
+    <text class="empty-desc">去逛逛摊位，留下你的评价吧</text>
+    <button class="go-home-btn" bindtap="goHome">去逛逛</button>
+  </view>
+
+  <!-- 数据态 -->
+  <view wx:else>
+
+    <!-- 统计卡片 -->
+    <view class="stats-card">
+      <view class="stat-item">
+        <text class="stat-value">{{stats.totalCount}}</text>
+        <text class="stat-label">总评价数</text>
+      </view>
+      <view class="stat-divider"></view>
+      <view class="stat-item">
+        <text class="stat-value">{{stats.averageRating}}</text>
+        <text class="stat-label">平均评分</text>
+        <view class="stat-stars">
+          <text wx:for="{{stars}}" wx:key="*this" wx:if="{{item <= stats.averageRating}}">⭐</text>
+          <text wx:for="{{stars}}" wx:key="*this" wx:if="{{item > stats.averageRating}}">☆</text>
+        </view>
+      </view>
+    </view>
+
+    <!-- 评价列表 -->
+    <view class="review-list">
+      <view
+        class="review-card"
+        wx:for="{{reviews}}"
+        wx:key="id"
+        data-vendor-id="{{item.vendorId}}"
+        bindtap="onReviewTap"
+      >
+        <view class="card-header">
+          <text class="vendor-name">{{item.vendorName}}</text>
+          <text class="card-arrow">›</text>
+          <text
+            class="delete-btn"
+            catchtap="deleteReview"
+            data-review-id="{{item.id}}"
+          >删除</text>
+        </view>
+        <view class="card-rating">
+          <text wx:for="{{stars}}" wx:for-item="s" wx:key="*this" wx:if="{{s <= item.rating}}">⭐</text>
+          <text wx:for="{{stars}}" wx:for-item="s" wx:key="*this" wx:if="{{s > item.rating}}">☆</text>
+        </view>
+        <text class="card-content" wx:if="{{item.content}}">{{item.content}}</text>
+        <view class="card-footer">
+          <text class="card-time">{{item.createTime}}</text>
+        </view>
+      </view>
+    </view>
+
+  </view>
+
+</view>

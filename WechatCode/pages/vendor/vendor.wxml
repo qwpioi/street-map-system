@@ -1,0 +1,80 @@
+<view class="vendor-page" wx:if="{{vendor}}">
+  <!-- 摊位头部卡片 -->
+  <view class="vendor-stall-card">
+    <view class="stall-header">
+      <image class="stall-avatar" src="{{vendor.avatar || 'https://via.placeholder.com/120?text=%F0%9F%8F%AA'}}" mode="aspectFill" />
+      <view class="stall-info">
+        <text class="stall-name">{{vendor.stallName}}</text>
+        <view class="stall-status-tag">{{vendor.status == 1 ? '营业中' : '已收摊'}}</view>
+      </view>
+    </view>
+    <view class="stall-address">📍 {{displayAddress || '位置未设置'}}</view>
+  </view>
+
+  <!-- 统计卡片 -->
+  <view class="vendor-stat-card">
+    <view class="vendor-stat-item">
+      <text class="vendor-stat-num">{{vendor.products ? vendor.products.length : 0}}</text>
+      <text class="vendor-stat-label">商品总数</text>
+    </view>
+    <view class="vendor-stat-item">
+      <text class="vendor-stat-num">{{vendor.status == 1 ? '营业中' : '已收摊'}}</text>
+      <text class="vendor-stat-label">当前状态</text>
+    </view>
+    <view class="vendor-stat-item">
+      <text class="vendor-stat-num">{{vendor.averageRating || '暂无'}}</text>
+      <text class="vendor-stat-label">店铺评分</text>
+    </view>
+  </view>
+
+  <!-- 摊位信息卡片 -->
+  <view class="vendor-info-card">
+    <view class="info-row">
+      <text class="info-label">摊位名称</text>
+      <text class="info-value">{{vendor.stallName}}</text>
+    </view>
+    <view class="info-row">
+      <text class="info-label">联系电话</text>
+      <text class="info-value phone">{{vendor.phone || '未设置'}}</text>
+    </view>
+    <button class="edit-info-btn" bindtap="goEditInfo">编辑摊位信息</button>
+  </view>
+
+  <!-- 操作卡片 -->
+  <view class="vendor-operate-box">
+    <view class="vendor-operate-item">
+      <text>营业开关</text>
+      <switch checked="{{vendor.status == 1}}" bindchange="changeStatus" color="#4CAF50"/>
+    </view>
+    <button class="vendor-manage-btn" bindtap="goGoodsManage" hover-class="btn-hover">商品管理</button>
+  </view>
+
+  <!-- 商品列表 -->
+  <view class="vendor-section-title">商品列表</view>
+  <view class="vendor-goods-item" wx:for="{{vendor.products}}" wx:key="id">
+    <view class="vendor-goods-img">
+      <image src="{{item.imageUrl || ''}}" mode="aspectFill" />
+      <text wx:if="{{!item.imageUrl}}">🍧</text>
+    </view>
+    <view class="vendor-goods-info">
+      <view class="vendor-goods-name">{{item.name}}</view>
+      <view class="vendor-goods-price-box">
+        <view class="vendor-goods-price">¥{{item.price}}</view>
+        <view class="vendor-goods-tag">上架</view>
+      </view>
+    </view>
+  </view>
+
+  <view class="vendor-empty-box" wx:if="{{!vendor.products || vendor.products.length === 0}}">
+    <text class="vendor-empty-icon">📦</text>
+    <text class="vendor-empty-text">还没有商品</text>
+    <view class="vendor-empty-action" bindtap="goGoodsManage">+ 添加商品</view>
+  </view>
+</view>
+
+<view class="vendor-no-vendor" wx:else>
+  <text class="vendor-nv-icon">🏪</text>
+  <text class="vendor-nv-text">你还没有摊位</text>
+  <text class="vendor-nv-hint">成为摊主，开始你的地摊事业</text>
+  <button class="vendor-btn-apply" bindtap="goApply">申请成为摊主</button>
+</view>

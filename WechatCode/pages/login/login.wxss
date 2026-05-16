@@ -1,0 +1,89 @@
+.login-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #4CAF50 0%, #66bb6a 100%);
+  padding: 60rpx 40rpx;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.logo-section {
+  margin-top: 80rpx;
+  text-align: center;
+}
+
+.logo {
+  font-size: 120rpx;
+  display: block;
+  margin-bottom: 20rpx;
+}
+
+.app-name {
+  font-size: 48rpx;
+  font-weight: bold;
+  color: #fff;
+  display: block;
+  margin-bottom: 16rpx;
+}
+
+.app-desc {
+  font-size: 28rpx;
+  color: rgba(255, 255, 255, 0.9);
+}
+
+.welcome-text {
+  text-align: center;
+  margin-bottom: 80rpx;
+  margin-top: 40rpx;
+}
+
+.welcome-text text {
+  font-size: 36rpx;
+  color: #fff;
+  font-weight: bold;
+  display: block;
+}
+
+.sub-text {
+  font-size: 26rpx;
+  color: rgba(255, 255, 255, 0.85);
+  margin-top: 12rpx;
+  display: block;
+}
+
+.login-btn {
+  width: 100%;
+  background-color: #fff !important;
+  color: #4CAF50 !important;
+  font-size: 32rpx !important;
+  font-weight: bold !important;
+  padding: 32rpx 0 !important;
+  border-radius: 50rpx !important;
+  box-shadow: 0 10rpx 40rpx rgba(0,0,0,0.15);
+  border: none !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.login-btn::after {
+  border: none;
+}
+
+.btn-icon {
+  margin-right: 12rpx;
+  font-size: 36rpx;
+}
+
+.tips {
+  margin-top: 80rpx;
+  font-size: 24rpx;
+  color: rgba(255,255,255,0.8);
+  text-align: center;
+}
+
+.link {
+  color: #fff;
+  font-weight: bold;
+  padding: 4rpx 8rpx;
+}

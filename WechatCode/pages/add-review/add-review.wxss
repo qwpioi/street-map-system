@@ -1,0 +1,105 @@
+.add-review-container {
+  padding: 30rpx;
+  min-height: 100vh;
+  background: #f5f5f5;
+}
+
+.vendor-info {
+  background: #fff;
+  padding: 30rpx;
+  border-radius: 10rpx;
+  margin-bottom: 30rpx;
+  display: flex;
+  align-items: center;
+}
+
+.vendor-label {
+  color: #999;
+  font-size: 28rpx;
+  margin-right: 10rpx;
+}
+
+.vendor-name {
+  color: #333;
+  font-size: 30rpx;
+  font-weight: bold;
+}
+
+.rating-section {
+  background: #fff;
+  padding: 30rpx;
+  border-radius: 10rpx;
+  margin-bottom: 30rpx;
+}
+
+.section-title {
+  display: block;
+  font-size: 28rpx;
+  color: #666;
+  margin-bottom: 20rpx;
+}
+
+.rating-stars {
+  display: flex;
+  align-items: center;
+  margin-bottom: 15rpx;
+}
+
+.star {
+  font-size: 60rpx;
+  margin-right: 10rpx;
+  transition: all 0.2s;
+}
+
+.star.active {
+  opacity: 1;
+  transform: scale(1.1);
+}
+
+.star:not(.active) {
+  opacity: 0.3;
+}
+
+.rating-text {
+  color: #ff9800;
+  font-size: 32rpx;
+  font-weight: bold;
+}
+
+.content-section {
+  background: #fff;
+  padding: 30rpx;
+  border-radius: 10rpx;
+  margin-bottom: 30rpx;
+}
+
+.content-input {
+  width: 100%;
+  min-height: 300rpx;
+  padding: 20rpx;
+  background: #f5f5f5;
+  border-radius: 10rpx;
+  font-size: 28rpx;
+  line-height: 1.6;
+}
+
+.char-count {
+  display: block;
+  text-align: right;
+  color: #999;
+  font-size: 24rpx;
+  margin-top: 10rpx;
+}
+
+.submit-btn {
+  background: #07c160;
+  color: #fff;
+  font-size: 32rpx;
+  padding: 30rpx;
+  border-radius: 10rpx;
+  margin-top: 20rpx;
+}
+
+.submit-btn[disabled] {
+  background: #ccc;
+}

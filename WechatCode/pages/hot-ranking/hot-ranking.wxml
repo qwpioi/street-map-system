@@ -1,0 +1,68 @@
+<view class="hot-ranking-container">
+
+  <!-- 加载状态 -->
+  <view class="loading-state" wx:if="{{loading}}">
+    <text class="loading-text">加载中...</text>
+  </view>
+
+  <!-- 空状态 -->
+  <view class="empty-state" wx:elif="{{!loading && vendors.length === 0}}">
+    <text class="empty-icon">🔥</text>
+    <text class="empty-text">3KM内暂无摊位</text>
+    <text class="empty-desc">换个地方试试吧</text>
+  </view>
+
+  <!-- 数据态 -->
+  <view wx:else>
+
+    <!-- 排行列表 -->
+    <view class="ranking-list">
+      <view
+        class="rank-card"
+        wx:for="{{vendors}}"
+        wx:key="id"
+        data-vendor="{{item}}"
+        bindtap="onVendorTap"
+      >
+        <!-- 排名徽章 -->
+        <view class="rank-badge rank-{{item.rank <= 3 ? 'top' : 'normal'}}">
+          <text wx:if="{{item.rank === 1}}">🥇</text>
+          <text wx:elif="{{item.rank === 2}}">🥈</text>
+          <text wx:elif="{{item.rank === 3}}">🥉</text>
+          <text wx:else>{{item.rank}}</text>
+        </view>
+
+        <view class="card-body">
+          <view class="card-header">
+            <text class="vendor-name">{{item.stallName}}</text>
+            <text class="card-arrow">›</text>
+          </view>
+
+          <view class="card-rating" wx:if="{{item.averageRating > 0}}">
+            <text wx:for="{{[1,2,3,4,5]}}" wx:for-item="s" wx:key="*this" wx:if="{{s <= item.averageRating}}">⭐</text>
+            <text wx:for="{{[1,2,3,4,5]}}" wx:for-item="s" wx:key="*this" wx:if="{{s > item.averageRating}}">☆</text>
+            <text class="rating-num">{{item.averageRating.toFixed(1)}}分</text>
+            <text class="review-count">({{item.reviewCount}}条)</text>
+          </view>
+          <view class="card-rating" wx:else>
+            <text class="no-rating">暂无评分</text>
+          </view>
+
+          <view class="card-info-row" wx:if="{{item.address}}">
+            <text class="info-text">📍 {{item.address}}</text>
+          </view>
+
+          <view class="tags" wx:if="{{item.hotProductsArray.length > 0}}">
+            <text class="tag" wx:for="{{item.hotProductsArray}}" wx:key="*this">{{item}}</text>
+          </view>
+
+          <view class="card-footer">
+            <text class="card-distance">{{item.distanceText}}</text>
+          </view>
+        </view>
+      </view>
+    </view>
+
+  </view>
+
+</view>

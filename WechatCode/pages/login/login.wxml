@@ -1,0 +1,24 @@
+<view class="login-container">
+  <view class="logo-section">
+    <text class="logo">🛒</text>
+    <text class="app-name">地摊地图</text>
+    <text class="app-desc">发现身边的特色摊位</text>
+  </view>
+
+  <view class="welcome-text">
+    <text>欢迎使用地摊地图</text>
+    <text class="sub-text">发现身边的美味摊位</text>
+  </view>
+
+  <button class="login-btn" type="primary" bindtap="wxLogin">
+    <text class="btn-icon">💚</text>
+    <text>微信一键登录</text>
+  </button>
+
+  <view class="tips">
+    <text>登录即代表你同意</text>
+    <text class="link" bindtap="goAgreement">《用户协议》</text>
+    <text>和</text>
+    <text class="link" bindtap="goPrivacy">《隐私政策》</text>
+  </view>
+</view>
