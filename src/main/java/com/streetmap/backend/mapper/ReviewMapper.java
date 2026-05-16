@@ -4,8 +4,10 @@ import com.streetmap.backend.dto.ReviewWithUserDTO;
 import com.streetmap.backend.entity.Review;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
+import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 评价 Mapper 接口
@@ -14,11 +16,26 @@ import java.util.List;
 public interface ReviewMapper extends BaseMapper<Review> {
 
     /**
+     * 批量获取摊位平均评分
+     * @param vendorIds 摊位 ID 列表
+     * @return 摊位ID -> 平均分 Map
+     */
+    @Select("<script>" +
+            "SELECT vendor_id, AVG(rating) as avg_rating FROM review " +
+            "WHERE deleted = 0 AND vendor_id IN " +
+            "<foreach collection='vendorIds' item='id' open='(' separator=',' close=')'>" +
+            "#{id}" +
+            "</foreach>" +
+            " GROUP BY vendor_id" +
+            "</script>")
+    List<Map<String, Object>> getAverageRatingsBatch(@Param("vendorIds") List<Long> vendorIds);
+
+    /**
      * 根据摊位 ID 查询评价列表
      * @param vendorId 摊位 ID
      * @return 评价列表
      */
-    @Select("SELECT * FROM review WHERE vendor_id = #{vendorId} ORDER BY create_time DESC")
+    @Select("SELECT * FROM review WHERE vendor_id = #{vendorId} AND deleted = 0 ORDER BY create_time DESC")
     List<Review> findByVendorId(Long vendorId);
 
     /**
@@ -26,7 +43,7 @@ public interface ReviewMapper extends BaseMapper<Review> {
      * @param userId 用户 ID
      * @return 评价列表
      */
-    @Select("SELECT * FROM review WHERE user_id = #{userId} ORDER BY create_time DESC")
+    @Select("SELECT * FROM review WHERE user_id = #{userId} AND deleted = 0 ORDER BY create_time DESC")
     List<Review> findByUserId(Long userId);
 
     /**
@@ -34,7 +51,7 @@ public interface ReviewMapper extends BaseMapper<Review> {
      * @param vendorId 摊位 ID
      * @return 平均分
      */
-    @Select("SELECT AVG(rating) FROM review WHERE vendor_id = #{vendorId}")
+    @Select("SELECT AVG(rating) FROM review WHERE vendor_id = #{vendorId} AND deleted = 0")
     Double getAverageRating(Long vendorId);
 
     /**
@@ -47,7 +64,7 @@ public interface ReviewMapper extends BaseMapper<Review> {
             "u.username as userName, u.avatar as userAvatar " +
             "FROM review r " +
             "LEFT JOIN user u ON r.user_id = u.id " +
-            "WHERE r.vendor_id = #{vendorId} " +
+            "WHERE r.vendor_id = #{vendorId} AND r.deleted = 0 " +
             "ORDER BY r.create_time DESC")
     List<ReviewWithUserDTO> findByVendorIdWithUser(Long vendorId);
 
@@ -61,7 +78,7 @@ public interface ReviewMapper extends BaseMapper<Review> {
             "v.stall_name as vendorName " +
             "FROM review r " +
             "LEFT JOIN vendor v ON r.vendor_id = v.id " +
-            "WHERE r.user_id = #{userId} " +
+            "WHERE r.user_id = #{userId} AND r.deleted = 0 " +
             "ORDER BY r.create_time DESC")
     List<ReviewWithUserDTO> findByUserIdWithVendor(Long userId);
 
@@ -70,7 +87,7 @@ public interface ReviewMapper extends BaseMapper<Review> {
      * @param vendorId 摊位 ID
      * @return 评价数量
      */
-    @Select("SELECT COUNT(*) FROM review WHERE vendor_id = #{vendorId}")
+    @Select("SELECT COUNT(*) FROM review WHERE vendor_id = #{vendorId} AND deleted = 0")
     Long countByVendorId(Long vendorId);
 
     /**
@@ -78,6 +95,6 @@ public interface ReviewMapper extends BaseMapper<Review> {
      * @param reviewId 评价 ID
      * @return 评价对象
      */
-    @Select("SELECT * FROM review WHERE id = #{reviewId}")
+    @Select("SELECT * FROM review WHERE id = #{reviewId} AND deleted = 0")
     Review findByIdWithUser(Long reviewId);
 }

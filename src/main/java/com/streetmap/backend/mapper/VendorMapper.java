@@ -17,7 +17,7 @@ public interface VendorMapper extends BaseMapper<Vendor> {
      * @return 摊位列表
      */
     @Select("SELECT v.id, v.user_id, v.stall_name, v.description, v.hot_products, " +
-            "v.status, v.latitude, v.longitude, v.address, v.last_open_time, " +
+            "v.status, v.latitude, v.longitude, v.address, v.avatar, v.last_open_time, " +
             "v.create_time, v.update_time, u.phone " +
             "FROM vendor v LEFT JOIN user u ON v.user_id = u.id " +
             "WHERE v.status = 1")
@@ -29,7 +29,7 @@ public interface VendorMapper extends BaseMapper<Vendor> {
      * @return 摊位对象
      */
     @Select("SELECT v.id, v.user_id, v.stall_name, v.description, v.hot_products, " +
-            "v.status, v.latitude, v.longitude, v.address, v.last_open_time, " +
+            "v.status, v.latitude, v.longitude, v.address, v.avatar, v.last_open_time, " +
             "v.create_time, v.update_time, u.phone " +
             "FROM vendor v LEFT JOIN user u ON v.user_id = u.id " +
             "WHERE v.user_id = #{userId}")
@@ -43,7 +43,7 @@ public interface VendorMapper extends BaseMapper<Vendor> {
      * @return 摊位列表
      */
     @Select("SELECT v.id, v.user_id, v.stall_name, v.description, v.hot_products, " +
-            "v.status, v.latitude, v.longitude, v.address, v.last_open_time, " +
+            "v.status, v.latitude, v.longitude, v.address, v.avatar, v.last_open_time, " +
             "v.create_time, v.update_time, u.phone " +
             "FROM vendor v LEFT JOIN user u ON v.user_id = u.id " +
             "WHERE v.status = 1 " +

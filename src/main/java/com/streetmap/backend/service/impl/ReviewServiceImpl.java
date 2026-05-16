@@ -8,7 +8,9 @@ import com.streetmap.backend.service.ReviewService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 评价 Service 实现类
@@ -18,6 +20,25 @@ public class ReviewServiceImpl extends ServiceImpl<ReviewMapper, Review> impleme
 
     @Autowired
     private ReviewMapper reviewMapper;
+
+    @Override
+    public Map<Long, Double> getAverageRatingsBatch(List<Long> vendorIds) {
+        if (vendorIds == null || vendorIds.isEmpty()) {
+            return new HashMap<>();
+        }
+        List<Map<String, Object>> results = reviewMapper.getAverageRatingsBatch(vendorIds);
+        Map<Long, Double> ratingMap = new HashMap<>();
+        for (Map<String, Object> row : results) {
+            Object vendorIdObj = row.get("vendor_id");
+            Object avgRatingObj = row.get("avg_rating");
+            if (vendorIdObj != null && avgRatingObj != null) {
+                Long vendorId = ((Number) vendorIdObj).longValue();
+                Double avgRating = ((Number) avgRatingObj).doubleValue();
+                ratingMap.put(vendorId, avgRating);
+            }
+        }
+        return ratingMap;
+    }
 
     @Override
     public List<Review> findByVendorId(Long vendorId) {

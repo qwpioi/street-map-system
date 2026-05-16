@@ -4,11 +4,19 @@ import com.streetmap.backend.dto.ReviewWithUserDTO;
 import com.streetmap.backend.entity.Review;
 import com.baomidou.mybatisplus.extension.service.IService;
 import java.util.List;
+import java.util.Map;
 
 /**
  * 评价 Service 接口
  */
 public interface ReviewService extends IService<Review> {
+
+    /**
+     * 批量获取摊位平均评分
+     * @param vendorIds 摊位 ID 列表
+     * @return 摊位ID -> 平均分 Map
+     */
+    Map<Long, Double> getAverageRatingsBatch(List<Long> vendorIds);
 
     /**
      * 根据摊位 ID 查询评价列表

@@ -16,6 +16,7 @@ public class VendorDTO {
     private String address;
     private String phone;          // 摊主手机号
     private String hotProducts;
+    private String avatar;           // 摊位头像URL
     private BigDecimal latitude;
     private BigDecimal longitude;
     private Integer status;
@@ -28,7 +29,11 @@ public class VendorDTO {
     // 评价信息
     private Double averageRating;
     private Long reviewCount;
-    
+
+    // 智能推荐字段
+    private Double distance;  // 距离（km）
+    private Double score;    // 综合评分
+
     // 商品列表
     private List<ProductVO> products;
 }

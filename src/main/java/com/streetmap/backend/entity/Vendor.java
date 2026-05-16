@@ -48,6 +48,11 @@ public class Vendor {
     private String hotProducts;
 
     /**
+     * 摊位头像 URL
+     */
+    private String avatar;
+
+    /**
      * 营业状态：0-收摊，1-开摊
      */
     private Integer status = 0;

@@ -58,4 +58,10 @@ public class Review {
      */
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
+
+    /**
+     * 逻辑删除：0-正常，1-已删除
+     */
+    @TableLogic
+    private Integer deleted;
 }
