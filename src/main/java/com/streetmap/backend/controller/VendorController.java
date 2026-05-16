@@ -2,6 +2,7 @@ package com.streetmap.backend.controller;
 
 import com.streetmap.backend.common.Result;
 import com.streetmap.backend.dto.ProductVO;
+import com.streetmap.backend.dto.UpdateVendorInfoDTO;
 import com.streetmap.backend.dto.VendorDTO;
 import com.streetmap.backend.dto.ApplyVendorDTO;
 import com.streetmap.backend.entity.Vendor;
@@ -58,10 +59,35 @@ public class VendorController {
     }
 
     /**
+     * 智能推荐摊位（距离优先 + 质量筛选）
+     * GET /api/vendor/smart-list?latitude=xxx&longitude=xxx&range=5.0
+     */
+    @GetMapping("/smart-list")
+    public Result<List<VendorDTO>> getSmartRecommendedVendors(
+            @RequestParam Double latitude,
+            @RequestParam Double longitude,
+            @RequestParam(defaultValue = "5.0") Double range) {
+        List<VendorDTO> vendors = vendorService.getSmartRecommendedVendors(latitude, longitude, range);
+        return Result.success(vendors);
+    }
+
+    /**
+     * 热门排行（3KM内按评分降序）
+     * GET /api/vendor/hot-ranking?latitude=xxx&longitude=xxx
+     */
+    @GetMapping("/hot-ranking")
+    public Result<List<VendorDTO>> getHotRankingVendors(
+            @RequestParam Double latitude,
+            @RequestParam Double longitude) {
+        List<VendorDTO> vendors = vendorService.getHotRankingVendors(latitude, longitude);
+        return Result.success(vendors);
+    }
+
+    /**
      * 根据 ID 查询摊位（含评价和商品数据）
      * GET /api/vendor/{id}
      */
-    @GetMapping("/{id}")
+    @GetMapping("/{id:\\d+}")
     public Result<VendorDTO> getById(@PathVariable Long id) {
         Vendor vendor = vendorService.getById(id);
         return Result.success(convertToDTO(vendor));
@@ -149,21 +175,25 @@ public class VendorController {
      * PUT /api/vendor/status
      */
     @PutMapping("/status")
-    public Result<?> updateStatus(@RequestHeader("Authorization") String token, 
+    public Result<?> updateStatus(@RequestHeader("Authorization") String token,
                               @RequestBody Map<String, Object> params) {
         try {
             Long userId = getUserIdFromToken(token);
             Integer status = (Integer) params.get("status");
-            
+
             // 提取经纬度 (如果是开摊操作)
             BigDecimal lat = null;
             BigDecimal lng = null;
+            String address = null;
             if (status == 1 && params.get("latitude") != null) {
                 lat = new BigDecimal(params.get("latitude").toString());
                 lng = new BigDecimal(params.get("longitude").toString());
+                if (params.get("address") != null) {
+                    address = params.get("address").toString();
+                }
             }
 
-            vendorService.updateVendorStatus(userId, status, lat, lng);
+            vendorService.updateVendorStatus(userId, status, lat, lng, address);
             return Result.success(status == 1 ? "开摊成功！位置已更新" : "收摊成功，辛苦了！");
         } catch (Exception e) {
             return Result.error(e.getMessage());
@@ -211,20 +241,54 @@ public class VendorController {
     }
 
     /**
+     * 编辑摊位信息（名称、头像、手机号）
+     * PUT /api/vendor/info
+     */
+    @PutMapping("/info")
+    public Result<?> updateVendorInfo(@RequestHeader("Authorization") String token,
+                                   @RequestBody UpdateVendorInfoDTO dto) {
+        try {
+            Long userId = getUserIdFromToken(token);
+            vendorService.updateVendorInfo(userId, dto);
+            return Result.success("摊位信息更新成功！");
+        } catch (Exception e) {
+            return Result.error(e.getMessage());
+        }
+    }
+
+    /**
+     * 逆地理编码解析摊位地址（前端异步调用，不阻塞页面加载）
+     * POST /api/vendor/resolve-address
+     */
+    @PostMapping("/resolve-address")
+    public Result<?> resolveAddress(@RequestHeader("Authorization") String token) {
+        try {
+            Long userId = getUserIdFromToken(token);
+            String address = vendorService.resolveAddress(userId);
+            if (address != null) {
+                return Result.success(address);
+            }
+            return Result.error("地址解析失败");
+        } catch (Exception e) {
+            return Result.error(e.getMessage());
+        }
+    }
+
+    /**
      * 转换为 DTO（含评价和商品数据）
      */
     private VendorDTO convertToDTO(Vendor vendor) {
         VendorDTO dto = new VendorDTO();
         BeanUtils.copyProperties(vendor, dto);
-        
+
         // 添加评价信息
         dto.setAverageRating(reviewService.getAverageRating(vendor.getId()));
         dto.setReviewCount(reviewService.countByVendorId(vendor.getId()));
-        
+
         // 添加商品列表
         List<ProductVO> products = productService.getProductsByVendorId(vendor.getId());
         dto.setProducts(products);
-        
+
         return dto;
     }
 
