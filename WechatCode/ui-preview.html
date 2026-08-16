@@ -1,0 +1,1593 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>地摊地图 - 美团风格 UI 预览</title>
+<style>
+  /* ========== RESET & BASE ========== */
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', sans-serif;
+    background: #1a1a2e;
+    color: #1A1A1A;
+    min-height: 100vh;
+    padding: 40px 20px;
+  }
+
+  /* ========== LAYOUT ========== */
+  .preview-header {
+    text-align: center;
+    margin-bottom: 48px;
+    color: #fff;
+  }
+  .preview-header h1 {
+    font-size: 32px;
+    font-weight: 700;
+    margin-bottom: 8px;
+    background: linear-gradient(135deg, #FFD100, #FF6633);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+  .preview-header p {
+    font-size: 14px;
+    color: rgba(255,255,255,0.6);
+  }
+
+  .phones-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 40px;
+    max-width: 1600px;
+    margin: 0 auto;
+  }
+
+  .phone-wrapper {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 16px;
+  }
+  .phone-label {
+    font-size: 14px;
+    font-weight: 600;
+    color: rgba(255,255,255,0.8);
+    letter-spacing: 1px;
+    text-transform: uppercase;
+  }
+
+  /* ========== PHONE FRAME ========== */
+  .phone-frame {
+    width: 375px;
+    height: 750px;
+    background: #F5F5F5;
+    border-radius: 40px;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(0,0,0,0.4), 0 0 0 2px rgba(255,255,255,0.1);
+    position: relative;
+    display: flex;
+    flex-direction: column;
+  }
+
+  /* Status bar */
+  .status-bar {
+    height: 44px;
+    background: #FFD100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 20px;
+    flex-shrink: 0;
+  }
+  .status-bar .time { font-size: 12px; font-weight: 600; color: #1A1A1A; }
+  .status-bar .icons { font-size: 11px; color: #1A1A1A; display: flex; gap: 4px; align-items: center; }
+
+  /* Scrollable content area */
+  .phone-content {
+    flex: 1;
+    overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+  }
+  .phone-content::-webkit-scrollbar { display: none; }
+
+  /* ========== TAB BAR ========== */
+  .tab-bar {
+    height: 56px;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-around;
+    border-top: 1px solid #EEEEEE;
+    flex-shrink: 0;
+  }
+  .tab-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    cursor: pointer;
+    padding: 4px 12px;
+  }
+  .tab-item .tab-icon { font-size: 20px; }
+  .tab-item .tab-text { font-size: 10px; color: #999; }
+  .tab-item.active .tab-text { color: #FFD100; font-weight: 600; }
+
+  /* ========== PAGE 1: HOME ========== */
+
+  /* Location + Search Header */
+  .home-header {
+    background: #FFD100;
+    padding: 0 16px 16px;
+  }
+  .location-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+  }
+  .location-left {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+  }
+  .location-pin { font-size: 16px; }
+  .location-text { font-size: 14px; font-weight: 600; color: #1A1A1A; }
+  .location-arrow { font-size: 10px; color: #666; }
+  .weather-badge {
+    font-size: 11px;
+    color: #666;
+    background: rgba(255,255,255,0.5);
+    padding: 2px 8px;
+    border-radius: 10px;
+  }
+  .search-bar {
+    display: flex;
+    align-items: center;
+    background: #fff;
+    border-radius: 20px;
+    padding: 8px 14px;
+    gap: 8px;
+  }
+  .search-bar .s-icon { font-size: 14px; color: #999; }
+  .search-bar .s-text { font-size: 13px; color: #BBB; }
+
+  /* Banner */
+  .banner-card {
+    margin: 12px 16px;
+    background: linear-gradient(135deg, #FF6633 0%, #FF3366 100%);
+    border-radius: 12px;
+    padding: 16px 20px;
+    color: #fff;
+    position: relative;
+    overflow: hidden;
+  }
+  .banner-card::after {
+    content: '🏮';
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
+    font-size: 48px;
+    opacity: 0.3;
+  }
+  .banner-title { font-size: 18px; font-weight: 700; margin-bottom: 4px; }
+  .banner-sub { font-size: 12px; opacity: 0.9; }
+  .banner-tag {
+    display: inline-block;
+    background: rgba(255,255,255,0.25);
+    padding: 2px 8px;
+    border-radius: 8px;
+    font-size: 10px;
+    margin-top: 8px;
+  }
+
+  /* Category Grid */
+  .category-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 4px;
+    padding: 16px;
+    background: #fff;
+    margin: 0 16px;
+    border-radius: 12px;
+  }
+  .cat-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 0;
+    cursor: pointer;
+  }
+  .cat-icon {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+  }
+  .cat-icon.c1 { background: linear-gradient(135deg, #FFF3E0, #FFE0B2); }
+  .cat-icon.c2 { background: linear-gradient(135deg, #E8F5E9, #C8E6C9); }
+  .cat-icon.c3 { background: linear-gradient(135deg, #E3F2FD, #BBDEFB); }
+  .cat-icon.c4 { background: linear-gradient(135deg, #FCE4EC, #F8BBD0); }
+  .cat-icon.c5 { background: linear-gradient(135deg, #FFF8E1, #FFECB3); }
+  .cat-icon.c6 { background: linear-gradient(135deg, #E0F7FA, #B2EBF2); }
+  .cat-icon.c7 { background: linear-gradient(135deg, #F3E5F5, #E1BEE7); }
+  .cat-icon.c8 { background: linear-gradient(135deg, #ECEFF1, #CFD8DC); }
+  .cat-text { font-size: 11px; color: #333; }
+
+  /* Quick Actions Strip */
+  .quick-strip {
+    display: flex;
+    gap: 8px;
+    padding: 12px 16px;
+    overflow-x: auto;
+  }
+  .quick-strip::-webkit-scrollbar { display: none; }
+  .quick-chip {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: #fff;
+    border-radius: 16px;
+    padding: 6px 12px;
+    white-space: nowrap;
+    font-size: 12px;
+    color: #333;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.06);
+    flex-shrink: 0;
+  }
+  .quick-chip .qc-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: #00C853;
+  }
+  .quick-chip .qc-dot.hot { background: #FF3366; }
+
+  /* Section */
+  .section-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 16px 8px;
+  }
+  .section-title {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1A1A1A;
+  }
+  .section-more {
+    font-size: 12px;
+    color: #999;
+    display: flex;
+    align-items: center;
+    gap: 2px;
+  }
+
+  /* Vendor Cards - Meituan style */
+  .vendor-card-mt {
+    background: #fff;
+    margin: 0 16px 10px;
+    border-radius: 12px;
+    overflow: hidden;
+    box-shadow: 0 1px 6px rgba(0,0,0,0.05);
+  }
+  .vcm-top {
+    display: flex;
+    padding: 12px;
+    gap: 12px;
+  }
+  .vcm-thumb {
+    width: 80px;
+    height: 80px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #FFE0B2, #FFCC80);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 36px;
+    flex-shrink: 0;
+    position: relative;
+  }
+  .vcm-open-badge {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: rgba(0,200,83,0.9);
+    color: #fff;
+    font-size: 9px;
+    text-align: center;
+    padding: 1px 0;
+    border-radius: 0 0 10px 10px;
+  }
+  .vcm-open-badge.closed {
+    background: rgba(153,153,153,0.9);
+  }
+  .vcm-info {
+    flex: 1;
+    min-width: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .vcm-name {
+    font-size: 15px;
+    font-weight: 600;
+    color: #1A1A1A;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .vcm-rating-row {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    margin-top: 4px;
+  }
+  .vcm-stars {
+    display: flex;
+    gap: 1px;
+  }
+  .vcm-star { font-size: 11px; color: #FFD100; }
+  .vcm-star.empty { color: #DDD; }
+  .vcm-score {
+    font-size: 12px;
+    font-weight: 700;
+    color: #FF6633;
+  }
+  .vcm-review-count {
+    font-size: 11px;
+    color: #999;
+  }
+  .vcm-tags-row {
+    display: flex;
+    gap: 4px;
+    margin-top: 4px;
+    overflow: hidden;
+  }
+  .vcm-tag {
+    font-size: 10px;
+    padding: 1px 6px;
+    border-radius: 3px;
+    background: #FFF3E0;
+    color: #FF6633;
+    white-space: nowrap;
+  }
+  .vcm-tag.green {
+    background: #E8F5E9;
+    color: #2E7D32;
+  }
+  .vcm-bottom {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-top: 1px solid #F5F5F5;
+  }
+  .vcm-address {
+    font-size: 11px;
+    color: #999;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: 1;
+    min-width: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .vcm-distance {
+    font-size: 11px;
+    color: #00C853;
+    font-weight: 600;
+    white-space: nowrap;
+    margin-left: 8px;
+  }
+  .vcm-actions {
+    display: flex;
+    gap: 6px;
+    margin-left: 8px;
+    flex-shrink: 0;
+  }
+  .vcm-btn {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    cursor: pointer;
+    border: none;
+    background: #F5F5F5;
+  }
+  .vcm-btn.nav-btn { background: #E8F5E9; }
+  .vcm-btn.fav-btn { background: #FFF3E0; }
+
+  /* ========== PAGE 2: VENDOR DETAIL ========== */
+  .vd-header {
+    background: linear-gradient(180deg, #FFD100 0%, #FFD100 60%, #F5F5F5 100%);
+    padding: 0 16px 20px;
+  }
+  .vd-back-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 0;
+  }
+  .vd-back {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .vd-share {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    background: rgba(0,0,0,0.06);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+    cursor: pointer;
+  }
+  .vd-shop-card {
+    background: #fff;
+    border-radius: 16px;
+    padding: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  }
+  .vd-shop-top {
+    display: flex;
+    gap: 12px;
+    margin-bottom: 12px;
+  }
+  .vd-avatar {
+    width: 56px;
+    height: 56px;
+    border-radius: 12px;
+    background: linear-gradient(135deg, #FFE0B2, #FFCC80);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    flex-shrink: 0;
+  }
+  .vd-shop-info { flex: 1; }
+  .vd-shop-name {
+    font-size: 18px;
+    font-weight: 700;
+    color: #1A1A1A;
+    margin-bottom: 4px;
+  }
+  .vd-shop-meta {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .vd-rating-badge {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    background: #FFF8E1;
+    padding: 2px 8px;
+    border-radius: 8px;
+  }
+  .vd-rating-badge .star { font-size: 11px; color: #FFD100; }
+  .vd-rating-badge .score { font-size: 13px; font-weight: 700; color: #FF6633; }
+  .vd-review-link { font-size: 11px; color: #999; }
+  .vd-status-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 8px;
+    font-size: 11px;
+    font-weight: 600;
+  }
+  .vd-status-pill.open { background: #E8F5E9; color: #2E7D32; }
+  .vd-status-pill.closed { background: #F5F5F5; color: #999; }
+  .vd-status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+  }
+  .vd-info-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .vd-info-cell {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 10px;
+    background: #FAFAFA;
+    border-radius: 8px;
+    font-size: 12px;
+    color: #666;
+  }
+  .vd-info-cell .ic { font-size: 14px; }
+  .vd-info-cell.full { grid-column: 1 / -1; }
+  .vd-info-cell .val { color: #1A1A1A; font-weight: 500; }
+
+  /* Products section */
+  .vd-section {
+    background: #fff;
+    margin: 10px 16px;
+    border-radius: 12px;
+    padding: 16px;
+  }
+  .vd-section-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #1A1A1A;
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .vd-section-title .badge {
+    font-size: 10px;
+    background: #FF6633;
+    color: #fff;
+    padding: 1px 6px;
+    border-radius: 6px;
+    font-weight: 600;
+  }
+  .vd-product {
+    display: flex;
+    gap: 12px;
+    padding: 10px 0;
+    border-bottom: 1px solid #F5F5F5;
+  }
+  .vd-product:last-child { border-bottom: none; }
+  .vd-product-img {
+    width: 64px;
+    height: 64px;
+    border-radius: 8px;
+    background: linear-gradient(135deg, #E3F2FD, #BBDEFB);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    flex-shrink: 0;
+  }
+  .vd-product-info { flex: 1; display: flex; flex-direction: column; justify-content: space-between; }
+  .vd-product-name { font-size: 14px; font-weight: 600; color: #1A1A1A; }
+  .vd-product-desc { font-size: 11px; color: #999; margin-top: 2px; }
+  .vd-product-bottom { display: flex; align-items: center; justify-content: space-between; }
+  .vd-product-price {
+    font-size: 16px;
+    font-weight: 700;
+    color: #FF6633;
+  }
+  .vd-product-price .yen { font-size: 11px; }
+  .vd-product-sales { font-size: 10px; color: #BBB; }
+
+  /* Reviews */
+  .vd-review-item {
+    padding: 10px 0;
+    border-bottom: 1px solid #F5F5F5;
+  }
+  .vd-review-item:last-child { border-bottom: none; }
+  .vd-review-top {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 6px;
+  }
+  .vd-review-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: #E0E0E0;
+  }
+  .vd-review-user { font-size: 13px; font-weight: 500; color: #333; flex: 1; }
+  .vd-review-time { font-size: 10px; color: #CCC; }
+  .vd-review-stars { display: flex; gap: 1px; }
+  .vd-review-stars .s { font-size: 10px; color: #FFD100; }
+  .vd-review-text { font-size: 13px; color: #666; line-height: 1.5; margin-left: 36px; }
+
+  /* Bottom action bar */
+  .vd-bottom-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    background: #fff;
+    border-top: 1px solid #F0F0F0;
+    flex-shrink: 0;
+  }
+  .vd-bottom-icon-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+    padding: 0 8px;
+  }
+  .vd-bottom-icon-btn .bi { font-size: 18px; }
+  .vd-bottom-icon-btn .bt { font-size: 9px; color: #999; }
+  .vd-bottom-actions {
+    flex: 1;
+    display: flex;
+    gap: 8px;
+    margin-left: 8px;
+  }
+  .vd-btn-secondary {
+    flex: 1;
+    height: 36px;
+    border-radius: 18px;
+    border: 1px solid #FFD100;
+    background: #FFFDE7;
+    color: #FF6633;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+  }
+  .vd-btn-primary {
+    flex: 1;
+    height: 36px;
+    border-radius: 18px;
+    border: none;
+    background: linear-gradient(135deg, #FFD100, #FFC107);
+    color: #1A1A1A;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    box-shadow: 0 2px 8px rgba(255,209,0,0.3);
+  }
+
+  /* ========== PAGE 3: FAVORITES ========== */
+  .fav-header {
+    background: #FFD100;
+    padding: 12px 16px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .fav-title { font-size: 16px; font-weight: 700; color: #1A1A1A; }
+  .fav-count { font-size: 12px; color: #666; }
+
+  .fav-tabs {
+    display: flex;
+    background: #fff;
+    padding: 0 16px;
+    gap: 0;
+    border-bottom: 1px solid #F0F0F0;
+  }
+  .fav-tab {
+    padding: 12px 16px;
+    font-size: 13px;
+    color: #999;
+    position: relative;
+    cursor: pointer;
+  }
+  .fav-tab.active {
+    color: #1A1A1A;
+    font-weight: 600;
+  }
+  .fav-tab.active::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 20px;
+    height: 3px;
+    background: #FFD100;
+    border-radius: 2px;
+  }
+
+  .fav-card {
+    background: #fff;
+    margin: 8px 16px;
+    border-radius: 12px;
+    padding: 12px;
+    display: flex;
+    gap: 12px;
+    box-shadow: 0 1px 4px rgba(0,0,0,0.04);
+  }
+  .fav-thumb {
+    width: 72px;
+    height: 72px;
+    border-radius: 10px;
+    background: linear-gradient(135deg, #FFE0B2, #FFCC80);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 32px;
+    flex-shrink: 0;
+  }
+  .fav-info { flex: 1; min-width: 0; display: flex; flex-direction: column; justify-content: space-between; }
+  .fav-name {
+    font-size: 14px;
+    font-weight: 600;
+    color: #1A1A1A;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .fav-meta {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: #999;
+  }
+  .fav-meta .dot { color: #FFD100; }
+  .fav-bottom-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .fav-time { font-size: 10px; color: #CCC; }
+  .fav-unfav-btn {
+    font-size: 11px;
+    color: #FF6633;
+    background: #FFF3E0;
+    padding: 3px 10px;
+    border-radius: 10px;
+    border: none;
+    cursor: pointer;
+  }
+
+  /* ========== PAGE 4: PROFILE ========== */
+  .profile-header {
+    background: linear-gradient(180deg, #FFD100 0%, #FFC107 100%);
+    padding: 20px 16px 24px;
+  }
+  .profile-user-row {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .profile-avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    border: 2px solid rgba(255,255,255,0.8);
+  }
+  .profile-user-info { flex: 1; }
+  .profile-nickname { font-size: 18px; font-weight: 700; color: #1A1A1A; }
+  .profile-desc { font-size: 12px; color: #666; margin-top: 2px; }
+
+  /* Stats row */
+  .profile-stats {
+    display: flex;
+    background: #fff;
+    margin: -12px 16px 0;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+    position: relative;
+    z-index: 1;
+  }
+  .stat-item {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 2px;
+  }
+  .stat-num { font-size: 20px; font-weight: 700; color: #1A1A1A; }
+  .stat-label { font-size: 11px; color: #999; }
+
+  /* Menu sections */
+  .profile-menu {
+    background: #fff;
+    margin: 12px 16px;
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .profile-menu-item {
+    display: flex;
+    align-items: center;
+    padding: 14px 16px;
+    border-bottom: 1px solid #F5F5F5;
+    cursor: pointer;
+  }
+  .profile-menu-item:last-child { border-bottom: none; }
+  .pmi-icon {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    margin-right: 12px;
+  }
+  .pmi-icon.orange { background: #FFF3E0; }
+  .pmi-icon.green { background: #E8F5E9; }
+  .pmi-icon.blue { background: #E3F2FD; }
+  .pmi-icon.purple { background: #F3E5F5; }
+  .pmi-icon.gray { background: #ECEFF1; }
+  .pmi-text { flex: 1; font-size: 14px; color: #333; }
+  .pmi-arrow { font-size: 14px; color: #CCC; }
+  .pmi-badge {
+    font-size: 10px;
+    background: #FF3366;
+    color: #fff;
+    padding: 1px 6px;
+    border-radius: 8px;
+    margin-right: 8px;
+  }
+
+  /* ========== RESPONSIVE ========== */
+  @media (max-width: 768px) {
+    body { padding: 20px 10px; }
+    .preview-header h1 { font-size: 24px; }
+    .phones-grid { gap: 24px; }
+    .phone-frame {
+      width: 320px;
+      height: 640px;
+      border-radius: 32px;
+    }
+  }
+
+  @media (max-width: 400px) {
+    .phone-frame {
+      width: 290px;
+      height: 580px;
+      border-radius: 28px;
+    }
+  }
+
+  /* ========== SCROLLBAR ========== */
+  .phone-content::-webkit-scrollbar { width: 0; }
+
+  /* ========== DESIGN NOTES ========== */
+  .design-notes {
+    max-width: 800px;
+    margin: 48px auto 0;
+    background: rgba(255,255,255,0.05);
+    border-radius: 16px;
+    padding: 32px;
+    color: rgba(255,255,255,0.8);
+  }
+  .design-notes h2 {
+    font-size: 20px;
+    color: #FFD100;
+    margin-bottom: 16px;
+  }
+  .design-notes h3 {
+    font-size: 14px;
+    color: rgba(255,255,255,0.6);
+    margin: 16px 0 8px;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+  }
+  .design-notes ul { padding-left: 20px; }
+  .design-notes li { margin-bottom: 6px; font-size: 13px; line-height: 1.6; }
+  .color-swatch {
+    display: inline-block;
+    width: 14px;
+    height: 14px;
+    border-radius: 4px;
+    vertical-align: middle;
+    margin-right: 6px;
+    border: 1px solid rgba(255,255,255,0.2);
+  }
+</style>
+</head>
+<body>
+
+<div class="preview-header">
+  <h1>地摊地图 · 美团风格 UI 重设计</h1>
+  <p>4 个核心页面预览 — 首页 / 摊位详情 / 收藏 / 我的</p>
+</div>
+
+<div class="phones-grid">
+
+  <!-- ==================== PHONE 1: HOME ==================== -->
+  <div class="phone-wrapper">
+    <div class="phone-label">首页 Home</div>
+    <div class="phone-frame">
+      <div class="status-bar">
+        <span class="time">9:41</span>
+        <span class="icons">📶 📡 🔋</span>
+      </div>
+      <div class="phone-content">
+        <!-- Header with location + search -->
+        <div class="home-header">
+          <div class="location-row">
+            <div class="location-left">
+              <span class="location-pin">📍</span>
+              <span class="location-text">朝阳区建国路</span>
+              <span class="location-arrow">▾</span>
+            </div>
+            <span class="weather-badge">☀️ 28°C</span>
+          </div>
+          <div class="search-bar">
+            <span class="s-icon">🔍</span>
+            <span class="s-text">搜索摊位、商品、地址...</span>
+          </div>
+        </div>
+
+        <!-- Banner -->
+        <div class="banner-card">
+          <div class="banner-title">发现身边好摊位</div>
+          <div class="banner-sub">3公里内精选美食摊位</div>
+          <span class="banner-tag">🔥 今日热门</span>
+        </div>
+
+        <!-- Category Grid -->
+        <div class="category-grid">
+          <div class="cat-item">
+            <div class="cat-icon c1">🏪</div>
+            <span class="cat-text">附近摊位</span>
+          </div>
+          <div class="cat-item">
+            <div class="cat-icon c2">🗺️</div>
+            <span class="cat-text">地图找摊</span>
+          </div>
+          <div class="cat-item">
+            <div class="cat-icon c3">🔥</div>
+            <span class="cat-text">热门排行</span>
+          </div>
+          <div class="cat-item">
+            <div class="cat-icon c4">⭐</div>
+            <span class="cat-text">我的收藏</span>
+          </div>
+          <div class="cat-item">
+            <div class="cat-icon c5">🍜</div>
+            <span class="cat-text">美食小吃</span>
+          </div>
+          <div class="cat-item">
+            <div class="cat-icon c6">🎨</div>
+            <span class="cat-text">手工文创</span>
+          </div>
+          <div class="cat-item">
+            <div class="cat-icon c7">💬</div>
+            <span class="cat-text">我的评价</span>
+          </div>
+          <div class="cat-item">
+            <div class="cat-icon c8">⋯</div>
+            <span class="cat-text">全部服务</span>
+          </div>
+        </div>
+
+        <!-- Quick Strip -->
+        <div class="quick-strip">
+          <div class="quick-chip"><span class="qc-dot"></span> 附近28家营业中</div>
+          <div class="quick-chip"><span class="qc-dot hot"></span> 排行榜更新</div>
+          <div class="quick-chip">📝 成为摊主</div>
+        </div>
+
+        <!-- Recommended Section -->
+        <div class="section-header">
+          <span class="section-title">推荐摊位</span>
+          <span class="section-more">智能排序 ›</span>
+        </div>
+
+        <!-- Vendor Card 1 -->
+        <div class="vendor-card-mt">
+          <div class="vcm-top">
+            <div class="vcm-thumb">
+              🍜
+              <div class="vcm-open-badge">营业中</div>
+            </div>
+            <div class="vcm-info">
+              <div class="vcm-name">老张麻辣烫</div>
+              <div class="vcm-rating-row">
+                <div class="vcm-stars">
+                  <span class="vcm-star">★</span>
+                  <span class="vcm-star">★</span>
+                  <span class="vcm-star">★</span>
+                  <span class="vcm-star">★</span>
+                  <span class="vcm-star">★</span>
+                </div>
+                <span class="vcm-score">4.9</span>
+                <span class="vcm-review-count">326条</span>
+              </div>
+              <div class="vcm-tags-row">
+                <span class="vcm-tag">麻辣烫</span>
+                <span class="vcm-tag">人均¥18</span>
+                <span class="vcm-tag green">🔥热销</span>
+              </div>
+            </div>
+          </div>
+          <div class="vcm-bottom">
+            <span class="vcm-address">📍 建国路88号路口</span>
+            <span class="vcm-distance">350m</span>
+            <div class="vcm-actions">
+              <button class="vcm-btn nav-btn">🧭</button>
+              <button class="vcm-btn fav-btn">❤️</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Vendor Card 2 -->
+        <div class="vendor-card-mt">
+          <div class="vcm-top">
+            <div class="vcm-thumb" style="background: linear-gradient(135deg, #C8E6C9, #A5D6A7);">
+              🥘
+              <div class="vcm-open-badge">营业中</div>
+            </div>
+            <div class="vcm-info">
+              <div class="vcm-name">李姐煎饼果子</div>
+              <div class="vcm-rating-row">
+                <div class="vcm-stars">
+                  <span class="vcm-star">★</span>
+                  <span class="vcm-star">★</span>
+                  <span class="vcm-star">★</span>
+                  <span class="vcm-star">★</span>
+                  <span class="vcm-star empty">★</span>
+                </div>
+                <span class="vcm-score">4.3</span>
+                <span class="vcm-review-count">128条</span>
+              </div>
+              <div class="vcm-tags-row">
+                <span class="vcm-tag">煎饼</span>
+                <span class="vcm-tag">人均¥8</span>
+              </div>
+            </div>
+          </div>
+          <div class="vcm-bottom">
+            <span class="vcm-address">📍 朝阳公园南门</span>
+            <span class="vcm-distance">520m</span>
+            <div class="vcm-actions">
+              <button class="vcm-btn nav-btn">🧭</button>
+              <button class="vcm-btn fav-btn">🤍</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Vendor Card 3 -->
+        <div class="vendor-card-mt">
+          <div class="vcm-top">
+            <div class="vcm-thumb" style="background: linear-gradient(135deg, #FFCDD2, #EF9A9A);">
+              🍢
+              <div class="vcm-open-badge closed">已收摊</div>
+            </div>
+            <div class="vcm-info">
+              <div class="vcm-name">王叔烤串</div>
+              <div class="vcm-rating-row">
+                <div class="vcm-stars">
+                  <span class="vcm-star">★</span>
+                  <span class="vcm-star">★</span>
+                  <span class="vcm-star">★</span>
+                  <span class="vcm-star">★</span>
+                  <span class="vcm-star">★</span>
+                </div>
+                <span class="vcm-score">4.8</span>
+                <span class="vcm-review-count">256条</span>
+              </div>
+              <div class="vcm-tags-row">
+                <span class="vcm-tag">烤串</span>
+                <span class="vcm-tag">人均¥25</span>
+                <span class="vcm-tag green">口碑榜TOP3</span>
+              </div>
+            </div>
+          </div>
+          <div class="vcm-bottom">
+            <span class="vcm-address">📍 三里屯北路</span>
+            <span class="vcm-distance">1.2km</span>
+            <div class="vcm-actions">
+              <button class="vcm-btn nav-btn">🧭</button>
+              <button class="vcm-btn fav-btn">❤️</button>
+            </div>
+          </div>
+        </div>
+
+        <div style="height: 20px;"></div>
+      </div>
+      <!-- Tab Bar -->
+      <div class="tab-bar">
+        <div class="tab-item active">
+          <span class="tab-icon">🏠</span>
+          <span class="tab-text">首页</span>
+        </div>
+        <div class="tab-item">
+          <span class="tab-icon">🗺️</span>
+          <span class="tab-text">地图</span>
+        </div>
+        <div class="tab-item">
+          <span class="tab-icon">⭐</span>
+          <span class="tab-text">收藏</span>
+        </div>
+        <div class="tab-item">
+          <span class="tab-icon">👤</span>
+          <span class="tab-text">我的</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== PHONE 2: VENDOR DETAIL ==================== -->
+  <div class="phone-wrapper">
+    <div class="phone-label">摊位详情 Detail</div>
+    <div class="phone-frame">
+      <div class="status-bar">
+        <span class="time">9:41</span>
+        <span class="icons">📶 📡 🔋</span>
+      </div>
+      <div class="phone-content">
+        <!-- Header -->
+        <div class="vd-header">
+          <div class="vd-back-row">
+            <div class="vd-back">‹</div>
+            <div class="vd-share">↗</div>
+          </div>
+          <div class="vd-shop-card">
+            <div class="vd-shop-top">
+              <div class="vd-avatar">🍜</div>
+              <div class="vd-shop-info">
+                <div class="vd-shop-name">老张麻辣烫</div>
+                <div class="vd-shop-meta">
+                  <div class="vd-rating-badge">
+                    <span class="star">★</span>
+                    <span class="score">4.9</span>
+                  </div>
+                  <span class="vd-review-link">326条评价</span>
+                </div>
+                <div style="margin-top: 6px;">
+                  <span class="vd-status-pill open">
+                    <span class="vd-status-dot"></span>
+                    营业中
+                  </span>
+                </div>
+              </div>
+            </div>
+            <div class="vd-info-grid">
+              <div class="vd-info-cell">
+                <span class="ic">📍</span>
+                <span class="val">建国路88号</span>
+              </div>
+              <div class="vd-info-cell">
+                <span class="ic">📏</span>
+                <span class="val">350m</span>
+              </div>
+              <div class="vd-info-cell">
+                <span class="ic">📞</span>
+                <span class="val">138****1234</span>
+              </div>
+              <div class="vd-info-cell">
+                <span class="ic">💰</span>
+                <span class="val">人均¥18</span>
+              </div>
+              <div class="vd-info-cell full">
+                <span class="ic">🔥</span>
+                <span class="val">主打：麻辣烫 / 冒菜 / 酸辣粉</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Products -->
+        <div class="vd-section">
+          <div class="vd-section-title">
+            🥘 全部商品 <span class="badge">6</span>
+          </div>
+          <div class="vd-product">
+            <div class="vd-product-img">🍲</div>
+            <div class="vd-product-info">
+              <div>
+                <div class="vd-product-name">招牌麻辣烫（大份）</div>
+                <div class="vd-product-desc">自选食材，浓郁骨汤底</div>
+              </div>
+              <div class="vd-product-bottom">
+                <span class="vd-product-price"><span class="yen">¥</span>22</span>
+                <span class="vd-product-sales">月售186</span>
+              </div>
+            </div>
+          </div>
+          <div class="vd-product">
+            <div class="vd-product-img" style="background: linear-gradient(135deg, #FFF3E0, #FFE0B2);">🌶️</div>
+            <div class="vd-product-info">
+              <div>
+                <div class="vd-product-name">酸辣粉</div>
+                <div class="vd-product-desc">手工红薯粉，酸辣开胃</div>
+              </div>
+              <div class="vd-product-bottom">
+                <span class="vd-product-price"><span class="yen">¥</span>12</span>
+                <span class="vd-product-sales">月售98</span>
+              </div>
+            </div>
+          </div>
+          <div class="vd-product">
+            <div class="vd-product-img" style="background: linear-gradient(135deg, #FCE4EC, #F8BBD0);">🥬</div>
+            <div class="vd-product-info">
+              <div>
+                <div class="vd-product-name">素菜拼盘</div>
+                <div class="vd-product-desc">时令蔬菜5种</div>
+              </div>
+              <div class="vd-product-bottom">
+                <span class="vd-product-price"><span class="yen">¥</span>8</span>
+                <span class="vd-product-sales">月售64</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Reviews -->
+        <div class="vd-section">
+          <div class="vd-section-title" style="justify-content: space-between;">
+            <span>💬 最新评价</span>
+            <span style="font-size: 12px; color: #FF6633; font-weight: 400;">查看全部 ›</span>
+          </div>
+          <div class="vd-review-item">
+            <div class="vd-review-top">
+              <div class="vd-review-avatar"></div>
+              <span class="vd-review-user">小明同学</span>
+              <div class="vd-review-stars"><span class="s">★</span><span class="s">★</span><span class="s">★</span><span class="s">★</span><span class="s">★</span></div>
+              <span class="vd-review-time">2天前</span>
+            </div>
+            <div class="vd-review-text">汤底很浓郁，食材新鲜，分量足！下次还来~</div>
+          </div>
+          <div class="vd-review-item">
+            <div class="vd-review-top">
+              <div class="vd-review-avatar"></div>
+              <span class="vd-review-user">吃货少女</span>
+              <div class="vd-review-stars"><span class="s">★</span><span class="s">★</span><span class="s">★</span><span class="s">★</span><span class="s">★</span></div>
+              <span class="vd-review-time">5天前</span>
+            </div>
+            <div class="vd-review-text">酸辣粉太好吃了！粉很Q弹，汤也好喝。</div>
+          </div>
+        </div>
+
+        <div style="height: 20px;"></div>
+      </div>
+
+      <!-- Bottom Action Bar -->
+      <div class="vd-bottom-bar">
+        <div class="vd-bottom-icon-btn">
+          <span class="bi">📞</span>
+          <span class="bt">电话</span>
+        </div>
+        <div class="vd-bottom-icon-btn">
+          <span class="bi">❤️</span>
+          <span class="bt">收藏</span>
+        </div>
+        <div class="vd-bottom-actions">
+          <button class="vd-btn-secondary">📝 评价</button>
+          <button class="vd-btn-primary">🧭 导航前往</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== PHONE 3: FAVORITES ==================== -->
+  <div class="phone-wrapper">
+    <div class="phone-label">收藏 Favorites</div>
+    <div class="phone-frame">
+      <div class="status-bar">
+        <span class="time">9:41</span>
+        <span class="icons">📶 📡 🔋</span>
+      </div>
+      <div class="phone-content">
+        <div class="fav-header">
+          <span class="fav-title">我的收藏</span>
+          <span class="fav-count">共5个摊位</span>
+        </div>
+        <div class="fav-tabs">
+          <div class="fav-tab active">全部</div>
+          <div class="fav-tab">营业中</div>
+          <div class="fav-tab">已收摊</div>
+        </div>
+
+        <div style="padding-top: 8px;">
+          <!-- Fav Card 1 -->
+          <div class="fav-card">
+            <div class="fav-thumb">🍜</div>
+            <div class="fav-info">
+              <div class="fav-name">老张麻辣烫</div>
+              <div class="fav-meta">
+                <span>★ 4.9</span>
+                <span class="dot">·</span>
+                <span>326条</span>
+                <span class="dot">·</span>
+                <span style="color: #00C853;">营业中</span>
+              </div>
+              <div class="fav-bottom-row">
+                <span class="fav-time">收藏于 3天前</span>
+                <button class="fav-unfav-btn">取消收藏</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Fav Card 2 -->
+          <div class="fav-card">
+            <div class="fav-thumb" style="background: linear-gradient(135deg, #C8E6C9, #A5D6A7);">🥘</div>
+            <div class="fav-info">
+              <div class="fav-name">李姐煎饼果子</div>
+              <div class="fav-meta">
+                <span>★ 4.3</span>
+                <span class="dot">·</span>
+                <span>128条</span>
+                <span class="dot">·</span>
+                <span style="color: #00C853;">营业中</span>
+              </div>
+              <div class="fav-bottom-row">
+                <span class="fav-time">收藏于 5天前</span>
+                <button class="fav-unfav-btn">取消收藏</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Fav Card 3 -->
+          <div class="fav-card">
+            <div class="fav-thumb" style="background: linear-gradient(135deg, #FFCDD2, #EF9A9A);">🍢</div>
+            <div class="fav-info">
+              <div class="fav-name">王叔烤串</div>
+              <div class="fav-meta">
+                <span>★ 4.8</span>
+                <span class="dot">·</span>
+                <span>256条</span>
+                <span class="dot">·</span>
+                <span style="color: #999;">已收摊</span>
+              </div>
+              <div class="fav-bottom-row">
+                <span class="fav-time">收藏于 1周前</span>
+                <button class="fav-unfav-btn">取消收藏</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Fav Card 4 -->
+          <div class="fav-card">
+            <div class="fav-thumb" style="background: linear-gradient(135deg, #E3F2FD, #BBDEFB);">🧁</div>
+            <div class="fav-info">
+              <div class="fav-name">甜甜烘焙小站</div>
+              <div class="fav-meta">
+                <span>★ 4.6</span>
+                <span class="dot">·</span>
+                <span>89条</span>
+                <span class="dot">·</span>
+                <span style="color: #00C853;">营业中</span>
+              </div>
+              <div class="fav-bottom-row">
+                <span class="fav-time">收藏于 2周前</span>
+                <button class="fav-unfav-btn">取消收藏</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Fav Card 5 -->
+          <div class="fav-card">
+            <div class="fav-thumb" style="background: linear-gradient(135deg, #F3E5F5, #E1BEE7);">🍵</div>
+            <div class="fav-info">
+              <div class="fav-name">陈记奶茶</div>
+              <div class="fav-meta">
+                <span>★ 4.5</span>
+                <span class="dot">·</span>
+                <span>167条</span>
+                <span class="dot">·</span>
+                <span style="color: #00C853;">营业中</span>
+              </div>
+              <div class="fav-bottom-row">
+                <span class="fav-time">收藏于 3周前</span>
+                <button class="fav-unfav-btn">取消收藏</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div style="height: 20px;"></div>
+      </div>
+      <!-- Tab Bar -->
+      <div class="tab-bar">
+        <div class="tab-item">
+          <span class="tab-icon">🏠</span>
+          <span class="tab-text">首页</span>
+        </div>
+        <div class="tab-item">
+          <span class="tab-icon">🗺️</span>
+          <span class="tab-text">地图</span>
+        </div>
+        <div class="tab-item active">
+          <span class="tab-icon">⭐</span>
+          <span class="tab-text">收藏</span>
+        </div>
+        <div class="tab-item">
+          <span class="tab-icon">👤</span>
+          <span class="tab-text">我的</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ==================== PHONE 4: PROFILE ==================== -->
+  <div class="phone-wrapper">
+    <div class="phone-label">我的 Profile</div>
+    <div class="phone-frame">
+      <div class="status-bar">
+        <span class="time">9:41</span>
+        <span class="icons">📶 📡 🔋</span>
+      </div>
+      <div class="phone-content">
+        <!-- Profile Header -->
+        <div class="profile-header">
+          <div class="profile-user-row">
+            <div class="profile-avatar">😊</div>
+            <div class="profile-user-info">
+              <div class="profile-nickname">小明同学</div>
+              <div class="profile-desc">探索城市味道，已打卡 12 个摊位</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stats -->
+        <div class="profile-stats">
+          <div class="stat-item">
+            <span class="stat-num">5</span>
+            <span class="stat-label">收藏</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-num">12</span>
+            <span class="stat-label">评价</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-num">3</span>
+            <span class="stat-label">常去</span>
+          </div>
+          <div class="stat-item">
+            <span class="stat-num">1</span>
+            <span class="stat-label">摊位</span>
+          </div>
+        </div>
+
+        <!-- Orders section (Meituan style) -->
+        <div class="profile-menu" style="margin-top: 16px;">
+          <div style="padding: 14px 16px; border-bottom: 1px solid #F5F5F5; display: flex; align-items: center; justify-content: space-between;">
+            <span style="font-size: 14px; font-weight: 600; color: #1A1A1A;">我的订单</span>
+            <span style="font-size: 12px; color: #999;">查看全部 ›</span>
+          </div>
+          <div style="display: flex; padding: 16px; gap: 0;">
+            <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px;">
+              <div style="width: 36px; height: 36px; border-radius: 50%; background: #FFF3E0; display: flex; align-items: center; justify-content: center; font-size: 18px;">💰</div>
+              <span style="font-size: 11px; color: #666;">待付款</span>
+            </div>
+            <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px;">
+              <div style="width: 36px; height: 36px; border-radius: 50%; background: #E8F5E9; display: flex; align-items: center; justify-content: center; font-size: 18px;">🎫</div>
+              <span style="font-size: 11px; color: #666;">待使用</span>
+            </div>
+            <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px;">
+              <div style="width: 36px; height: 36px; border-radius: 50%; background: #E3F2FD; display: flex; align-items: center; justify-content: center; font-size: 18px;">⭐</div>
+              <span style="font-size: 11px; color: #666;">待评价</span>
+            </div>
+            <div style="flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px;">
+              <div style="width: 36px; height: 36px; border-radius: 50%; background: #FCE4EC; display: flex; align-items: center; justify-content: center; font-size: 18px;">↩️</div>
+              <span style="font-size: 11px; color: #666;">退款/售后</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- My Favorites -->
+        <div class="profile-menu">
+          <div class="profile-menu-item">
+            <div class="pmi-icon orange">⭐</div>
+            <span class="pmi-text">我的收藏</span>
+            <span class="pmi-badge">5</span>
+            <span class="pmi-arrow">›</span>
+          </div>
+          <div class="profile-menu-item">
+            <div class="pmi-icon green">🏪</div>
+            <span class="pmi-text">我的摊位</span>
+            <span class="pmi-arrow">›</span>
+          </div>
+          <div class="profile-menu-item">
+            <div class="pmi-icon blue">💬</div>
+            <span class="pmi-text">我的评价</span>
+            <span class="pmi-badge">12</span>
+            <span class="pmi-arrow">›</span>
+          </div>
+          <div class="profile-menu-item">
+            <div class="pmi-icon purple">📝</div>
+            <span class="pmi-text">成为摊主</span>
+            <span class="pmi-arrow">›</span>
+          </div>
+        </div>
+
+        <!-- Settings -->
+        <div class="profile-menu">
+          <div class="profile-menu-item">
+            <div class="pmi-icon gray">⚙️</div>
+            <span class="pmi-text">设置</span>
+            <span class="pmi-arrow">›</span>
+          </div>
+          <div class="profile-menu-item">
+            <div class="pmi-icon gray">ℹ️</div>
+            <span class="pmi-text">关于我们</span>
+            <span class="pmi-arrow">›</span>
+          </div>
+        </div>
+
+        <!-- Logout -->
+        <div style="padding: 20px 16px;">
+          <button style="width: 100%; height: 44px; border-radius: 22px; border: 1px solid #FF3366; background: #fff; color: #FF3366; font-size: 14px; font-weight: 600; cursor: pointer;">退出登录</button>
+        </div>
+
+        <div style="height: 20px;"></div>
+      </div>
+      <!-- Tab Bar -->
+      <div class="tab-bar">
+        <div class="tab-item">
+          <span class="tab-icon">🏠</span>
+          <span class="tab-text">首页</span>
+        </div>
+        <div class="tab-item">
+          <span class="tab-icon">🗺️</span>
+          <span class="tab-text">地图</span>
+        </div>
+        <div class="tab-item">
+          <span class="tab-icon">⭐</span>
+          <span class="tab-text">收藏</span>
+        </div>
+        <div class="tab-item active">
+          <span class="tab-icon">👤</span>
+          <span class="tab-text">我的</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<!-- Design Notes -->
+<div class="design-notes">
+  <h2>🎨 设计方案说明</h2>
+
+  <h3>色彩系统</h3>
+  <ul>
+    <li><span class="color-swatch" style="background: #FFD100;"></span><strong>主色 #FFD100</strong> — 美团标志性黄色，用于头部、TabBar高亮、主按钮</li>
+    <li><span class="color-swatch" style="background: #FF6633;"></span><strong>强调色 #FF6633</strong> — 价格、评分、标签，营造食欲感</li>
+    <li><span class="color-swatch" style="background: #00C853;"></span><strong>成功色 #00C853</strong> — 营业状态、距离信息</li>
+    <li><span class="color-swatch" style="background: #FF3366;"></span><strong>警示色 #FF3366</strong> — 排行榜渐变、退出按钮</li>
+    <li><span class="color-swatch" style="background: #F5F5F5;"></span><strong>背景色 #F5F5F5</strong> — 统一浅灰底色</li>
+  </ul>
+
+  <h3>核心变化 vs 当前版本</h3>
+  <ul>
+    <li><strong>首页头部</strong>：绿色渐变 → 美团黄色，增加定位信息+天气，搜索栏从独立变为嵌入式</li>
+    <li><strong>功能入口</strong>：大圆角渐变色方块 → 轻量圆形图标 + 更紧凑的 4×2 网格</li>
+    <li><strong>新增运营 Banner</strong>：橙红渐变促销横幅，增加视觉焦点和运营位</li>
+    <li><strong>摊位卡片</strong>：左图右文横排 → 保留但信息更丰富（评分星标、标签、营业状态小角标）</li>
+    <li><strong>快速状态条</strong>：新增横向滚动 chip，显示"附近N家营业中"等实时信息</li>
+    <li><strong>摊位详情</strong>：顶部增加黄色渐变背景+返回/分享按钮，信息改为 2×2 grid 布局</li>
+    <li><strong>底部操作栏</strong>：增加电话、收藏图标按钮 + 双主操作按钮（评价+导航）</li>
+    <li><strong>收藏页</strong>：增加顶部分类 Tab（全部/营业中/已收摊），卡片信息更紧凑</li>
+    <li><strong>个人中心</strong>：增加数据统计卡片（收藏/评价/常去/摊位数），增加"我的订单"快捷入口</li>
+    <li><strong>Tab Bar</strong>：高亮色从绿色改为美团黄，保持统一品牌感</li>
+  </ul>
+
+  <h3>设计原则</h3>
+  <ul>
+    <li><strong>信息密度提升</strong>：美团风格的核心是"一屏展示更多信息"，通过更紧凑的间距和更小的字号实现</li>
+    <li><strong>视觉层次分明</strong>：黄色头部 → 白色内容区 → 浅灰背景，三层递进</li>
+    <li><strong>标签系统</strong>：每个摊位卡片最多展示 3 个标签（品类/人均/热门），用色彩区分类型</li>
+    <li><strong>状态即时可见</strong>：营业/收摊状态以小角标形式直接显示在缩略图上</li>
+    <li><strong>操作触手可及</strong>：导航、收藏按钮直接外露在卡片上，减少点击层级</li>
+  </ul>
+</div>
+
+</body>
+</html>

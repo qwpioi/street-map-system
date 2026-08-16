@@ -1,10 +1,15 @@
-.favorite-container {
-  min-height: 100vh;
-  background-color: #f5f5f5;
-  padding-bottom: 120rpx;
+page {
+  background: #F5F5F5;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', sans-serif;
 }
 
-/* 加载状态 */
+.favorite-container {
+  min-height: 100vh;
+  background: #F5F5F5;
+  padding-bottom: 40rpx;
+}
+
+/* ========== 加载状态 ========== */
 .loading-state {
   display: flex;
   flex-direction: column;
@@ -29,7 +34,7 @@
   color: #999;
 }
 
-/* 空状态 */
+/* ========== 空状态 ========== */
 .empty-state {
   display: flex;
   flex-direction: column;
@@ -38,15 +43,12 @@
   padding-top: 200rpx;
 }
 
-.empty-icon {
-  font-size: 120rpx;
-  margin-bottom: 30rpx;
-}
+.empty-icon { font-size: 120rpx; margin-bottom: 30rpx; }
 
 .empty-text {
   font-size: 32rpx;
-  color: #333;
-  margin-bottom: 16rpx;
+  color: #1A1A1A;
+  margin-bottom: 12rpx;
 }
 
 .empty-desc {
@@ -56,101 +58,118 @@
 }
 
 .go-home-btn {
-  background-color: #4CAF50;
-  color: #fff;
-  border-radius: 40rpx;
+  background: linear-gradient(135deg, #FFD100, #FFC107) !important;
+  color: #1A1A1A !important;
+  border-radius: 36rpx;
   width: 300rpx;
   font-size: 28rpx;
+  font-weight: 600;
+  border: none !important;
+  box-shadow: 0 4rpx 16rpx rgba(255,209,0,0.3);
 }
 
-/* 列表头部 */
-.list-header {
-  padding: 30rpx;
-  background-color: #fff;
-  margin-bottom: 20rpx;
+.go-home-btn::after { border: none; }
+
+/* ========== 黄色头部 ========== */
+.fav-header {
+  background: #FFD100;
+  padding: 24rpx 32rpx;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
 }
 
-.header-title {
-  font-size: 28rpx;
+.fav-title {
+  font-size: 34rpx;
+  font-weight: 700;
+  color: #1A1A1A;
+}
+
+.fav-count {
+  font-size: 24rpx;
   color: #666;
 }
 
-/* 收藏列表 */
-.favorite-list {
-  padding: 0 30rpx;
+/* ========== 收藏卡片列表 ========== */
+.fav-list {
+  padding: 16rpx 24rpx;
 }
 
-.favorite-item {
-  background-color: #fff;
+.fav-card {
+  display: flex;
+  gap: 20rpx;
+  background: #fff;
   border-radius: 20rpx;
-  margin-bottom: 20rpx;
-  overflow: hidden;
-  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.05);
+  padding: 24rpx;
+  margin-bottom: 16rpx;
+  box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.04);
 }
 
-.item-content {
-  padding: 30rpx;
-}
-
-.item-header {
+.fav-thumb {
+  width: 120rpx;
+  height: 120rpx;
+  border-radius: 16rpx;
+  background: linear-gradient(135deg, #FFE0B2, #FFCC80);
   display: flex;
-  justify-content: space-between;
   align-items: center;
-  margin-bottom: 20rpx;
+  justify-content: center;
+  font-size: 48rpx;
+  flex-shrink: 0;
 }
 
-.item-name {
-  font-size: 32rpx;
-  font-weight: bold;
-  color: #333;
+.fav-info {
   flex: 1;
-}
-
-.favorite-btn {
-  display: flex;
-  align-items: center;
-  padding: 10rpx 20rpx;
-  border-radius: 30rpx;
-  background-color: #f5f5f5;
-}
-
-.favorite-btn.active {
-  background-color: #fff0f0;
-}
-
-.heart-icon {
-  font-size: 28rpx;
-  margin-right: 8rpx;
-}
-
-.btn-text {
-  font-size: 24rpx;
-  color: #ff4444;
-}
-
-.item-info {
+  min-width: 0;
   display: flex;
   flex-direction: column;
-  gap: 12rpx;
+  justify-content: space-between;
 }
 
-.item-address {
-  font-size: 26rpx;
-  color: #666;
+.fav-name {
+  font-size: 30rpx;
+  font-weight: 600;
+  color: #1A1A1A;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-.item-products {
-  font-size: 26rpx;
-  color: #4CAF50;
+.fav-meta {
+  display: flex;
+  flex-direction: column;
+  gap: 6rpx;
+  margin-top: 8rpx;
 }
 
-.item-footer {
-  padding: 20rpx 30rpx;
-  background-color: #fafafa;
-  border-top: 1rpx solid #f0f0f0;
-}
-
-.item-time {
-  font-size: 22rpx;
+.fav-address {
+  font-size: 24rpx;
   color: #999;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.fav-products {
+  font-size: 24rpx;
+  color: #FF6633;
+}
+
+.fav-bottom-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 12rpx;
+}
+
+.fav-time {
+  font-size: 20rpx;
+  color: #CCC;
+}
+
+.fav-unfav-btn {
+  font-size: 22rpx;
+  color: #FF6633;
+  background: #FFF3E0;
+  padding: 6rpx 16rpx;
+  border-radius: 16rpx;
 }

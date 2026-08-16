@@ -1,55 +1,78 @@
 <view class="profile-container">
-  <!-- 用户信息卡片 -->
-  <view class="user-card">
-    <view class="user-header">
-      <image wx:if="{{isLoggedIn && (userInfo.avatarUrl || userInfo.avatar)}}" class="avatar" src="{{userInfo.avatarUrl || userInfo.avatar}}" mode="aspectFill"></image>
-      <view wx:if="{{isLoggedIn && !(userInfo.avatarUrl || userInfo.avatar)}}" class="avatar" style="background-color: #e0e0e0; display: flex; align-items: center; justify-content: center;">
-        <text style="font-size: 40rpx; color: #999;">👤</text>
+  <!-- 用户头部（黄色渐变） -->
+  <view class="profile-header">
+    <view class="profile-user-row">
+      <image wx:if="{{isLoggedIn && (userInfo.avatarUrl || userInfo.avatar)}}" class="profile-avatar" src="{{userInfo.avatarUrl || userInfo.avatar}}" mode="aspectFill"></image>
+      <view wx:else class="profile-avatar default-avatar">
+        <text class="avatar-emoji">😊</text>
       </view>
-      <view wx:else class="avatar" style="background-color: #e0e0e0;"></view>
-      <view class="user-info">
-        <text class="nickname">{{isLoggedIn ? (userInfo.nickName || userInfo.username) : '未登录'}}</text>
-        <text class="user-id">{{isLoggedIn ? '欢迎使用地摊地图' : '登录后可收藏摊位、发布评论'}}</text>
+      <view class="profile-user-info">
+        <text class="profile-nickname">{{isLoggedIn ? (userInfo.nickName || userInfo.username || '摊友') : '未登录'}}</text>
+        <text class="profile-desc">{{isLoggedIn ? '探索城市味道，发现身边好摊' : '登录后可收藏摊位、发布评论'}}</text>
       </view>
     </view>
-    <button class="login-btn" wx:if="{{!isLoggedIn}}" bindtap="goLogin">立即登录</button>
+  </view>
+
+  <!-- 数据统计卡片 -->
+  <view class="stats-card" wx:if="{{isLoggedIn}}">
+    <view class="stat-item" bindtap="goFavorite">
+      <text class="stat-num">⭐</text>
+      <text class="stat-label">收藏</text>
+    </view>
+    <view class="stat-item" bindtap="goComments">
+      <text class="stat-num">💬</text>
+      <text class="stat-label">评价</text>
+    </view>
+    <view class="stat-item" bindtap="goVendor">
+      <text class="stat-num">🏪</text>
+      <text class="stat-label">摊位</text>
+    </view>
+    <view class="stat-item" bindtap="goBecomeVendor">
+      <text class="stat-num">📝</text>
+      <text class="stat-label">成为摊主</text>
+    </view>
+  </view>
+
+  <!-- 未登录按钮 -->
+  <view class="login-section" wx:if="{{!isLoggedIn}}">
+    <button class="login-btn" bindtap="goLogin">立即登录</button>
   </view>
 
   <!-- 功能菜单 -->
   <view class="menu-section">
     <view class="menu-item" bindtap="goFavorite">
-      <text class="menu-icon">⭐</text>
-      <text class="menu-text">我的收藏</text>
-      <text class="menu-arrow">›</text>
+      <view class="pmi-icon orange">⭐</view>
+      <text class="pmi-text">我的收藏</text>
+      <text class="pmi-arrow">›</text>
     </view>
     <view class="menu-item" bindtap="goVendor">
-      <text class="menu-icon">🏪</text>
-      <text class="menu-text">我的摊位</text>
-      <text class="menu-arrow">›</text>
+      <view class="pmi-icon green">🏪</view>
+      <text class="pmi-text">我的摊位</text>
+      <text class="pmi-arrow">›</text>
     </view>
     <view class="menu-item" bindtap="goComments">
-      <text class="menu-icon">💬</text>
-      <text class="menu-text">我的评价</text>
-      <text class="menu-arrow">›</text>
+      <view class="pmi-icon blue">💬</view>
+      <text class="pmi-text">我的评价</text>
+      <text class="pmi-arrow">›</text>
     </view>
     <view class="menu-item" bindtap="goBecomeVendor">
-      <text class="menu-icon">📝</text>
-      <text class="menu-text">成为摊主</text>
-      <text class="menu-arrow">›</text>
+      <view class="pmi-icon purple">📝</view>
+      <text class="pmi-text">成为摊主</text>
+      <text class="pmi-arrow">›</text>
     </view>
   </view>
 
   <!-- 设置 -->
   <view class="menu-section">
     <view class="menu-item" bindtap="goSettings">
-      <text class="menu-icon">⚙️</text>
-      <text class="menu-text">设置</text>
-      <text class="menu-arrow">›</text>
+      <view class="pmi-icon gray">⚙️</view>
+      <text class="pmi-text">设置</text>
+      <text class="pmi-arrow">›</text>
     </view>
     <view class="menu-item" bindtap="goAbout">
-      <text class="menu-icon">ℹ️</text>
-      <text class="menu-text">关于我们</text>
-      <text class="menu-arrow">›</text>
+      <view class="pmi-icon gray">ℹ️</view>
+      <text class="pmi-text">关于我们</text>
+      <text class="pmi-arrow">›</text>
     </view>
   </view>
 

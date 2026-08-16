@@ -21,13 +21,13 @@
   ],
   "window": {
     "backgroundTextStyle": "light",
-    "navigationBarBackgroundColor": "#4CAF50",
+    "navigationBarBackgroundColor": "#FFD100",
     "navigationBarTitleText": "🛒 地摊地图",
-    "navigationBarTextStyle": "white"
+    "navigationBarTextStyle": "black"
   },
   "tabBar": {
     "color": "#999999",
-    "selectedColor": "#4CAF50",
+    "selectedColor": "#FFD100",
     "backgroundColor": "#ffffff",
     "borderStyle": "black",
     "list": [

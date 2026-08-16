@@ -73,7 +73,7 @@
 }
 
 .rank-badge.rank-top {
-  background: linear-gradient(135deg, #ff6b00, #f44336);
+  background: linear-gradient(135deg, #FF6633, #FF3366);
   font-size: 50rpx;
 }
 
@@ -121,7 +121,7 @@
 
 .rating-num {
   font-size: 26rpx;
-  color: #f37b1d;
+  color: #FF6633;
   font-weight: bold;
   margin-left: 8rpx;
 }
@@ -157,8 +157,8 @@
 
 .tag {
   font-size: 22rpx;
-  color: #ff6b00;
-  background: rgba(255, 107, 0, 0.08);
+  color: #FF6633;
+  background: rgba(255, 102, 51, 0.08);
   padding: 6rpx 16rpx;
   border-radius: 20rpx;
 }
@@ -170,5 +170,5 @@
 
 .card-distance {
   font-size: 24rpx;
-  color: #4CAF50;
+  color: #00C853;
 }
