@@ -46,7 +46,7 @@
 
 .go-home-btn {
   width: 300rpx;
-  background-color: #4CAF50;
+  background-color: #FFD100;
   color: #fff;
   font-size: 28rpx;
   border-radius: 30rpx;
@@ -78,7 +78,7 @@
 .stat-value {
   font-size: 56rpx;
   font-weight: bold;
-  color: #4CAF50;
+  color: #FFD100;
 }
 
 .stat-label {

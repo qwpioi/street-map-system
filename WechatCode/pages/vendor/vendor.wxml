@@ -44,7 +44,7 @@
   <view class="vendor-operate-box">
     <view class="vendor-operate-item">
       <text>营业开关</text>
-      <switch checked="{{vendor.status == 1}}" bindchange="changeStatus" color="#4CAF50"/>
+      <switch checked="{{vendor.status == 1}}" bindchange="changeStatus" color="#FFD100"/>
     </view>
     <button class="vendor-manage-btn" bindtap="goGoodsManage" hover-class="btn-hover">商品管理</button>
   </view>

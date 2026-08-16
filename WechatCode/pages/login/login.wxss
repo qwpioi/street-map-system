@@ -1,6 +1,6 @@
 .login-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #4CAF50 0%, #66bb6a 100%);
+  background: linear-gradient(135deg, #FFD100 0%, #FFD100 100%);
   padding: 60rpx 40rpx;
   display: flex;
   flex-direction: column;
@@ -54,7 +54,7 @@
 .login-btn {
   width: 100%;
   background-color: #fff !important;
-  color: #4CAF50 !important;
+  color: #FFD100 !important;
   font-size: 32rpx !important;
   font-weight: bold !important;
   padding: 32rpx 0 !important;

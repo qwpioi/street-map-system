@@ -22,7 +22,7 @@
 }
 
 .pm-add-btn {
-  background: #4CAF50;
+  background: #FFD100;
   color: #fff;
   padding: 12rpx 36rpx;
   border-radius: 30rpx;
@@ -115,7 +115,7 @@
   padding: 4rpx 16rpx;
   border-radius: 20rpx;
   background: #e6f9ef;
-  color: #4CAF50;
+  color: #FFD100;
   margin-left: 16rpx;
 }
 
@@ -136,7 +136,7 @@
 
 .pm-edit {
   background: #e8f4fd;
-  color: #4CAF50;
+  color: #FFD100;
 }
 
 .pm-delete {
@@ -172,7 +172,7 @@
 .pm-empty-btn {
   display: inline-block;
   background: #e6f9ef;
-  color: #4CAF50;
+  color: #FFD100;
   padding: 16rpx 40rpx;
   border-radius: 30rpx;
   font-size: 28rpx;

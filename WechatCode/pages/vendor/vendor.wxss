@@ -11,7 +11,7 @@
 
 /* 摊位头部卡片 */
 .vendor-stall-card {
-  background: linear-gradient(180deg, #4CAF50 0%, #45a049 100%);
+  background: linear-gradient(180deg, #FFD100 0%, #FFC107 100%);
   border-radius: 20rpx;
   padding: 32rpx;
   color: white;
@@ -90,7 +90,7 @@
 }
 
 .vendor-stat-item:nth-child(2) .vendor-stat-num {
-  color: #4CAF50;
+  color: #FFD100;
   font-size: 30rpx;
 }
 
@@ -135,13 +135,13 @@
 }
 
 .info-value.phone {
-  color: #4CAF50;
+  color: #FFD100;
   font-weight: bold;
 }
 
 .edit-info-btn {
   margin-top: 24rpx;
-  background: #4CAF50;
+  background: #FFD100;
   color: white;
   font-size: 28rpx;
   border-radius: 30rpx;
@@ -184,7 +184,7 @@
 
 .vendor-manage-btn {
   float: right;
-  background: #4CAF50;
+  background: #FFD100;
   color: white;
   padding: 0 48rpx;
   height: 72rpx;
@@ -274,7 +274,7 @@
   font-size: 22rpx;
   font-weight: 500;
   background: #e6f9ef;
-  color: #4CAF50;
+  color: #FFD100;
   white-space: nowrap;
 }
 
@@ -299,7 +299,7 @@
 }
 
 .vendor-empty-action {
-  color: #4CAF50;
+  color: #FFD100;
   font-size: 28rpx;
   font-weight: 600;
   background-color: #e6f9ef;
@@ -334,7 +334,7 @@
 
 .vendor-btn-apply {
   margin-top: 30rpx;
-  background: #4CAF50;
+  background: #FFD100;
   color: #fff;
   border-radius: 30rpx;
   font-size: 28rpx;

@@ -206,7 +206,7 @@ page {
 
 .add-review-btn {
   width: 100%;
-  background-color: #4CAF50 !important;
+  background-color: #FFD100 !important;
   color: #fff !important;
   font-size: 28rpx;
   padding: 24rpx 0;

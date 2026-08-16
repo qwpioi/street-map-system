@@ -173,7 +173,7 @@
 }
 
 .item-value.distance {
-  color: #4caf50;
+  color: #FFD100;
   font-weight: bold;
 }
 
@@ -374,7 +374,7 @@
 }
 
 .action-btn.primary {
-  background: #4CAF50;
+  background: #FFD100;
   color: white;
 }
 
