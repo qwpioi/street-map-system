@@ -12,25 +12,26 @@ page {
   min-height: 100vh;
   background-color: #F5F5F5;
   padding-bottom: 20rpx;
+  overflow-x: hidden;
 }
 
 /* ========== 黄色头部 ========== */
 .home-header {
   background: #FFD100;
-  padding: 16rpx 24rpx 24rpx;
+  padding: 20rpx 30rpx 28rpx;
 }
 
 .location-row {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: 16rpx;
+  margin-bottom: 20rpx;
 }
 
 .location-left {
   display: flex;
   align-items: center;
-  gap: 6rpx;
+  gap: 8rpx;
 }
 
 .location-pin { font-size: 28rpx; }
@@ -41,7 +42,7 @@ page {
   font-size: 22rpx;
   color: #666;
   background: rgba(255,255,255,0.5);
-  padding: 4rpx 16rpx;
+  padding: 6rpx 18rpx;
   border-radius: 20rpx;
 }
 
@@ -50,7 +51,7 @@ page {
   align-items: center;
   background: #fff;
   border-radius: 36rpx;
-  padding: 14rpx 24rpx;
+  padding: 16rpx 24rpx;
   gap: 12rpx;
 }
 
@@ -59,16 +60,16 @@ page {
 
 /* ========== 运营 Banner ========== */
 .banner-card {
-  margin: 20rpx 24rpx;
+  margin: 20rpx 30rpx;
   background: linear-gradient(135deg, #FF6633 0%, #FF3366 100%);
   border-radius: 20rpx;
-  padding: 28rpx 32rpx;
+  padding: 28rpx 30rpx;
   color: #fff;
   position: relative;
   overflow: hidden;
 }
 
-.banner-title { font-size: 34rpx; font-weight: 700; margin-bottom: 6rpx; }
+.banner-title { font-size: 32rpx; font-weight: 700; margin-bottom: 8rpx; }
 .banner-sub { font-size: 24rpx; opacity: 0.9; }
 
 .banner-tag {
@@ -82,22 +83,22 @@ page {
 
 /* ========== 功能入口网格 ========== */
 .category-grid {
-  display: grid;
-  grid-template-columns: repeat(4, 1fr);
-  gap: 8rpx;
-  padding: 24rpx 16rpx;
-  margin: 0 24rpx;
+  display: flex;
+  flex-wrap: wrap;
+  padding: 20rpx 10rpx;
+  margin: 0 30rpx;
   background: #fff;
   border-radius: 20rpx;
   box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.04);
 }
 
 .cat-item {
+  width: 25%;
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 10rpx;
-  padding: 12rpx 0;
+  padding: 14rpx 0;
 }
 
 .cat-icon {
@@ -124,13 +125,13 @@ page {
 /* ========== 快速状态条 ========== */
 .quick-strip {
   display: flex;
-  white-space: nowrap;
-  padding: 16rpx 24rpx;
+  flex-wrap: wrap;
   gap: 12rpx;
+  padding: 16rpx 30rpx;
 }
 
 .quick-chip {
-  display: inline-flex;
+  display: flex;
   align-items: center;
   gap: 8rpx;
   background: #fff;
@@ -139,21 +140,21 @@ page {
   font-size: 22rpx;
   color: #333;
   box-shadow: 0 2rpx 8rpx rgba(0,0,0,0.04);
-  flex-shrink: 0;
 }
 
 .qc-dot {
-  width: 10rpx;
-  height: 10rpx;
+  width: 12rpx;
+  height: 12rpx;
   border-radius: 50%;
   background: #00C853;
+  flex-shrink: 0;
 }
 
 .qc-dot.hot { background: #FF3366; }
 
 /* ========== 推荐摊位 Section ========== */
 .vendor-section {
-  padding: 0 24rpx;
+  padding: 0 30rpx;
 }
 
 .section-header {
@@ -164,7 +165,7 @@ page {
 }
 
 .section-title {
-  font-size: 32rpx;
+  font-size: 30rpx;
   font-weight: 700;
   color: #1A1A1A;
 }
@@ -191,12 +192,12 @@ page {
 .vcm-top {
   display: flex;
   padding: 20rpx;
-  gap: 20rpx;
+  gap: 16rpx;
 }
 
 .vcm-thumb {
-  width: 140rpx;
-  height: 140rpx;
+  width: 120rpx;
+  height: 120rpx;
   border-radius: 16rpx;
   background: linear-gradient(135deg, #FFE0B2, #FFCC80);
   display: flex;
@@ -207,7 +208,7 @@ page {
   overflow: hidden;
 }
 
-.vcm-emoji { font-size: 56rpx; }
+.vcm-emoji { font-size: 48rpx; }
 
 .vcm-open-badge {
   position: absolute;
@@ -230,11 +231,11 @@ page {
   min-width: 0;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  justify-content: center;
 }
 
 .vcm-name {
-  font-size: 30rpx;
+  font-size: 28rpx;
   font-weight: 600;
   color: #1A1A1A;
   white-space: nowrap;
@@ -254,10 +255,10 @@ page {
   gap: 2rpx;
 }
 
-.vcm-star { font-size: 22rpx; color: #FFD100; }
+.vcm-star { font-size: 20rpx; color: #FFD100; }
 
 .vcm-distance {
-  font-size: 24rpx;
+  font-size: 22rpx;
   color: #00C853;
   font-weight: 600;
 }
@@ -304,13 +305,13 @@ page {
 }
 
 .vcm-btn {
-  width: 52rpx;
-  height: 52rpx;
+  width: 48rpx;
+  height: 48rpx;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 24rpx;
+  font-size: 22rpx;
 }
 
 .vcm-btn.nav-btn { background: #E8F5E9; }
@@ -324,8 +325,8 @@ page {
   padding: 120rpx 0;
 }
 
-.empty-icon { font-size: 100rpx; margin-bottom: 20rpx; }
-.empty-text { font-size: 28rpx; color: #999; }
+.empty-icon { font-size: 80rpx; margin-bottom: 20rpx; }
+.empty-text { font-size: 26rpx; color: #999; }
 
 /* ========== 弹窗 ========== */
 .vendor-detail-modal {
@@ -367,14 +368,14 @@ page {
   position: absolute;
   top: 20rpx;
   right: 20rpx;
-  width: 56rpx;
-  height: 56rpx;
+  width: 52rpx;
+  height: 52rpx;
   background: rgba(0,0,0,0.06);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 32rpx;
+  font-size: 28rpx;
   color: #666;
   z-index: 10;
 }
@@ -388,22 +389,22 @@ page {
 }
 
 .detail-avatar {
-  width: 96rpx;
-  height: 96rpx;
+  width: 88rpx;
+  height: 88rpx;
   border-radius: 16rpx;
   background: linear-gradient(135deg, #FFE0B2, #FFCC80);
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 48rpx;
+  font-size: 44rpx;
   margin-right: 20rpx;
   flex-shrink: 0;
 }
 
-.detail-info { flex: 1; }
+.detail-info { flex: 1; min-width: 0; }
 
 .detail-name {
-  font-size: 34rpx;
+  font-size: 32rpx;
   font-weight: 700;
   color: #1A1A1A;
   margin-bottom: 8rpx;
@@ -450,12 +451,13 @@ page {
 }
 
 .detail-info-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
+  display: flex;
+  flex-wrap: wrap;
   gap: 12rpx;
 }
 
 .detail-info-cell {
+  width: calc(50% - 6rpx);
   display: flex;
   align-items: center;
   gap: 8rpx;
@@ -463,10 +465,11 @@ page {
   background: #FAFAFA;
   border-radius: 12rpx;
   font-size: 24rpx;
+  box-sizing: border-box;
 }
 
-.dic-icon { font-size: 24rpx; }
-.dic-val { color: #1A1A1A; font-weight: 500; }
+.dic-icon { font-size: 24rpx; flex-shrink: 0; }
+.dic-val { color: #1A1A1A; font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .distance-val { color: #00C853; font-weight: 600; }
 .phone-val { color: #FF6633; }
 
@@ -478,7 +481,7 @@ page {
 }
 
 .modal-section-title {
-  font-size: 30rpx;
+  font-size: 28rpx;
   font-weight: 700;
   color: #1A1A1A;
   margin-bottom: 16rpx;
@@ -509,8 +512,8 @@ page {
 .modal-product-card:last-child { border-bottom: none; }
 
 .modal-product-img {
-  width: 120rpx;
-  height: 120rpx;
+  width: 100rpx;
+  height: 100rpx;
   border-radius: 12rpx;
   flex-shrink: 0;
   background: #eee;
@@ -521,14 +524,15 @@ page {
   display: flex;
   flex-direction: column;
   justify-content: space-between;
+  min-width: 0;
 }
 
-.modal-product-name { font-size: 28rpx; font-weight: 600; color: #1A1A1A; }
+.modal-product-name { font-size: 26rpx; font-weight: 600; color: #1A1A1A; }
 .modal-product-desc { font-size: 22rpx; color: #999; line-height: 1.4; }
 
 .modal-product-price { display: flex; align-items: baseline; gap: 4rpx; }
 .price-symbol { font-size: 22rpx; color: #FF6633; }
-.price-value { font-size: 32rpx; color: #FF6633; font-weight: 700; }
+.price-value { font-size: 30rpx; color: #FF6633; font-weight: 700; }
 
 /* 弹窗评价列表 */
 .modal-review-list {
@@ -551,8 +555,8 @@ page {
 }
 
 .modal-review-avatar {
-  width: 48rpx;
-  height: 48rpx;
+  width: 44rpx;
+  height: 44rpx;
   border-radius: 50%;
   background: #E0E0E0;
 }
@@ -567,7 +571,7 @@ page {
 }
 
 .modal-review-time { font-size: 20rpx; color: #CCC; }
-.modal-review-content { font-size: 26rpx; color: #666; line-height: 1.5; margin-left: 58rpx; }
+.modal-review-content { font-size: 26rpx; color: #666; line-height: 1.5; margin-left: 54rpx; }
 
 /* 空评价 */
 .empty-reviews {
@@ -592,12 +596,12 @@ page {
 
 .modal-action-btn {
   flex: 1;
-  height: 76rpx;
-  border-radius: 38rpx;
+  height: 72rpx;
+  border-radius: 36rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 28rpx;
+  font-size: 26rpx;
   border: none;
   padding: 0;
   margin: 0;

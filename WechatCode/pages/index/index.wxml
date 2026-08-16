@@ -59,7 +59,7 @@
   </view>
 
   <!-- 快速状态条 -->
-  <scroll-view class="quick-strip" scroll-x="true">
+  <view class="quick-strip">
     <view class="quick-chip">
       <text class="qc-dot"></text>
       <text>附近{{vendors.length}}家摊位</text>
@@ -71,7 +71,7 @@
     <view class="quick-chip" bindtap="goBecomeVendor">
       <text>📝 成为摊主</text>
     </view>
-  </scroll-view>
+  </view>
 
   <!-- 推荐摊位列表 -->
   <view class="vendor-section">
