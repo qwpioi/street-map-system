@@ -19,24 +19,5 @@
     "ignoreDevUnusedFiles": true
   },
   "libVersion": "3.15.2",
-  "condition": {
-    "miniprogram": {
-      "list": [
-        {
-          "name": "pages/profile/profile",
-          "pathName": "pages/login/login",
-          "query": "",
-          "scene": null,
-          "launchMode": "default"
-        },
-        {
-          "name": "pages/apply-vendor/apply-vendor",
-          "pathName": "pages/apply-vendor/apply-vendor",
-          "query": "",
-          "launchMode": "default",
-          "scene": null
-        }
-      ]
-    }
-  }
+  "condition": {}
 }

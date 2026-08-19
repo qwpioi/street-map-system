@@ -17,6 +17,10 @@ view, text, image, button, scroll-view {
   min-height: 100vh;
   background-color: #F5F5F5;
   padding-bottom: 20rpx;
+  /* 兜底：显式重置全局 .container 模板样式的侵入 */
+  display: block;
+  height: auto;
+  padding-top: 0;
 }
 
 /* ========== 黄色头部 ========== */

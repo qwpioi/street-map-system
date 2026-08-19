@@ -208,6 +208,14 @@ WechatCode/
 9. **JWT 过期处理**：`utils/api.js` 的 `request()` 拦截 401/403 状态码，自动清除 token 并跳转登录页
 10. **URL 参数编码**：页面跳转传参时使用 `encodeURIComponent()` 编码（特别是名称和头像URL含特殊字符时）
 
+## 数据库分析工作流
+当需要深度分析数据库结构/性能/索引时，使用以下工作流：
+1. 当前 Claude 生成**提示词**，用户复制给**专门分析数据库的 Claude Code 实例**
+2. 用户把那个实例的返回结果粘贴回来
+3. 当前 Claude 根据返回做业务层决策
+
+触发词："问数据库"、"数据库分析"、"database"、"DB review"
+
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence
 

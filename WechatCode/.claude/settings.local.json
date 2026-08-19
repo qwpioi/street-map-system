@@ -12,7 +12,8 @@
       "Bash(mvn compile *)",
       "PowerShell($bytes = [System.IO.File]::ReadAllBytes\\(\"D:\\\\study\\\\Java\\\\Data\\\\street-map-backend\\\\WechatCode\\\\pages\\\\hot-ranking\\\\hot-ranking.json\"\\); if \\($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF\\) { Write-Host \"HAS BOM\" } else { Write-Host \"NO BOM, first bytes:\" $bytes[0..2] })",
       "PowerShell(Join-Path *)",
-      "Bash(powershell *)"
+      "Bash(powershell *)",
+      "Skill(commit-commands:commit-push-pr)"
     ]
   }
 }

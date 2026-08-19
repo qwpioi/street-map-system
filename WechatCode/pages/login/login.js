@@ -1,4 +1,5 @@
-const API_BASE_URL = 'http://47.94.23.66/api'
+// 本地开发环境：指向本机后端；上线时改回 'http://47.94.23.66/api'
+const API_BASE_URL = 'http://192.168.1.5:8081/api'
 
 Page({
   data: {

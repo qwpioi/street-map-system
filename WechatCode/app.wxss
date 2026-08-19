@@ -1,10 +1,5 @@
 /**app.wxss**/
-.container {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: space-between;
-  padding: 200rpx 0;
+/* 全局盒模型统一：避免各页面元素宽度/内边距计算不一致 */
+view, text, image, button, scroll-view, input, textarea, navigator {
   box-sizing: border-box;
-} 
+}

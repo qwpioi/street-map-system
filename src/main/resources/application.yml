@@ -61,5 +61,5 @@ mybatis-plus:
 
 # 自定义上传配置
 upload:
-  path: D:/study/Java/Data/street-map-backend/uploads/images/
-  image-base-url: http://192.168.1.4:8081/images/
+  path: D:/Code/project/street-map-system/uploads/images/
+  image-base-url: http://192.168.1.5:8081/images/
