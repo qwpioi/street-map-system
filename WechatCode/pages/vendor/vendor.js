@@ -1,5 +1,6 @@
 // 引入你项目已经封装好的接口
 const { vendorApi } = require('../../utils/api.js')
+const { fixDevLocation } = require('../../utils/util')
 
 Page({
   data: {
@@ -112,8 +113,9 @@ Page({
             fail: reject
           })
         })
-        lat = location.latitude
-        lng = location.longitude
+        const fixed = fixDevLocation(location.latitude, location.longitude)
+        lat = fixed.latitude
+        lng = fixed.longitude
         wx.hideLoading()
       } catch (err) {
         wx.hideLoading()

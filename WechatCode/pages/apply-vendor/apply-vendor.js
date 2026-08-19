@@ -1,4 +1,5 @@
 const { vendorApi } = require('../../utils/api');
+const { fixDevLocation } = require('../../utils/util');
 
 Page({
   data: {
@@ -21,12 +22,16 @@ Page({
   getLocation() {
     wx.showLoading({ title: '定位中' })
     wx.getLocation({
-      type: 'gcj02', // 腾讯地图坐标系
+      type: 'gcj02',
       success: (res) => {
+        let { latitude, longitude } = res
+        const fixed = fixDevLocation(latitude, longitude)
+        latitude = fixed.latitude
+        longitude = fixed.longitude
         this.setData({
-          latitude: res.latitude,
-          longitude: res.longitude,
-          address: '已获取当前位置（经纬度：' + res.latitude.toFixed(4) + ',' + res.longitude.toFixed(4) + '）'
+          latitude,
+          longitude,
+          address: '已获取当前位置（经纬度：' + latitude.toFixed(4) + ',' + longitude.toFixed(4) + '）'
         })
         wx.hideLoading()
         wx.showToast({ title: '定位成功', icon: 'success' })
