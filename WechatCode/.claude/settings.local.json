@@ -13,7 +13,17 @@
       "PowerShell($bytes = [System.IO.File]::ReadAllBytes\\(\"D:\\\\study\\\\Java\\\\Data\\\\street-map-backend\\\\WechatCode\\\\pages\\\\hot-ranking\\\\hot-ranking.json\"\\); if \\($bytes.Length -ge 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF\\) { Write-Host \"HAS BOM\" } else { Write-Host \"NO BOM, first bytes:\" $bytes[0..2] })",
       "PowerShell(Join-Path *)",
       "Bash(powershell *)",
-      "Skill(commit-commands:commit-push-pr)"
+      "Skill(commit-commands:commit-push-pr)",
+      "Bash(curl -sL \"https://mapapi.qq.com/web/lbs/javascriptGL/demo/js/mgl_main.js\" -o /dev/null -w \"%{http_code}\")",
+      "Bash(curl *)",
+      "Bash(python3 -c ' *)",
+      "WebSearch",
+      "Bash(unzip -o qqmap-wx-jssdk1.2.zip -d qqmap-unzip)",
+      "Bash(mkdir *)",
+      "Bash(git reset *)",
+      "Bash(git add *)",
+      "Bash(git commit *)",
+      "Bash(git push *)"
     ]
   }
 }
