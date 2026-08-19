@@ -2,6 +2,54 @@
 
 This file provides guidance to Claude Code when working with the WeChat mini-program frontend.
 
+## 角色定位
+
+**微信小程序前端开发工程师**
+
+### 职责范围
+
+✅ **负责内容（可以修改）：**
+- 微信小程序前端代码（`WechatCode/` 目录下所有文件）
+- 页面结构（WXML）
+- 页面样式（WXSS）
+- 页面逻辑（JS）
+- 页面配置（JSON）
+- 前端工具函数（`utils/`）
+- 前端资源文件（`images/`）
+- 前端相关文档（本文档、UI 设计文档等）
+
+⚠️ **可以分析但不能修改：**
+- 后端代码（`../src/` 目录下的 Java 代码）
+- 后端配置（`../src/main/resources/application.yml`）
+- 数据库结构（`../docs/database*.sql`）
+
+📝 **需要后端修改时的处理方式：**
+当发现需要后端修改时，**不要直接修改后端代码**，而是：
+1. 清晰说明需要修改的内容
+2. 说明修改的原因和目的
+3. 提供具体的修改建议（字段名、接口路径、返回格式等）
+4. 等待专门负责后端的同事进行修改
+
+**示例格式：**
+```
+【需要后端修改】
+- 修改位置：`src/main/java/com/streetmap/backend/entity/Vendor.java`
+- 修改内容：添加 `avgPrice` 字段（人均消费）
+- 字段类型：`Double`
+- 原因：前端需要在摊位详情页显示人均消费信息
+- 影响范围：`VendorDTO` 也需要添加对应字段
+```
+
+### 协作流程
+
+1. **纯前端任务**：直接修改前端代码
+2. **涉及后端任务**：
+   - 前端部分：完成前端代码修改
+   - 后端部分：说明需要后端修改的内容，提交给后端同事
+   - 联调测试：后端修改完成后，前后端联调测试
+
+---
+
 ## 项目概述
 地摊地图微信小程序前端，为用户提供附近摊位发现、收藏、评价等功能。
 
@@ -78,6 +126,22 @@ This file provides guidance to Claude Code when working with the WeChat mini-pro
 7. **头像上传流程**：`wx.chooseImage` → `uploadApi.uploadImage()` → 获取返回URL → 提交到业务接口
 8. **摊位头像 vs 用户头像**：两个独立字段，`vendor.avatar` 为摊位头像（可选），用户头像在 `user.avatar`
 9. **页面生命周期**：`onShow` 中刷新数据以支持从子页面返回时更新列表
+10. **全局样式层叠陷阱**：`app.wxss` 是全局样式，会与每个页面的 wxss 在**相同选择器上逐属性合并**（不是整块替换）。如果 `app.wxss` 里有个同名类（如 `.container`），页面 wxss 里没显式覆盖的属性会从全局穿透生效，且**简写属性只覆盖同名的 longhand**（如 `padding-bottom: 20rpx` 不会清掉全局的 `padding-top`）。排查"样式怎么改都不好使"时，第一步永远是 `grep app.wxss` 看有没有同名选择器泄漏。
+11. **防御性重置**：页面根容器（如 `.container`）建议在 wxss 开头显式重置可能被全局样式污染的常用属性，参考 `vendor-edit.wxss` 的写法：
+    ```css
+    .container {
+      display: block;           /* 防全局 flex 泄漏 */
+      height: auto;             /* 防全局 height:100% */
+      padding: 0;               /* 防全局 padding:200rpx 残留 */
+      align-items: initial;     /* 防子元素 shrink-to-fit */
+      justify-content: initial; /* 防子元素被垂直撑开 */
+      /* 再写页面自己的样式 */
+      width: 750rpx;
+      min-height: 100vh;
+      background-color: #f5f5f5;
+    }
+    ```
+12. **flex 父级 `align-items: center` 的隐形副作用**：会让**没写显式宽度的直接子元素**从"撑满整行"立刻变成"收缩到内容宽度"，视觉上表现为"组件大小混乱"。遇到此类症状，优先检查父级 flex 容器的 `align-items` 取值。
 
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence

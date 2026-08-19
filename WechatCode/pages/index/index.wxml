@@ -2,7 +2,7 @@
   <!-- 黄色头部：定位 + 搜索 -->
   <view class="home-header">
     <view class="location-row">
-      <view class="location-left">
+      <view class="location-left" bindtap="onLocationTap">
         <text class="location-pin">📍</text>
         <text class="location-text">{{address || '定位中...'}}</text>
         <text class="location-arrow">▾</text>
@@ -101,13 +101,11 @@
             <text class="vcm-name">{{item.stallName}}</text>
             <view class="vcm-rating-row">
               <view class="vcm-stars">
-                <text class="vcm-star">★</text>
-                <text class="vcm-star">★</text>
-                <text class="vcm-star">★</text>
-                <text class="vcm-star">★</text>
-                <text class="vcm-star">★</text>
+                <text wx:for="{{[1,2,3,4,5]}}" wx:for-item="star" wx:key="*this" wx:if="{{star <= item.averageRating}}" class="vcm-star filled">★</text>
+                <text wx:for="{{[1,2,3,4,5]}}" wx:for-item="star" wx:key="*this" wx:if="{{star > item.averageRating}}" class="vcm-star empty">★</text>
               </view>
-              <text class="vcm-distance">{{item.distanceText}}</text>
+              <text class="vcm-score" wx:if="{{item.averageRating > 0}}">{{item.averageRating}}</text>
+              <text class="vcm-review-count" wx:if="{{item.reviewCount > 0}}">{{item.reviewCount}}条</text>
             </view>
             <view class="vcm-tags-row" wx:if="{{item.hotProducts}}">
               <text class="vcm-tag">{{item.hotProducts}}</text>
@@ -115,7 +113,7 @@
           </view>
         </view>
         <view class="vcm-bottom">
-          <text class="vcm-address" wx:if="{{item.address}}">📍 {{item.address}}</text>
+          <text class="vcm-address" wx:if="{{item.address}}">📍 {{item.address}} · {{item.distanceText}}</text>
           <view class="vcm-actions">
             <view class="vcm-btn nav-btn" catchtap="navigateToVendor" data-item="{{item}}">🧭</view>
             <view class="vcm-btn fav-btn" wx:if="{{isLoggedIn}}" catchtap="onToggleFavorite" data-item="{{item}}">
@@ -175,16 +173,15 @@
             <text class="dic-icon">📞</text>
             <text class="dic-val phone-val">{{selectedVendor.phone}}</text>
           </view>
-          <view class="detail-info-cell">
-            <text class="dic-icon">💰</text>
-            <text class="dic-val">查看详情</text>
-          </view>
         </view>
       </view>
 
       <!-- 商品列表 -->
       <view class="modal-section" wx:if="{{vendorProducts.length > 0 || selectedVendor.products.length > 0}}">
-        <view class="modal-section-title">🔥 热销产品</view>
+        <view class="modal-section-title">
+          🥘 全部商品
+          <text class="modal-badge">{{vendorProducts.length || selectedVendor.products.length}}</text>
+        </view>
         <view class="modal-product-list">
           <block wx:for="{{vendorProducts}}" wx:key="id" wx:if="{{index < 5}}">
             <view class="modal-product-card">

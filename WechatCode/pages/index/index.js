@@ -1,4 +1,7 @@
 const { favoriteApi, vendorApi, reviewApi, productApi, API_BASE_URL, getUserId } = require('../../utils/api')
+const QQMapWX = require('../../utils/qqmap-wx-jssdk.min')
+const { fixDevLocation } = require('../../utils/util')
+const qqmapsdk = new QQMapWX({ key: '3DYBZ-NF2CN-XNYF2-SE3HN-NMFMS-T2BMO' })
 
 const app = getApp()
 
@@ -100,33 +103,53 @@ Page({
 
   getLocation() {
     wx.showLoading({ title: '定位中...', mask: true })
-    
+
     wx.getLocation({
       type: 'gcj02',
       success: (res) => {
-        const latitude = res.latitude
-        const longitude = res.longitude
-        
-        console.log('✅ 定位成功:', latitude, longitude)
-        
-        this.setData({
-          address: `北纬${latitude.toFixed(2)}, 东经${longitude.toFixed(2)}`,
-          latitude: latitude,
-          longitude: longitude
-        })
-        
+        let { latitude, longitude } = res
+        console.log('✅ 原始定位:', latitude, longitude)
+
+        // 开发者工具 IP 定位偏差检测
+        const fixed = fixDevLocation(latitude, longitude)
+        latitude = fixed.latitude
+        longitude = fixed.longitude
+        console.log('✅ 使用定位:', latitude, longitude)
+
+        // 先保存坐标，立即开始加载摊位（不阻塞）
+        this.setData({ latitude, longitude })
         this.loadVendors(latitude, longitude)
-        
-        wx.hideLoading()
+
+        // 腾讯地图逆地址解析：坐标 → 中文地址
+        qqmapsdk.reverseGeocoder({
+          location: { latitude, longitude },
+          success: (geoRes) => {
+            // formatted_addresses.recommend = "北京市朝阳区望京街道XX小区"
+            const recommend = geoRes?.result?.formatted_addresses?.recommend
+            const address = geoRes?.result?.address
+            this.setData({ address: recommend || address || '' })
+            console.log('✅ 地址解析:', recommend || address)
+          },
+          fail: (err) => {
+            console.warn('⚠️ 逆地址解析失败，回退显示:', err)
+            this.setData({ address: '定位成功' })
+          },
+          complete: () => wx.hideLoading()
+        })
       },
       fail: (err) => {
         console.error('❌ 定位失败:', err)
-        this.setData({
-          address: '定位失败'
-        })
+        this.setData({ address: '定位失败，请重试' })
         wx.hideLoading()
       }
     })
+  },
+
+  /**
+   * 点击地址栏 → 重新定位
+   */
+  onLocationTap() {
+    this.getLocation()
   },
 
   loadVendors(latitude, longitude) {
@@ -154,6 +177,8 @@ Page({
               distanceText: distanceText,
               latitude: lat,
               longitude: lng,
+              averageRating: vendor.averageRating || 0,
+              reviewCount: vendor.reviewCount || 0,
               isFavorite: this.data.favoriteVendorIds.includes(vendor.id)
             }
           })

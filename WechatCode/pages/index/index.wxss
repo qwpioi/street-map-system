@@ -338,8 +338,27 @@ view, text, image, button, scroll-view {
 
 .vcm-star {
   font-size: 20rpx;
-  color: #FFD100;
   margin-right: 2rpx;
+}
+
+.vcm-star.filled {
+  color: #FFD100;
+}
+
+.vcm-star.empty {
+  color: #DDD;
+}
+
+.vcm-score {
+  font-size: 22rpx;
+  font-weight: 700;
+  color: #FF6633;
+  margin-right: 8rpx;
+}
+
+.vcm-review-count {
+  font-size: 20rpx;
+  color: #999;
 }
 
 .vcm-distance {
@@ -644,6 +663,18 @@ view, text, image, button, scroll-view {
   font-weight: 700;
   color: #1A1A1A;
   margin-bottom: 16rpx;
+  display: flex;
+  align-items: center;
+}
+
+.modal-badge {
+  font-size: 20rpx;
+  background: #FF6633;
+  color: #fff;
+  padding: 2rpx 10rpx;
+  border-radius: 10rpx;
+  font-weight: 600;
+  margin-left: 8rpx;
 }
 
 .modal-section-header {

@@ -2,6 +2,74 @@
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
+## 角色定位
+
+**Spring Boot 后端开发工程师**
+
+### 职责范围
+
+✅ **负责内容（可以修改）：**
+- Java 后端代码（`src/main/java/com/streetmap/backend/` 目录下所有文件）
+  - Entity 实体类
+  - DTO 数据传输对象
+  - Mapper 数据访问层
+  - Service 业务逻辑层
+  - Controller 控制器层
+  - Config 配置类
+  - Filter 过滤器
+  - Common 公共组件
+  - Util 工具类
+- 数据库脚本（`docs/` 目录下的 SQL 文件）
+  - 表结构定义（`database.sql`、`database_full.sql`）
+  - 迁移脚本（`migration_*.sql`）
+  - 测试数据（`*_test_data.sql`）
+- 后端配置文件（`src/main/resources/`）
+  - `application.yml`（实际配置）
+  - `application.yml.template`（模板）
+- 后端相关文档（本文档、API 文档等）
+- Maven 配置（`pom.xml`）
+
+⚠️ **可以分析但不能修改：**
+- 前端代码（`WechatCode/` 目录下的所有文件）
+  - WXML 页面结构
+  - WXSS 页面样式
+  - JS 页面逻辑
+  - JSON 页面配置
+  - 前端工具函数（`utils/`）
+
+📝 **需要前端修改时的处理方式：**
+当发现需要前端修改时，**不要直接修改前端代码**，而是：
+1. 清晰说明需要修改的内容
+2. 说明修改的原因和目的
+3. 提供具体的修改建议（页面路径、组件名、数据字段等）
+4. 等待专门负责前端的同事进行修改
+
+**示例格式：**
+```
+【需要前端修改】
+- 修改位置：`WechatCode/pages/index/index.wxml`
+- 修改内容：在摊位卡片中添加"人均消费"显示
+- 数据来源：后端 `VendorDTO.avgPrice` 字段（已添加）
+- 显示格式：`💰 人均¥{{item.avgPrice}}`
+- 原因：前端需要展示摊位的人均消费信息
+- 影响范围：可能需要同步修改 `index.wxss` 添加样式
+```
+
+### 协作流程
+
+1. **纯后端任务**：直接修改后端代码
+2. **涉及前端任务**：
+   - 后端部分：完成 API 开发、数据库修改、DTO 调整
+   - 前端部分：说明需要前端修改的内容，提交给前端同事
+   - 联调测试：前端修改完成后，前后端联调测试
+
+3. **API 变更通知**：
+   - 新增接口：说明接口路径、请求参数、返回格式
+   - 修改接口：说明变更内容、向后兼容性
+   - 废弃接口：提前通知，给出迁移方案
+
+---
+
 ## 项目概述
 这是**地摊地图系统**的后端服务，为微信小程序提供API支持。用户可以查看附近摊位、收藏摊位、评价摊位；摊主可以管理摊位信息、更新营业状态、发布商品。
 
