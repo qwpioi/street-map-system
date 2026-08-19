@@ -1,4 +1,5 @@
-const { reviewApi, API_BASE_URL, getUserId } = require('../../utils/api')
+const { reviewApi, productApi, favoriteApi, API_BASE_URL, getUserId } = require('../../utils/api')
+const { fixDevLocation } = require('../../utils/util')
 
 Page({
   data: {
@@ -14,7 +15,8 @@ Page({
     averageRating: 0,
     reviewCount: 0,
     recentReviews: [],
-    stars: [1, 2, 3, 4, 5]
+    stars: [1, 2, 3, 4, 5],
+    vendorProducts: []
   },
 
   onLoad() {
@@ -43,11 +45,16 @@ Page({
     wx.getLocation({
       type: 'gcj02',
       success: (res) => {
-        this.setData({
-          latitude: res.latitude,
-          longitude: res.longitude
-        })
-        this.loadVendors(res.latitude, res.longitude)
+        let { latitude, longitude } = res
+        console.log('✅ 原始定位:', latitude, longitude)
+
+        const fixed = fixDevLocation(latitude, longitude)
+        latitude = fixed.latitude
+        longitude = fixed.longitude
+        console.log('✅ 使用定位:', latitude, longitude)
+
+        this.setData({ latitude, longitude })
+        this.loadVendors(latitude, longitude)
         wx.hideLoading()
       },
       fail: (err) => {
@@ -127,12 +134,12 @@ Page({
     const vendor = this.data.vendors.find(v => v.id === markerId)
     if (!vendor) return
 
-    this.setData({ selectedVendor: vendor, vendorDetailVisible: true, loading: true })
+    this.setData({ selectedVendor: vendor })
 
     // 处理热销产品（分割成数组）
     const hotProductsArray = vendor.hotProducts ? vendor.hotProducts.split(/[,，]/) : []
 
-    // 加载评价信息
+    // 加载评价信息和商品列表
     try {
       const ratingRes = await reviewApi.getAverageRating(vendor.id)
       const averageRating = ratingRes?.data || ratingRes || 0
@@ -147,12 +154,17 @@ Page({
         createTime: this.formatTime(item.createTime)
       }))
 
+      const productsRes = await productApi.getProducts(vendor.id)
+      const products = productsRes?.data || productsRes || []
+
       this.setData({
         averageRating,
         reviewCount,
         recentReviews,
         hotProductsArray,
-        loading: false
+        vendorDetailVisible: true,
+        ['selectedVendor.products']: products,
+        vendorProducts: products
       })
 
       console.log('✅ 评价数据加载成功:', { averageRating, reviewCount, recentReviews: recentReviews.length })
@@ -163,7 +175,7 @@ Page({
         reviewCount: 0,
         recentReviews: [],
         hotProductsArray,
-        loading: false
+        vendorDetailVisible: true
       })
     }
   },
@@ -173,6 +185,42 @@ Page({
       vendorDetailVisible: false,
       selectedVendor: null
     })
+  },
+
+  goToVendorPage(e) {
+    const vendorId = e.currentTarget.dataset.vendorId
+    wx.navigateTo({
+      url: `/pages/vendor-detail/vendor-detail?id=${vendorId}`
+    })
+  },
+
+  async onToggleFavoriteInModal(e) {
+    const item = e.currentTarget.dataset.item
+    if (!item || !item.id) return
+
+    const token = wx.getStorageSync('token')
+    if (!token) {
+      wx.showModal({ title: '提示', content: '请先登录再收藏', showCancel: false })
+      return
+    }
+
+    const isFavorite = item.isFavorite
+    try {
+      if (isFavorite) {
+        await favoriteApi.removeFavorite(item.id)
+        wx.showToast({ title: '已取消收藏', icon: 'success' })
+      } else {
+        await favoriteApi.addFavorite(item.id)
+        wx.showToast({ title: '收藏成功', icon: 'success' })
+      }
+
+      this.setData({
+        ['selectedVendor.isFavorite']: !isFavorite,
+        vendors: this.data.vendors.map(v => v.id === item.id ? { ...v, isFavorite: !isFavorite } : v)
+      })
+    } catch (err) {
+      console.error('❌ 弹窗收藏操作失败:', err)
+    }
   },
 
   onViewAllReviews() {
@@ -185,6 +233,17 @@ Page({
 
   onAddReview() {
     if (!this.data.selectedVendor) return
+
+    const token = wx.getStorageSync('token')
+    if (!token) {
+      wx.showModal({
+        title: '提示',
+        content: '请先登录再评价',
+        showCancel: false,
+        success: () => { wx.navigateTo({ url: '/pages/login/login' }) }
+      })
+      return
+    }
 
     wx.navigateTo({
       url: `/pages/add-review/add-review?vendorId=${this.data.selectedVendor.id}&vendorName=${this.data.selectedVendor.stallName}`

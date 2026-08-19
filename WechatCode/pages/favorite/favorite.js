@@ -1,10 +1,19 @@
-const { favoriteApi, getUserId } = require('../../utils/api')
+const { favoriteApi, vendorApi, reviewApi, productApi, getUserId } = require('../../utils/api')
 
 Page({
   data: {
     favorites: [],
     loading: false,
-    isLoggedIn: false
+    isLoggedIn: false,
+
+    // 摊位详情弹窗
+    selectedVendor: null,
+    vendorDetailVisible: false,
+    averageRating: 0,
+    reviewCount: 0,
+    recentReviews: [],
+    stars: [1, 2, 3, 4, 5],
+    vendorProducts: []
   },
 
   onLoad() {
@@ -15,6 +24,11 @@ Page({
     // 每次显示页面时刷新收藏列表
     if (this.data.isLoggedIn) {
       this.loadFavorites()
+    }
+
+    // 如果弹窗已打开且已选中摊位，从评价页返回时自动刷新详情
+    if (this.data.vendorDetailVisible && this.data.selectedVendor) {
+      this.onFavoriteItemTap({ currentTarget: { dataset: { item: this.data.selectedVendor } } })
     }
   },
 
@@ -96,20 +110,62 @@ Page({
   },
 
   /**
-   * 点击收藏项
+   * 点击收藏项 — 打开详情弹窗
    */
-  onFavoriteItemTap(e) {
+  async onFavoriteItemTap(e) {
     const item = e.currentTarget.dataset.item
     console.log('📍 点击收藏:', item)
-    
-    // 跳转到地图页并定位到该摊位
-    wx.openLocation({
-      latitude: item.latitude,
-      longitude: item.longitude,
-      name: item.stallName,
-      address: item.address,
-      scale: 16
-    })
+
+    // 先用基础数据展示弹窗
+    this.setData({ selectedVendor: item })
+
+    try {
+      // 获取完整摊位详情（含 phone、distance 等）
+      const vendorRes = await vendorApi.getVendorById(item.id)
+      const vendorDetail = vendorRes?.data || vendorRes || {}
+
+      // 合并完整数据到 selectedVendor
+      const mergedVendor = {
+        ...item,
+        phone: vendorDetail.phone || '',
+        distance: vendorDetail.distance || '',
+        address: vendorDetail.address || item.address || '',
+        isFavorite: true // 收藏页打开的必定已收藏
+      }
+
+      // 获取评价信息
+      const ratingRes = await reviewApi.getAverageRating(item.id)
+      const averageRating = ratingRes?.data || ratingRes || 0
+
+      const countRes = await reviewApi.getReviewCount(item.id)
+      const reviewCount = countRes?.data || countRes || 0
+
+      const reviewsRes = await reviewApi.getVendorReviews(item.id)
+      const allReviews = Array.isArray(reviewsRes) ? reviewsRes : (reviewsRes?.data || [])
+      const recentReviews = allReviews.slice(0, 3).map(r => ({
+        ...r,
+        createTime: this.formatTime(r.createTime)
+      }))
+
+      // 获取商品列表
+      const productsRes = await productApi.getProducts(item.id)
+      const products = productsRes?.data || productsRes || []
+
+      this.setData({
+        selectedVendor: mergedVendor,
+        averageRating,
+        reviewCount,
+        recentReviews,
+        vendorProducts: products,
+        vendorDetailVisible: true
+      })
+    } catch (err) {
+      console.error('❌ 加载摊位详情失败:', err)
+      // 降级：用基础数据打开弹窗
+      this.setData({
+        vendorDetailVisible: true
+      })
+    }
   },
 
   /**
@@ -144,6 +200,110 @@ Page({
         }
       }
     })
+  },
+
+  onCloseVendorDetail() {
+    this.setData({
+      vendorDetailVisible: false,
+      selectedVendor: null
+    })
+  },
+
+  goToVendorPage(e) {
+    const vendorId = e.currentTarget.dataset.vendorId
+    wx.navigateTo({
+      url: `/pages/vendor-detail/vendor-detail?id=${vendorId}`
+    })
+  },
+
+  navigateToVendor(e) {
+    const item = e.currentTarget.dataset.item || this.data.selectedVendor
+    wx.openLocation({
+      latitude: item.latitude,
+      longitude: item.longitude,
+      name: item.stallName,
+      address: item.address,
+      scale: 16
+    })
+  },
+
+  callPhone() {
+    const phone = this.data.selectedVendor.phone
+    if (!phone) return
+    wx.makePhoneCall({ phoneNumber: phone })
+  },
+
+  async onToggleFavoriteInModal(e) {
+    const item = e.currentTarget.dataset.item
+    if (!item || !item.id) return
+
+    const isFavorite = item.isFavorite
+    try {
+      if (isFavorite) {
+        await favoriteApi.removeFavorite(item.id)
+        wx.showToast({ title: '已取消收藏', icon: 'success' })
+        // 从收藏列表中移除
+        const favorites = this.data.favorites.filter(f => f.id !== item.id)
+        this.setData({
+          favorites,
+          ['selectedVendor.isFavorite']: false
+        })
+        // 取消收藏后关闭弹窗
+        this.onCloseVendorDetail()
+      } else {
+        await favoriteApi.addFavorite(item.id)
+        wx.showToast({ title: '收藏成功', icon: 'success' })
+        this.setData({
+          ['selectedVendor.isFavorite']: true
+        })
+      }
+    } catch (err) {
+      console.error('❌ 弹窗收藏操作失败:', err)
+    }
+  },
+
+  onAddReview() {
+    if (!this.data.selectedVendor) return
+
+    const token = wx.getStorageSync('token')
+    if (!token) {
+      wx.showModal({
+        title: '提示',
+        content: '请先登录再评价',
+        showCancel: false,
+        success: () => { wx.navigateTo({ url: '/pages/login/login' }) }
+      })
+      return
+    }
+
+    wx.navigateTo({
+      url: `/pages/add-review/add-review?vendorId=${this.data.selectedVendor.id}&vendorName=${this.data.selectedVendor.stallName}`
+    })
+  },
+
+  onViewAllReviews() {
+    if (!this.data.selectedVendor) return
+    wx.navigateTo({
+      url: `/pages/review-list/review-list?vendorId=${this.data.selectedVendor.id}&vendorName=${this.data.selectedVendor.stallName}`
+    })
+  },
+
+  formatTime(timeStr) {
+    if (!timeStr) return ''
+    try {
+      const date = new Date(timeStr)
+      const now = new Date()
+      const diff = now - date
+
+      if (diff < 60000) return '刚刚'
+      if (diff < 3600000) return `${Math.floor(diff / 60000)}分钟前`
+      if (diff < 86400000) return `${Math.floor(diff / 3600000)}小时前`
+      if (diff < 604800000) return `${Math.floor(diff / 86400000)}天前`
+
+      return `${date.getMonth() + 1}/${date.getDate()}`
+    } catch (e) {
+      return timeStr
+    }
   },
 
   /**
