@@ -1,4 +1,5 @@
 const { vendorApi } = require('../../utils/api');
+const logger = require('../../utils/logger');
 const { fixDevLocation } = require('../../utils/util');
 
 Page({
@@ -76,6 +77,7 @@ Page({
       }
     }).catch(err => {
       this.setData({ submitting: false })
+      logger.error('申请摊主失败:', err)
       wx.showToast({ title: '网络错误', icon: 'error' })
     })
   }

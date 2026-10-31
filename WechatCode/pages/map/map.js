@@ -221,6 +221,7 @@ Page({
       })
     } catch (err) {
       logger.error('❌ 弹窗收藏操作失败:', err)
+      wx.showToast({ title: '操作失败，请重试', icon: 'none' })
     }
   },
 

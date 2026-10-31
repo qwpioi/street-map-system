@@ -1,7 +1,23 @@
 <view class="container">
-  <view class="form-group">
-    <text class="label">联系电话 <text class="required">*</text></text>
-    <input class="input" type="number" maxlength="11" placeholder="请输入手机号" value="{{phone}}" bindinput="onInputPhone" />
+  <view class="form-card">
+    <view class="form-group">
+      <view class="label-row">
+        <icon name="phone" size="sm" color="var(--color-primary)"></icon>
+        <text class="label">联系电话</text>
+        <text class="required">*</text>
+      </view>
+      <input
+        class="input {{focusPhone ? 'input-focus' : ''}}"
+        type="number"
+        maxlength="11"
+        placeholder="请输入手机号"
+        value="{{phone}}"
+        bindinput="onInputPhone"
+        bindfocus="onFocusPhone"
+        bindblur="onBlurPhone"
+      />
+    </view>
   </view>
-  <button class="btn-save" bindtap="onSave" loading="{{saving}}">保存</button>
+
+  <button class="btn-save" bindtap="onSave" loading="{{saving}}" hover-class="hover-save">保存</button>
 </view>

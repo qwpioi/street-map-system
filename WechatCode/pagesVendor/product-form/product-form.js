@@ -118,6 +118,7 @@ Page({
     } catch (err) {
       wx.hideLoading();
       this.setData({ uploading: false });
+      logger.error('图片上传失败:', err);
       wx.showToast({ title: '图片上传失败', icon: 'none' });
     }
   },
@@ -156,6 +157,7 @@ Page({
       }
     } catch (err) {
       wx.hideLoading()
+      logger.error('发布商品失败:', err)
       wx.showToast({ title: '发布失败', icon: 'none' })
     }
   },
@@ -174,6 +176,7 @@ Page({
       }
     } catch (err) {
       wx.hideLoading()
+      logger.error('保存商品失败:', err)
       wx.showToast({ title: '保存失败', icon: 'none' })
     }
   },

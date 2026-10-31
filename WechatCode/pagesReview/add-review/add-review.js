@@ -1,4 +1,5 @@
 const { getUserId, reviewApi } = require('../../utils/api.js');
+const logger = require('../../utils/logger');
 
 Page({
   data: {
@@ -69,8 +70,10 @@ Page({
           showCancel: false
         });
       }
-    }).catch(() => {
+    }).catch(err => {
+      logger.error('提交评价失败:', err);
       this.setData({ submitting: false });
+      wx.showToast({ title: '提交失败，请重试', icon: 'none' });
     });
   }
 });

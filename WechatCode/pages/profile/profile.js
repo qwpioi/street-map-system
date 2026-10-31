@@ -1,4 +1,5 @@
 const { vendorApi, getUserId } = require('../../utils/api');
+const logger = require('../../utils/logger');
 
 Page({
   data: {
@@ -75,6 +76,7 @@ Page({
         });
       }
     }).catch(err => {
+      logger.error('获取摊位信息失败:', err)
       wx.showModal({
         title: '网络错误',
         content: err.errMsg || '请检查网络或后端服务',
@@ -107,6 +109,7 @@ Page({
         wx.navigateTo({ url: '/pagesVendor/apply-vendor/apply-vendor' });
       }
     }).catch(err => {
+      logger.error('获取摊位信息失败:', err)
       // 网络错误等情况，也引导去申请页或者提示
       wx.navigateTo({ url: '/pagesVendor/apply-vendor/apply-vendor' });
     })

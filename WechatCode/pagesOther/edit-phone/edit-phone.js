@@ -4,11 +4,20 @@ const logger = require('../../utils/logger')
 Page({
   data: {
     phone: '',
-    saving: false
+    saving: false,
+    focusPhone: false
   },
 
   onLoad(options) {
     this.setData({ phone: options.phone || '' })
+  },
+
+  onFocusPhone() {
+    this.setData({ focusPhone: true })
+  },
+
+  onBlurPhone() {
+    this.setData({ focusPhone: false })
   },
 
   onInputPhone(e) {

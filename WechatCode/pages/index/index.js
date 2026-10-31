@@ -434,6 +434,7 @@ Page({
       }
     } catch (err) {
       logger.error('❌ 收藏操作失败:', err)
+      wx.showToast({ title: '操作失败，请重试', icon: 'none' })
     }
   },
 
@@ -468,6 +469,7 @@ Page({
       })
     } catch (err) {
       logger.error('❌ 弹窗收藏操作失败:', err)
+      wx.showToast({ title: '操作失败，请重试', icon: 'none' })
     }
   },
 
@@ -571,6 +573,7 @@ Page({
         wx.navigateTo({ url: '/pagesVendor/apply-vendor/apply-vendor' });
       }
     }).catch(err => {
+      logger.error('获取摊位信息失败:', err)
       wx.navigateTo({ url: '/pagesVendor/apply-vendor/apply-vendor' });
     })
   },
