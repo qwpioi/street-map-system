@@ -176,7 +176,7 @@ Page({
   // ✅ 跳转到申请摊主页，和你现有逻辑一致
   goApply() {
     wx.navigateTo({
-      url: '/pages/apply-vendor/apply-vendor'
+      url: '/pagesVendor/apply-vendor/apply-vendor'
     })
   },
 

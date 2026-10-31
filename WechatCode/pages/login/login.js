@@ -1,9 +1,9 @@
-// 本地开发环境：指向本机后端；上线时改回 'http://47.94.23.66/api'
-const API_BASE_URL = 'http://192.168.1.5:8081/api'
+const API_BASE_URL = 'https://api.ditan.asia/api'
 
 Page({
   data: {
-    loading: false
+    loading: false,
+    showPrivacy: false
   },
 
   onLoad() {
@@ -13,7 +13,55 @@ Page({
       wx.reLaunch({
         url: '/pages/index/index'
       })
+    } else {
+      // 未登录时检查是否需要显示隐私弹窗
+      this.checkPrivacyAuth()
     }
+  },
+
+  /**
+   * 检查隐私授权状态
+   */
+  checkPrivacyAuth() {
+    wx.getPrivacySetting({
+      success: res => {
+        console.log('隐私授权状态:', res)
+        if (res.needAuthorization) {
+          // 需要授权，显示隐私弹窗
+          this.setData({ showPrivacy: true })
+        }
+      },
+      fail: err => {
+        console.error('获取隐私设置失败:', err)
+      }
+    })
+  },
+
+  /**
+   * 同意隐私协议
+   */
+  onPrivacyAgree() {
+    wx.requirePrivacyAuthorize({
+      success: () => {
+        console.log('✅ 用户同意隐私协议')
+        this.setData({ showPrivacy: false })
+      },
+      fail: err => {
+        console.error('隐私授权失败:', err)
+      }
+    })
+  },
+
+  /**
+   * 拒绝隐私协议
+   */
+  onPrivacyReject() {
+    this.setData({ showPrivacy: false })
+    wx.showToast({
+      title: '拒绝隐私协议将无法使用小程序',
+      icon: 'none',
+      duration: 2000
+    })
   },
 
   wxLogin() {
@@ -48,13 +96,13 @@ Page({
 
   goAgreement() {
     wx.navigateTo({
-      url: '/pages/agreement/agreement?type=agreement'
+      url: '/pagesOther/agreement/agreement?type=agreement'
     })
   },
 
   goPrivacy() {
     wx.navigateTo({
-      url: '/pages/agreement/agreement?type=privacy'
+      url: '/pagesOther/agreement/agreement?type=privacy'
     })
   },
 

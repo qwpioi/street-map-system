@@ -212,7 +212,7 @@ Page({
   goToVendorPage(e) {
     const vendorId = e.currentTarget.dataset.vendorId
     wx.navigateTo({
-      url: `/pages/vendor-detail/vendor-detail?id=${vendorId}`
+      url: `/pagesOther/vendor-detail/vendor-detail?id=${vendorId}`
     })
   },
 
@@ -277,14 +277,14 @@ Page({
     }
 
     wx.navigateTo({
-      url: `/pages/add-review/add-review?vendorId=${this.data.selectedVendor.id}&vendorName=${this.data.selectedVendor.stallName}`
+      url: `/pagesReview/add-review/add-review?vendorId=${this.data.selectedVendor.id}&vendorName=${this.data.selectedVendor.stallName}`
     })
   },
 
   onViewAllReviews() {
     if (!this.data.selectedVendor) return
     wx.navigateTo({
-      url: `/pages/review-list/review-list?vendorId=${this.data.selectedVendor.id}&vendorName=${this.data.selectedVendor.stallName}`
+      url: `/pagesReview/review-list/review-list?vendorId=${this.data.selectedVendor.id}&vendorName=${this.data.selectedVendor.stallName}`
     })
   },
 

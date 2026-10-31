@@ -1,7 +1,27 @@
 // app.js
 App({
   onLaunch() {
+    this.checkPrivacyAuth()
     this.initLogin()
+  },
+
+  /**
+   * 检查隐私授权状态
+   * 如果需要授权，会在登录页展示隐私弹窗
+   */
+  checkPrivacyAuth() {
+    wx.getPrivacySetting({
+      success: res => {
+        console.log('隐私授权状态:', res)
+        if (res.needAuthorization) {
+          // 需要授权，存储状态供登录页使用
+          this.globalData.needPrivacyAuth = true
+        }
+      },
+      fail: err => {
+        console.error('获取隐私设置失败:', err)
+      }
+    })
   },
 
   initLogin() {
@@ -31,6 +51,7 @@ App({
   globalData: {
     userInfo: null,
     token: null,
-    needRefreshVendors: false
+    needRefreshVendors: false,
+    needPrivacyAuth: false
   }
 })

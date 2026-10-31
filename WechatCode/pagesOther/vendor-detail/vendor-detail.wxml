@@ -3,7 +3,6 @@
   <!-- 黄色渐变头部 -->
   <view class="vd-header">
     <view class="vd-back-row">
-      <view class="vd-back" bindtap="goBack">‹</view>
       <view class="vd-status-pill {{vendor.status === 1 ? 'open' : 'closed'}}">
         <view class="vd-status-dot"></view>
         {{vendor.status === 1 ? '营业中' : '已收摊'}}

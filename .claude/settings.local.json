@@ -3,7 +3,15 @@
     "allow": [
       "Bash(mvn compile *)",
       "Bash(git add *)",
-      "Bash(git commit -m ' *)"
+      "Bash(git commit -m ' *)",
+      "Bash(mvn clean *)",
+      "Bash(scp docs/migration_add_review_deleted.sql docs/migration_add_vendor_avatar.sql root@47.94.23.66:/tmp/)",
+      "WebFetch(domain:apis.map.qq.com)",
+      "Bash(curl *)",
+      "Bash(python3 -m json.tool)",
+      "Bash(scp *)",
+      "Read(//c/Users/EDY/.ssh/**)",
+      "Bash(ssh-keygen -t ed25519 -f ~/.ssh/id_ed25519 -N \"\" -q)"
     ]
   }
 }

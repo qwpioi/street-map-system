@@ -1,5 +1,5 @@
-const { reviewApi, productApi, favoriteApi, API_BASE_URL, getUserId } = require('../../utils/api')
-const { fixDevLocation } = require('../../utils/util')
+const { vendorApi, reviewApi, productApi, favoriteApi, getUserId } = require('../../utils/api')
+const { fixDevLocation, calculateDistance, formatRelativeTime } = require('../../utils/util')
 
 Page({
   data: {
@@ -24,13 +24,11 @@ Page({
   },
 
   onShow() {
-    // 如果从商品管理页返回，自动刷新摊位数据（含商品列表）
-    if (getApp().globalData.needRefreshVendors) {
-      getApp().globalData.needRefreshVendors = false
-      const { latitude, longitude } = this.data
-      if (latitude && longitude) {
-        this.loadVendors(latitude, longitude)
-      }
+    // 每次回到地图页都刷新摊位数据，保证开摊/收摊等状态变化实时反映到标记
+    // （首次进入时坐标为空，由 getLocation 成功回调负责首载，不会重复请求）
+    const { latitude, longitude } = this.data
+    if (latitude && longitude) {
+      this.loadVendors(latitude, longitude)
     }
 
     // 如果详情页已打开且已选中摊位，从评价页返回时自动刷新详情
@@ -65,17 +63,10 @@ Page({
   },
 
   loadVendors(latitude, longitude) {
-    const token = wx.getStorageSync('token')
-
-    wx.request({
-      url: `${API_BASE_URL}/vendor/open`,
-      method: 'GET',
-      header: {
-        'Authorization': token ? `Bearer ${token}` : ''
-      },
-      success: (res) => {
-        if (res.data && res.data.code === 200) {
-          const vendors = res.data.data
+    vendorApi.getOpenVendors()
+      .then(res => {
+        if (res && res.code === 200) {
+          const vendors = res.data
             .filter(v => v.latitude && v.longitude && v.status === 1)
             .map(vendor => ({
               id: vendor.id,
@@ -86,7 +77,7 @@ Page({
               products: vendor.products || [],
               latitude: parseFloat(vendor.latitude),
               longitude: parseFloat(vendor.longitude),
-              distance: this.calculateDistance(
+              distance: calculateDistance(
                 latitude, longitude,
                 parseFloat(vendor.latitude),
                 parseFloat(vendor.longitude)
@@ -102,11 +93,10 @@ Page({
 
           this.setData({ vendors, markers })
         }
-      },
-      fail: (err) => {
+      })
+      .catch(err => {
         console.error('❌ 加载摊位失败:', err)
-      }
-    })
+      })
   },
 
   createMarkers(vendors) {
@@ -151,7 +141,7 @@ Page({
       const allReviews = Array.isArray(reviewsRes) ? reviewsRes : (reviewsRes?.data || [])
       const recentReviews = allReviews.slice(0, 3).map(item => ({
         ...item,
-        createTime: this.formatTime(item.createTime)
+        createTime: formatRelativeTime(item.createTime)
       }))
 
       const productsRes = await productApi.getProducts(vendor.id)
@@ -190,7 +180,7 @@ Page({
   goToVendorPage(e) {
     const vendorId = e.currentTarget.dataset.vendorId
     wx.navigateTo({
-      url: `/pages/vendor-detail/vendor-detail?id=${vendorId}`
+      url: `/pagesOther/vendor-detail/vendor-detail?id=${vendorId}`
     })
   },
 
@@ -198,8 +188,7 @@ Page({
     const item = e.currentTarget.dataset.item
     if (!item || !item.id) return
 
-    const token = wx.getStorageSync('token')
-    if (!token) {
+    if (!getUserId()) {
       wx.showModal({ title: '提示', content: '请先登录再收藏', showCancel: false })
       return
     }
@@ -227,15 +216,14 @@ Page({
     if (!this.data.selectedVendor) return
 
     wx.navigateTo({
-      url: `/pages/review-list/review-list?vendorId=${this.data.selectedVendor.id}&vendorName=${this.data.selectedVendor.stallName}`
+      url: `/pagesReview/review-list/review-list?vendorId=${this.data.selectedVendor.id}&vendorName=${this.data.selectedVendor.stallName}`
     })
   },
 
   onAddReview() {
     if (!this.data.selectedVendor) return
 
-    const token = wx.getStorageSync('token')
-    if (!token) {
+    if (!getUserId()) {
       wx.showModal({
         title: '提示',
         content: '请先登录再评价',
@@ -246,7 +234,7 @@ Page({
     }
 
     wx.navigateTo({
-      url: `/pages/add-review/add-review?vendorId=${this.data.selectedVendor.id}&vendorName=${this.data.selectedVendor.stallName}`
+      url: `/pagesReview/add-review/add-review?vendorId=${this.data.selectedVendor.id}&vendorName=${this.data.selectedVendor.stallName}`
     })
   },
 
@@ -269,35 +257,5 @@ Page({
 
   relocate() {
     this.getLocation()
-  },
-
-  calculateDistance(lat1, lng1, lat2, lng2) {
-    const R = 6371000
-    const dLat = (lat2 - lat1) * Math.PI / 180
-    const dLng = (lng2 - lng1) * Math.PI / 180
-    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-              Math.sin(dLng/2) * Math.sin(dLng/2)
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
-    const distance = R * c
-    return distance < 1000 ? `${Math.round(distance)}m` : `${(distance/1000).toFixed(2)}km`
-  },
-
-  formatTime(timeStr) {
-    if (!timeStr) return ''
-    try {
-      const date = new Date(timeStr)
-      const now = new Date()
-      const diff = now - date
-
-      if (diff < 60000) return '刚刚'
-      if (diff < 3600000) return `${Math.floor(diff / 60000)}分钟前`
-      if (diff < 86400000) return `${Math.floor(diff / 3600000)}小时前`
-      if (diff < 604800000) return `${Math.floor(diff / 86400000)}天前`
-
-      return `${date.getMonth() + 1}/${date.getDate()}`
-    } catch (e) {
-      return timeStr
-    }
   }
 })

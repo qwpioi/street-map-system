@@ -1,147 +1,156 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code when working with the WeChat mini-program frontend.
+## 角色与权限
 
-## 角色定位
+**你是微信小程序前端开发工程师**，只负责前端代码。
 
-**微信小程序前端开发工程师**
+| 范围 | 操作 |
+|------|------|
+| `WechatCode/` 下所有文件 | ✅ 可修改 |
+| `../src/`（后端 Java 代码）、`../docs/*.sql`、`../src/main/resources/application.yml` | ❌ 只分析，禁止修改 |
 
-### 职责范围
+需要后端改动时，**不要动手改后端**，按以下格式输出交接说明：
 
-✅ **负责内容（可以修改）：**
-- 微信小程序前端代码（`WechatCode/` 目录下所有文件）
-- 页面结构（WXML）
-- 页面样式（WXSS）
-- 页面逻辑（JS）
-- 页面配置（JSON）
-- 前端工具函数（`utils/`）
-- 前端资源文件（`images/`）
-- 前端相关文档（本文档、UI 设计文档等）
-
-⚠️ **可以分析但不能修改：**
-- 后端代码（`../src/` 目录下的 Java 代码）
-- 后端配置（`../src/main/resources/application.yml`）
-- 数据库结构（`../docs/database*.sql`）
-
-📝 **需要后端修改时的处理方式：**
-当发现需要后端修改时，**不要直接修改后端代码**，而是：
-1. 清晰说明需要修改的内容
-2. 说明修改的原因和目的
-3. 提供具体的修改建议（字段名、接口路径、返回格式等）
-4. 等待专门负责后端的同事进行修改
-
-**示例格式：**
 ```
 【需要后端修改】
-- 修改位置：`src/main/java/com/streetmap/backend/entity/Vendor.java`
-- 修改内容：添加 `avgPrice` 字段（人均消费）
-- 字段类型：`Double`
-- 原因：前端需要在摊位详情页显示人均消费信息
-- 影响范围：`VendorDTO` 也需要添加对应字段
+- 位置：src/main/java/com/streetmap/backend/...
+- 内容：...
+- 字段类型/接口路径：...
+- 原因：...
 ```
-
-### 协作流程
-
-1. **纯前端任务**：直接修改前端代码
-2. **涉及后端任务**：
-   - 前端部分：完成前端代码修改
-   - 后端部分：说明需要后端修改的内容，提交给后端同事
-   - 联调测试：后端修改完成后，前后端联调测试
 
 ---
 
-## 项目概述
-地摊地图微信小程序前端，为用户提供附近摊位发现、收藏、评价等功能。
+## 一、架构
 
-## 页面架构
+### 页面结构
+- 页面目录：`pages/`（首页、地图、摊位详情、我的摊位、收藏、个人中心等）
+- TabBar：首页、地图、收藏、我的（配置见 `app.json`）
+- API 封装：`utils/api.js`（所有后端接口调用）
 
-### 页面列表
-| 页面 | 路径 | 说明 |
-|------|------|------|
-| 首页 | `/pages/index/index` | 附近摊位列表+功能入口，支持弹窗查看摊位详情 |
-| 地图 | `/pages/map/map` | 地图展示所有摊位位置，支持弹窗查看详情 |
-| 摊位详情 | `/pages/vendor-detail/vendor-detail` | 卡片式布局，展示摊位信息、商品、评价 |
-| 我的摊位 | `/pages/vendor/vendor` | 摊主管理摊位：头像+状态+营业开关+商品管理+编辑入口 |
-| 编辑摊位 | `/pages/vendor-edit/vendor-edit` | 编辑摊位头像（上传）/名称/手机号，保存调 PUT /api/vendor/info |
-| 热门排行 | `/pages/hot-ranking/hot-ranking` | 3KM内按评分降序排列，卡片式排行列表 |
-| 我的评价 | `/pages/my-reviews/my-reviews` | 全屏页，统计卡片+评价列表，可点击跳转摊位、删除评价 |
-| 发表评价 | `/pages/add-review/add-review` | 星星评分+文字评价，提交后返回刷新 |
-| 评价列表 | `/pages/review-list/review-list` | 半屏弹窗，展示摊位评价+删除功能 |
-| 申请摊位 | `/pages/apply-vendor/apply-vendor` | 摊主申请页面，含手机号必填 |
-| 收藏 | `/pages/favorite/favorite` | 收藏摊位列表（TabBar页） |
-| 个人中心 | `/pages/profile/profile` | 用户信息和功能入口（TabBar页） |
-| 登录 | `/pages/login/login` | 微信登录 |
-| 商品管理 | `/pages/product-manage/product-manage` | 摊位商品列表管理 |
-| 商品表单 | `/pages/product-form/product-form` | 添加/编辑商品 |
-| 编辑手机号 | `/pages/edit-phone/edit-phone` | 单独编辑手机号 |
-| 协议 | `/pages/agreement/agreement` | 用户协议展示 |
-| 日志 | `/pages/logs/logs` | 调试日志 |
+### 技术栈
+- 框架：微信小程序原生框架
+- UI 风格：卡片式设计，统一浅灰背景 `#f5f5f5`，白色卡片圆角 `20rpx`，轻微阴影
 
-### TabBar
-| Tab | 路径 | 图标 |
-|-----|------|------|
-| 首页 | `/pages/index/index` | - |
-| 地图 | `/pages/map/map` | - |
-| 收藏 | `/pages/favorite/favorite` | - |
-| 我的 | `/pages/profile/profile` | - |
+---
 
-### API 接口
-所有 API 封装在 `utils/api.js`，通过 `vendorApi`、`favoriteApi`、`reviewApi`、`productApi`、`uploadApi`、`userApi` 模块调用。
+## 二、开发命令
 
-| 模块 | 方法 | 后端接口 | 说明 |
-|------|------|------|------|
-| vendorApi | `getOpenVendors()` | `GET /api/vendor/open` | 开摊摊位列表 |
-| vendorApi | `getNearbyVendors(lat, lng)` | `GET /api/vendor/nearby` | 附近摊位 |
-| vendorApi | `getSmartRecommendedVendors(lat, lng)` | `GET /api/vendor/smart-list` | 智能推荐摊位 |
-| vendorApi | `getHotRankingVendors(lat, lng)` | `GET /api/vendor/hot-ranking` | 热门排行（3KM纯评分） |
-| vendorApi | `getMyVendor()` | `GET /api/vendor/my` | 获取我的摊位 |
-| vendorApi | `getVendorById(id)` | `GET /api/vendor/{id}` | 摊位详情 |
-| vendorApi | `updateVendorStatus(status, lat, lng)` | `PUT /api/vendor/status` | 开摊/收摊 |
-| vendorApi | `applyVendor(data)` | `POST /api/vendor/apply` | 申请摊主 |
-| vendorApi | `updateVendorInfo(data)` | `PUT /api/vendor/info` | 编辑摊位信息（名称/头像/手机号） |
-| favoriteApi | `getFavorites()` | `GET /api/favorite/user/{userId}` | 收藏列表 |
-| favoriteApi | `addFavorite(vendorId)` | `POST /api/favorite/add` | 添加收藏 |
-| favoriteApi | `removeFavorite(vendorId)` | `DELETE /api/favorite/remove` | 取消收藏 |
-| favoriteApi | `checkFavorite(vendorId)` | `GET /api/favorite/check` | 检查收藏状态 |
-| reviewApi | `getVendorReviews(vendorId)` | `GET /api/review/vendor/{id}/list` | 摊位评价列表 |
-| reviewApi | `getUserReviews()` | `GET /api/review/user/my-reviews` | 我的评价 |
-| reviewApi | `addReview(vendorId, rating, content)` | `POST /api/review/add` | 发表评价 |
-| reviewApi | `getAverageRating(vendorId)` | `GET /api/review/average/{id}` | 平均评分 |
-| reviewApi | `getReviewCount(vendorId)` | `GET /api/review/count/{id}` | 评价数量 |
-| reviewApi | `deleteReview(reviewId)` | `DELETE /api/review/{id}` | 删除评价 |
-| productApi | `getProducts(vendorId)` | `GET /api/product/vendor/{id}` | 商品列表 |
-| productApi | `addProduct(product)` | `POST /api/product/add` | 添加商品 |
-| productApi | `updateProduct(product)` | `PUT /api/product/update` | 更新商品 |
-| productApi | `deleteProduct(productId)` | `DELETE /api/product/{id}` | 删除商品 |
-| uploadApi | `uploadImage(filePath)` | `POST /api/upload/image` | 图片上传（`wx.uploadFile`） |
-| userApi | `wechatLogin(code)` | `POST /api/auth/wechat-login` | 微信登录 |
+微信小程序无构建命令，通过微信开发者工具编译运行。
 
-### 开发注意事项
-1. **卡片风格**：浅灰背景 `#f5f5f5`，白色卡片圆角 `20rpx`，轻微阴影
-2. **商品过滤**：在 JS 层过滤上架商品（`status === 1`），避免 WXML 中 `wx:for` 与 `wx:if` 同用
-3. **事件冒泡**：卡片内嵌按钮使用 `catchtap` 而非 `bindtap`
-4. **API 响应格式**：后端统一返回 `{code, data, message}`，`request()` 返回整个对象，页面使用时需防御性提取
-5. **JWT 过期处理**：`request()` 拦截 401/403 状态码，自动清除 token 并 `reLaunch` 到登录页，无需各页面单独处理
-6. **URL 参数编码**：页面跳转传参时需用 `encodeURIComponent()` 编码（特别是摊位名称、头像URL等含特殊字符的字段），接收页用 `decodeURIComponent()` 解码
-7. **头像上传流程**：`wx.chooseImage` → `uploadApi.uploadImage()` → 获取返回URL → 提交到业务接口
-8. **摊位头像 vs 用户头像**：两个独立字段，`vendor.avatar` 为摊位头像（可选），用户头像在 `user.avatar`
-9. **页面生命周期**：`onShow` 中刷新数据以支持从子页面返回时更新列表
-10. **全局样式层叠陷阱**：`app.wxss` 是全局样式，会与每个页面的 wxss 在**相同选择器上逐属性合并**（不是整块替换）。如果 `app.wxss` 里有个同名类（如 `.container`），页面 wxss 里没显式覆盖的属性会从全局穿透生效，且**简写属性只覆盖同名的 longhand**（如 `padding-bottom: 20rpx` 不会清掉全局的 `padding-top`）。排查"样式怎么改都不好使"时，第一步永远是 `grep app.wxss` 看有没有同名选择器泄漏。
-11. **防御性重置**：页面根容器（如 `.container`）建议在 wxss 开头显式重置可能被全局样式污染的常用属性，参考 `vendor-edit.wxss` 的写法：
-    ```css
-    .container {
-      display: block;           /* 防全局 flex 泄漏 */
-      height: auto;             /* 防全局 height:100% */
-      padding: 0;               /* 防全局 padding:200rpx 残留 */
-      align-items: initial;     /* 防子元素 shrink-to-fit */
-      justify-content: initial; /* 防子元素被垂直撑开 */
-      /* 再写页面自己的样式 */
-      width: 750rpx;
-      min-height: 100vh;
-      background-color: #f5f5f5;
-    }
-    ```
-12. **flex 父级 `align-items: center` 的隐形副作用**：会让**没写显式宽度的直接子元素**从"撑满整行"立刻变成"收缩到内容宽度"，视觉上表现为"组件大小混乱"。遇到此类症状，优先检查父级 flex 容器的 `align-items` 取值。
+### 调试技巧
+- 查看页面数据：`console.log()` 输出到开发者工具 Console
+- 查看网络请求：Network 面板查看 API 调用
+- 查看存储：Storage 面板查看本地缓存
+
+---
+
+## 三、代码风格
+
+### 组件写法
+- WXML：页面结构，避免 `wx:for` 与 `wx:if` 同用（触发渲染警告）
+- WXSS：页面样式，注意全局样式层叠问题（见常见陷阱）
+- JS：页面逻辑，数据过滤在 JS 层完成（如过滤上架商品 `status === 1`）
+- JSON：页面配置（导航栏标题、下拉刷新等）
+
+### 事件处理
+- 卡片内嵌操作按钮（如删除、收藏）使用 `catchtap` 而非 `bindtap`，阻止事件冒泡到父级卡片
+
+### 页面生命周期
+- `onShow` 中刷新数据（支持从子页面返回时更新列表）
+- `onLoad` 仅用于初始化参数解析
+
+---
+
+## 四、常见陷阱
+
+| 陷阱 | 正确做法 |
+|------|----------|
+| 全局样式污染页面样式 | `app.wxss` 与页面 wxss 在**相同选择器上逐属性合并**。排查样式问题时，第一步 `grep app.wxss` 检查同名选择器 |
+| 页面根容器样式异常 | 在 `.container` 开头显式重置可能被全局污染的属性：`display: block; height: auto; padding: 0; align-items: initial; justify-content: initial;`（参考 `vendor-edit.wxss`） |
+| flex 父级 `align-items: center` 导致子元素宽度收缩 | 给直接子元素显式设置 `width: 100%`，或检查父级 `align-items` 取值 |
+| API 响应格式不统一 | 后端返回 `{code, data, message}`，页面使用时防御性提取：`Array.isArray(res) ? res : (res?.data \|\| [])` |
+| JWT 过期未跳转登录 | `utils/api.js` 的 `request()` 已拦截 401/403，自动清除 token 并 `reLaunch` 到登录页，无需各页面单独处理 |
+| URL 参数含特殊字符导致跳转失败 | 跳转传参时用 `encodeURIComponent()` 编码，接收页用 `decodeURIComponent()` 解码 |
+| 头像上传流程错误 | 正确流程：`wx.chooseImage` → `uploadApi.uploadImage()` → 获取返回 URL → 提交到业务接口 |
+| 混淆摊位头像和用户头像 | `vendor.avatar` 是摊位头像（可选），`user.avatar` 是用户头像 |
+| 商品列表显示下架商品 | 在 JS 层过滤：`products.filter(p => p.status === 1)`，避免 WXML 中 `wx:for` 与 `wx:if` 同用 |
+| `ReviewWithUserDTO` 字段名错误 | 使用 `review.reviewId`（非 `review.id`） |
+
+---
+
+## 五、禁止操作
+
+| 禁止 | 替代方案 |
+|------|----------|
+| 修改 `../src/` 下任何后端文件 | 输出【需要后端修改】交接说明 |
+| WXML 中 `wx:for` 与 `wx:if` 同用 | 在 JS 层过滤数据后再渲染 |
+| 页面单独处理 JWT 过期 | 统一由 `utils/api.js` 的 `request()` 拦截处理 |
+| 页面跳转传参不编码 | 使用 `encodeURIComponent()` 编码特殊字符 |
+| 卡片内嵌按钮用 `bindtap` | 使用 `catchtap` 阻止事件冒泡 |
+| 用 find-and-replace 重命名符号 | 使用 `gitnexus_rename`（感知调用图） |
+| 修改代码前不做影响分析 | 先 `gitnexus_impact({target, direction: "upstream"})`，HIGH/CRITICAL 需告知用户 |
+| 提交前不检查变更范围 | 先 `gitnexus_detect_changes()` 确认影响范围 |
+
+---
+
+## 六、数据库工作流
+
+### 数据库修改
+当需要修改数据库结构（新增字段、修改表结构、添加索引等）时：
+
+1. **不要直接修改 SQL 文件**
+2. 按以下格式输出提示词，交给专门的数据库智能体执行：
+
+```
+【数据库修改提示词】
+请执行以下数据库变更：
+- 表名：xxx
+- 变更类型：新增字段 / 修改字段 / 添加索引 / ...
+- 具体操作：ALTER TABLE xxx ADD COLUMN ...
+- 业务背景：为什么需要这个变更
+- 影响范围：涉及哪些前端页面和后端接口
+```
+
+### 查询数据库数据
+当需要了解数据库中的数据（如排查问题、验证数据、分析业务逻辑）时：
+
+1. **触发词**："问数据库" / "查询数据" / "数据库分析"
+2. 按以下格式输出查询提示词：
+
+```
+【数据库查询提示词】
+请帮我查询以下数据：
+- 查询目的：排查 xxx 问题 / 验证 xxx 数据 / 分析 xxx 业务
+- 需要的数据：表名、字段、条件
+- 期望结果：数据格式、排序方式、数量限制
+- 示例 SQL（可选）：SELECT ... FROM ... WHERE ...
+```
+
+### 示例
+
+**场景 1：需要新增字段**
+```
+【数据库修改提示词】
+请执行以下数据库变更：
+- 表名：vendor
+- 变更类型：新增字段
+- 具体操作：ALTER TABLE vendor ADD COLUMN description TEXT COMMENT '摊位描述';
+- 业务背景：摊主申请时需要填写摊位描述信息
+- 影响范围：前端 apply-vendor 页面、后端 VendorService
+```
+
+**场景 2：需要查询数据**
+```
+【数据库查询提示词】
+请帮我查询以下数据：
+- 查询目的：排查用户反馈的"我的收藏"页面显示异常
+- 需要的数据：favorite 表中 user_id = 123 的所有记录，包含 vendor_id、create_time
+- 期望结果：按 create_time 倒序，最多 50 条
+- 示例 SQL：SELECT * FROM favorite WHERE user_id = 123 ORDER BY create_time DESC LIMIT 50;
+```
+
+---
 
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence

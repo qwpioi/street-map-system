@@ -68,7 +68,7 @@ Page({
         wx.showToast({ title: '申请成功！', icon: 'success' })
         setTimeout(() => {
           wx.redirectTo({
-            url: '/pages/vendor/vendor'
+            url: '/pagesVendor/vendor/vendor'
           })
         }, 1500)
       } else {

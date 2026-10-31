@@ -21,4 +21,23 @@
     <text>和</text>
     <text class="link" bindtap="goPrivacy">《隐私政策》</text>
   </view>
+
+  <!-- 隐私协议弹窗 -->
+  <view class="privacy-modal" wx:if="{{showPrivacy}}">
+    <view class="privacy-mask"></view>
+    <view class="privacy-content">
+      <view class="privacy-title">隐私保护提示</view>
+      <view class="privacy-desc">
+        <text>在使用地摊地图前，请仔细阅读并充分理解</text>
+        <text class="privacy-link" bindtap="goAgreement">《用户协议》</text>
+        <text>和</text>
+        <text class="privacy-link" bindtap="goPrivacy">《隐私政策》</text>
+        <text>。如同意请点击"同意"开始使用。</text>
+      </view>
+      <view class="privacy-btns">
+        <button class="privacy-btn reject" bindtap="onPrivacyReject">拒绝</button>
+        <button class="privacy-btn agree" bindtap="onPrivacyAgree">同意</button>
+      </view>
+    </view>
+  </view>
 </view>

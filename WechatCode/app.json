@@ -1,24 +1,53 @@
 {
   "pages": [
     "pages/login/login",
-    "pages/edit-phone/edit-phone",
     "pages/index/index",
     "pages/map/map",
     "pages/favorite/favorite",
-    "pages/profile/profile",
-    "pages/logs/logs",
-    "pages/review-list/review-list",
-    "pages/my-reviews/my-reviews",
-    "pages/add-review/add-review",
-    "pages/vendor/vendor",
-    "pages/vendor-detail/vendor-detail",
-    "pages/hot-ranking/hot-ranking",
-    "pages/apply-vendor/apply-vendor",
-    "pages/product-manage/product-manage",
-    "pages/product-form/product-form",
-    "pages/vendor-edit/vendor-edit",
-    "pages/agreement/agreement"
+    "pages/profile/profile"
   ],
+  "subpackages": [
+    {
+      "root": "pagesVendor",
+      "name": "vendor",
+      "pages": [
+        "vendor/vendor",
+        "vendor-edit/vendor-edit",
+        "apply-vendor/apply-vendor",
+        "product-manage/product-manage",
+        "product-form/product-form"
+      ]
+    },
+    {
+      "root": "pagesReview",
+      "name": "review",
+      "pages": [
+        "review-list/review-list",
+        "my-reviews/my-reviews",
+        "add-review/add-review"
+      ]
+    },
+    {
+      "root": "pagesOther",
+      "name": "other",
+      "pages": [
+        "hot-ranking/hot-ranking",
+        "vendor-detail/vendor-detail",
+        "edit-phone/edit-phone",
+        "agreement/agreement"
+      ]
+    }
+  ],
+  "preloadRule": {
+    "pages/index/index": {
+      "network": "all",
+      "packages": ["pagesOther"]
+    },
+    "pages/profile/profile": {
+      "network": "wifi",
+      "packages": ["pagesVendor", "pagesReview"]
+    }
+  },
   "window": {
     "backgroundTextStyle": "light",
     "navigationBarBackgroundColor": "#FFD100",
@@ -58,5 +87,6 @@
     "scope.userLocation": {
       "desc": "需要您的位置信息来显示附近摊位"
     }
-  }
+  },
+  "__usePrivacyCheck__": true
 }

@@ -23,7 +23,13 @@
       "Bash(git reset *)",
       "Bash(git add *)",
       "Bash(git commit *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "WebFetch(domain:developers.weixin.qq.com)",
+      "mcp__plugin_context7_context7__resolve-library-id",
+      "mcp__plugin_context7_context7__query-docs",
+      "Bash(npx gitnexus *)",
+      "Bash(node --check pages/index/index.js)",
+      "Bash(node --check pages/map/map.js)"
     ]
   }
 }

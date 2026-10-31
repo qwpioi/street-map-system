@@ -1,6 +1,6 @@
 const { favoriteApi, vendorApi, reviewApi, productApi, API_BASE_URL, getUserId } = require('../../utils/api')
 const QQMapWX = require('../../utils/qqmap-wx-jssdk.min')
-const { fixDevLocation } = require('../../utils/util')
+const { fixDevLocation, calculateDistance } = require('../../utils/util')
 const qqmapsdk = new QQMapWX({ key: '3DYBZ-NF2CN-XNYF2-SE3HN-NMFMS-T2BMO' })
 
 const app = getApp()
@@ -91,13 +91,12 @@ Page({
 
   onShow() {
     this.checkLogin()
-    
-    // 如果从商品管理页返回，自动刷新摊位数据（含商品列表）
-    if (getApp().globalData.needRefreshVendors) {
-      getApp().globalData.needRefreshVendors = false
-      if (this.data.latitude && this.data.longitude) {
-        this.loadVendors(this.data.latitude, this.data.longitude)
-      }
+
+    // 每次回到首页都刷新推荐列表，保证新增摊位/营业状态变化实时可见
+    // （首次进入时坐标为空，由 getLocation 成功回调负责首载，不会重复请求）
+    const { latitude, longitude } = this.data
+    if (latitude && longitude) {
+      this.loadVendors(latitude, longitude, { silent: true })
     }
   },
 
@@ -127,8 +126,11 @@ Page({
             // formatted_addresses.recommend = "北京市朝阳区望京街道XX小区"
             const recommend = geoRes?.result?.formatted_addresses?.recommend
             const address = geoRes?.result?.address
-            this.setData({ address: recommend || address || '' })
-            console.log('✅ 地址解析:', recommend || address)
+            const fullAddress = recommend || address || ''
+            // 截取详细地址（去掉省市区前缀）
+            const detailAddress = this.extractDetailAddress(fullAddress)
+            this.setData({ address: detailAddress })
+            console.log('✅ 地址解析:', detailAddress)
           },
           fail: (err) => {
             console.warn('⚠️ 逆地址解析失败，回退显示:', err)
@@ -152,7 +154,13 @@ Page({
     this.getLocation()
   },
 
-  loadVendors(latitude, longitude) {
+  /**
+   * 加载智能推荐摊位列表
+   * @param {Object} options.silent 为 true 时后台静默刷新（不弹 toast，失败仅记日志）
+   */
+  loadVendors(latitude, longitude, options = {}) {
+    const silent = !!options.silent
+
     vendorApi.getSmartRecommendedVendors(latitude, longitude)
       .then(res => {
         console.log('✅ 智能推荐返回:', res)
@@ -177,6 +185,7 @@ Page({
               distanceText: distanceText,
               latitude: lat,
               longitude: lng,
+              status: vendor.status, // 营业状态：1=营业中，0=已收摊
               averageRating: vendor.averageRating || 0,
               reviewCount: vendor.reviewCount || 0,
               isFavorite: this.data.favoriteVendorIds.includes(vendor.id)
@@ -190,26 +199,31 @@ Page({
 
           this.setData({ vendors, markers })
 
-          if (vendors.length > 0) {
-            wx.showToast({
-              title: `找到${vendors.length}个摊位`,
-              icon: 'success',
-              duration: 2000
-            })
-          } else {
-            wx.showToast({
-              title: '附近暂无摊位',
-              icon: 'none'
-            })
+          // 仅主动加载（首次进入、手动重定位）时提示，后台静默刷新不打扰用户
+          if (!silent) {
+            if (vendors.length > 0) {
+              wx.showToast({
+                title: `找到${vendors.length}个摊位`,
+                icon: 'success',
+                duration: 2000
+              })
+            } else {
+              wx.showToast({
+                title: '附近暂无摊位',
+                icon: 'none'
+              })
+            }
           }
         }
       })
       .catch(err => {
         console.error('❌ 加载摊位失败:', err)
-        wx.showToast({
-          title: '加载失败',
-          icon: 'none'
-        })
+        if (!silent) {
+          wx.showToast({
+            title: '加载失败',
+            icon: 'none'
+          })
+        }
       })
   },
 
@@ -317,7 +331,7 @@ Page({
     if (!this.data.selectedVendor) return
     
     wx.navigateTo({
-      url: `/pages/review-list/review-list?vendorId=${this.data.selectedVendor.id}&vendorName=${this.data.selectedVendor.stallName}`
+      url: `/pagesReview/review-list/review-list?vendorId=${this.data.selectedVendor.id}&vendorName=${this.data.selectedVendor.stallName}`
     })
   },
 
@@ -342,7 +356,7 @@ Page({
     if (!this.data.selectedVendor) return
     
     wx.navigateTo({
-      url: `/pages/add-review/add-review?vendorId=${this.data.selectedVendor.id}&vendorName=${this.data.selectedVendor.stallName}`
+      url: `/pagesReview/add-review/add-review?vendorId=${this.data.selectedVendor.id}&vendorName=${this.data.selectedVendor.stallName}`
     })
   },
 
@@ -457,17 +471,31 @@ Page({
     })
   },
 
-  calculateDistance(lat1, lng1, lat2, lng2) {
-    const R = 6371000
-    const dLat = (lat2 - lat1) * Math.PI / 180
-    const dLng = (lng2 - lng1) * Math.PI / 180
-    const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-              Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-              Math.sin(dLng/2) * Math.sin(dLng/2)
-    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a))
-    const distance = R * c
-    
-    return distance < 1000 ? `${Math.round(distance)}m` : `${(distance/1000).toFixed(2)}km`
+  /**
+   * 从完整地址中提取详细地址部分（去掉省、市、区/县/镇前缀）
+   */
+  extractDetailAddress(address) {
+    if (!address || address.trim() === '') {
+      return ''
+    }
+
+    // 查找最后一个行政区划分隔符（区/县/市/镇）的位置
+    let lastIndex = -1
+    const markers = ['区', '县', '市', '镇']
+    markers.forEach(marker => {
+      const idx = address.lastIndexOf(marker)
+      if (idx > lastIndex) {
+        lastIndex = idx
+      }
+    })
+
+    // 如果找到分隔符且后面还有内容，返回截取后的部分
+    if (lastIndex >= 0 && lastIndex < address.length - 1) {
+      return address.substring(lastIndex + 1)
+    }
+
+    // 如果没找到分隔符，或分隔符后没有内容，返回原地址
+    return address
   },
 
   handleLogin() {
@@ -526,12 +554,12 @@ Page({
 
     vendorApi.getMyVendor().then(res => {
       if (res.code === 200 && res.data) {
-        wx.navigateTo({ url: '/pages/vendor/vendor' });
+        wx.navigateTo({ url: '/pagesVendor/vendor/vendor' });
       } else {
-        wx.navigateTo({ url: '/pages/apply-vendor/apply-vendor' });
+        wx.navigateTo({ url: '/pagesVendor/apply-vendor/apply-vendor' });
       }
     }).catch(err => {
-      wx.navigateTo({ url: '/pages/apply-vendor/apply-vendor' });
+      wx.navigateTo({ url: '/pagesVendor/apply-vendor/apply-vendor' });
     })
   },
 
@@ -558,7 +586,7 @@ Page({
       return
     }
     wx.navigateTo({
-      url: `/pages/hot-ranking/hot-ranking?latitude=${latitude}&longitude=${longitude}`
+      url: `/pagesOther/hot-ranking/hot-ranking?latitude=${latitude}&longitude=${longitude}`
     })
   },
 
@@ -581,7 +609,7 @@ Page({
       return
     }
     wx.navigateTo({
-      url: '/pages/my-reviews/my-reviews'
+      url: '/pagesReview/my-reviews/my-reviews'
     })
   },
 
@@ -596,7 +624,7 @@ Page({
   goToVendorPage(e) {
     const vendorId = e.currentTarget.dataset.vendorId;
     wx.navigateTo({
-      url: `/pages/vendor-detail/vendor-detail?id=${vendorId}`
+      url: `/pagesOther/vendor-detail/vendor-detail?id=${vendorId}`
     });
   }
 })

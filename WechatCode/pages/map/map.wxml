@@ -32,7 +32,10 @@
       <view class="detail-header" bindtap="goToVendorPage" data-vendor-id="{{selectedVendor.id}}">
         <view class="detail-avatar">🍜</view>
         <view class="detail-info">
-          <view class="detail-name">{{selectedVendor.stallName}}</view>
+          <view class="detail-name">
+            <view class="name-text">{{selectedVendor.stallName}}</view>
+            <view class="name-arrow">></view>
+          </view>
           <view class="detail-rating" wx:if="{{averageRating > 0}}">
             <view class="detail-rating-badge">
               <text class="detail-star">★</text>

@@ -9,6 +9,7 @@ import com.streetmap.backend.entity.Vendor;
 import com.streetmap.backend.service.ProductService;
 import com.streetmap.backend.service.ReviewService;
 import com.streetmap.backend.service.VendorService;
+import com.streetmap.backend.util.AddressUtil;
 import com.streetmap.backend.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.BeanUtils;
@@ -45,6 +46,8 @@ public class VendorController {
     @PostMapping("/register")
     public Result<Vendor> register(@RequestBody Vendor vendor) {
         vendorService.save(vendor);
+        // 返回给前端前截取详细地址（DB 保留完整地址）
+        vendor.setAddress(AddressUtil.extractDetailAddress(vendor.getAddress()));
         return Result.success(vendor);
     }
 
@@ -55,6 +58,10 @@ public class VendorController {
     @GetMapping("/user/{userId}")
     public Result<Vendor> getByUserId(@PathVariable Long userId) {
         Vendor vendor = vendorService.findByUserId(userId);
+        // 返回给前端前截取详细地址（DB 保留完整地址）
+        if (vendor != null) {
+            vendor.setAddress(AddressUtil.extractDetailAddress(vendor.getAddress()));
+        }
         return Result.success(vendor);
     }
 

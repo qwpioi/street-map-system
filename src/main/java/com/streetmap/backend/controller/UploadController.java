@@ -18,8 +18,8 @@ public class UploadController {
     private String uploadPath;
 
     // 图片访问基础URL（直接返回完整URL，前端无需拼接）
-    // 开发环境：本地IP地址
-    // 生产环境：改为 http://你的服务器域名/images/ 或 http://服务器IP/images/
+    // 开发环境：本地IP地址（HTTP）
+    // 生产环境：必须使用 HTTPS，例如 https://api.ditan.asia/images/
     @Value("${upload.image-base-url:http://192.168.1.4:8081/images/}")
     private String imageBaseUrl;
 

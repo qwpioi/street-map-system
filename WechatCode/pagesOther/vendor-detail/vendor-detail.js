@@ -195,13 +195,13 @@ Page({
       return
     }
     wx.navigateTo({
-      url: `/pages/add-review/add-review?vendorId=${this.data.vendorId}&vendorName=${this.data.vendor.stallName}`
+      url: `/pagesReview/add-review/add-review?vendorId=${this.data.vendorId}&vendorName=${this.data.vendor.stallName}`
     })
   },
   // 查看全部评价
   viewAllReviews() {
     wx.navigateTo({
-      url: `/pages/review-list/review-list?vendorId=${this.data.vendorId}&vendorName=${this.data.vendor.stallName}`
+      url: `/pagesReview/review-list/review-list?vendorId=${this.data.vendorId}&vendorName=${this.data.vendor.stallName}`
     })
   }
 })

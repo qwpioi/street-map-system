@@ -100,7 +100,7 @@ Page({
   // 跳转到添加评价页
   goToAddReview() {
     wx.navigateTo({
-      url: `/pages/add-review/add-review?vendorId=${this.data.vendorId}&vendorName=${this.data.vendorName}`
+      url: `/pagesReview/add-review/add-review?vendorId=${this.data.vendorId}&vendorName=${this.data.vendorName}`
     })
   },
 

@@ -88,7 +88,7 @@ Page({
       return
     }
     wx.navigateTo({
-      url: `/pages/vendor-detail/vendor-detail?id=${vendorId}`
+      url: `/pagesOther/vendor-detail/vendor-detail?id=${vendorId}`
     })
   },
 

@@ -66,7 +66,7 @@ Page({
   goVendor() {
     vendorApi.getMyVendor().then(res => {
       if (res.code === 200 && res.data) {
-        wx.navigateTo({ url: '/pages/vendor/vendor' });
+        wx.navigateTo({ url: '/pagesVendor/vendor/vendor' });
       } else {
         wx.showModal({
           title: '提示',
@@ -94,7 +94,7 @@ Page({
     }
     
     wx.navigateTo({
-      url: '/pages/my-reviews/my-reviews'
+      url: '/pagesReview/my-reviews/my-reviews'
     })
   },
 
@@ -102,14 +102,14 @@ Page({
     vendorApi.getMyVendor().then(res => {
       if (res.code === 200 && res.data) {
         // ✅ 已经是摊主 -> 去管理页
-        wx.navigateTo({ url: '/pages/vendor/vendor' });
+        wx.navigateTo({ url: '/pagesVendor/vendor/vendor' });
       } else {
         // ❌ 还不是摊主 -> 去申请页
-        wx.navigateTo({ url: '/pages/apply-vendor/apply-vendor' });
+        wx.navigateTo({ url: '/pagesVendor/apply-vendor/apply-vendor' });
       }
     }).catch(err => {
       // 网络错误等情况，也引导去申请页或者提示
-      wx.navigateTo({ url: '/pages/apply-vendor/apply-vendor' });
+      wx.navigateTo({ url: '/pagesVendor/apply-vendor/apply-vendor' });
     })
   },
 

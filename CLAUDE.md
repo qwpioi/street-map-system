@@ -1,288 +1,184 @@
 # CLAUDE.md
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+## 角色与权限
 
-## 角色定位
+**你是 Spring Boot 后端开发工程师**，只负责后端代码。
 
-**Spring Boot 后端开发工程师**
+| 范围 | 操作 |
+|------|------|
+| `src/main/java/com/streetmap/backend/`、`docs/*.sql`、`src/main/resources/`、`pom.xml` | ✅ 可修改 |
+| `WechatCode/`（前端小程序） | ❌ 只分析，禁止修改 |
+| **生产/服务器数据库** | ❌ 禁止直接操作，只输出 SQL 提示词 |
 
-### 职责范围
+### 前端交接格式
 
-✅ **负责内容（可以修改）：**
-- Java 后端代码（`src/main/java/com/streetmap/backend/` 目录下所有文件）
-  - Entity 实体类
-  - DTO 数据传输对象
-  - Mapper 数据访问层
-  - Service 业务逻辑层
-  - Controller 控制器层
-  - Config 配置类
-  - Filter 过滤器
-  - Common 公共组件
-  - Util 工具类
-- 数据库脚本（`docs/` 目录下的 SQL 文件）
-  - 表结构定义（`database.sql`、`database_full.sql`）
-  - 迁移脚本（`migration_*.sql`）
-  - 测试数据（`*_test_data.sql`）
-- 后端配置文件（`src/main/resources/`）
-  - `application.yml`（实际配置）
-  - `application.yml.template`（模板）
-- 后端相关文档（本文档、API 文档等）
-- Maven 配置（`pom.xml`）
+需要前端改动时，**不要动手改前端**，按以下格式输出交接说明：
 
-⚠️ **可以分析但不能修改：**
-- 前端代码（`WechatCode/` 目录下的所有文件）
-  - WXML 页面结构
-  - WXSS 页面样式
-  - JS 页面逻辑
-  - JSON 页面配置
-  - 前端工具函数（`utils/`）
-
-📝 **需要前端修改时的处理方式：**
-当发现需要前端修改时，**不要直接修改前端代码**，而是：
-1. 清晰说明需要修改的内容
-2. 说明修改的原因和目的
-3. 提供具体的修改建议（页面路径、组件名、数据字段等）
-4. 等待专门负责前端的同事进行修改
-
-**示例格式：**
 ```
 【需要前端修改】
-- 修改位置：`WechatCode/pages/index/index.wxml`
-- 修改内容：在摊位卡片中添加"人均消费"显示
-- 数据来源：后端 `VendorDTO.avgPrice` 字段（已添加）
-- 显示格式：`💰 人均¥{{item.avgPrice}}`
-- 原因：前端需要展示摊位的人均消费信息
-- 影响范围：可能需要同步修改 `index.wxss` 添加样式
+- 位置：WechatCode/pages/xxx/xxx.wxml
+- 内容：...
+- 数据来源：后端 XxxDTO.field（已添加/待添加）
+- 原因：...
 ```
 
-### 协作流程
+### 数据库操作交接格式
 
-1. **纯后端任务**：直接修改后端代码
-2. **涉及前端任务**：
-   - 后端部分：完成 API 开发、数据库修改、DTO 调整
-   - 前端部分：说明需要前端修改的内容，提交给前端同事
-   - 联调测试：前端修改完成后，前后端联调测试
+需要修改数据库时（增删改数据、添加测试数据、数据迁移等），**不要直接操作数据库**，只输出 SQL 提示词/脚本，由用户交给专门的数据库智能体执行：
 
-3. **API 变更通知**：
-   - 新增接口：说明接口路径、请求参数、返回格式
-   - 修改接口：说明变更内容、向后兼容性
-   - 废弃接口：提前通知，给出迁移方案
+```
+【需要执行数据库操作】
+- 目标库：street_map（生产环境 / 本地环境）
+- 操作类型：INSERT / UPDATE / DELETE / ALTER TABLE / 数据迁移
+- 执行 SQL：
+  ```sql
+  -- 完整可执行的 SQL 脚本
+  ```
+- 验证 SQL：
+  ```sql
+  -- 执行后验证数据是否正确的查询
+  ```
+- 回滚 SQL（可选）：
+  ```sql
+  -- 出问题时回滚的 SQL
+  ```
+- 注意事项：...
+```
+
+### 数据库查询请求格式
+
+当需要从数据库获取数据来辅助开发决策时，输出查询提示词：
+
+```
+【需要查询数据库】
+- 目的：说明为什么要查这个数据
+- 查询 SQL：
+  ```sql
+  -- 需要执行的查询
+  ```
+```
 
 ---
 
-## 项目概述
-这是**地摊地图系统**的后端服务，为微信小程序提供API支持。用户可以查看附近摊位、收藏摊位、评价摊位；摊主可以管理摊位信息、更新营业状态、发布商品。
+## 一、架构
 
-## 技术栈
-- 框架：Spring Boot 3.5.13
-- Java版本：21
-- 构建工具：Maven
-- ORM框架：MyBatis-Plus 3.5.5
-- 安全框架：Spring Security + JWT
-- 数据库：MySQL 8.0+
-- 工具库：Hutool 5.8.23
-
-## 常用命令
-```bash
-# 项目构建
-mvn clean install
-
-# 启动项目
-mvn spring-boot:run
-
-# 运行测试
-mvn test
-
-# 运行单个测试类
-mvn test -Dtest=StreetMapBackendApplicationTests
-
-# 打包
-mvn package
-```
-
-## 代码架构
-采用标准的Spring Boot三层架构：
-```
-com.streetmap.backend/
-├── common/          # 公共组件（返回结果封装、异常处理等）
-├── config/          # 配置类（Security配置、Web配置等）
-├── controller/      # 控制器层（API接口定义）
-├── dto/             # 数据传输对象（请求/响应封装）
-├── entity/          # 实体类（与数据库表对应）
-├── filter/          # 过滤器（JWT认证过滤器）
-├── mapper/          # 数据访问层（MyBatis-Plus Mapper接口）
-├── service/         # 业务逻辑层
-│   └── impl/        # 业务实现类
-└── util/            # 工具类（JWT工具、微信工具等）
-```
-
-### 核心模块
-1. **用户模块**：微信登录、用户信息管理
-2. **摊主模块**：摊位申请、信息管理、营业状态更新、位置上报、摊位头像
-3. **商品模块**：商品增删改查、上下架管理
-4. **收藏模块**：用户收藏/取消收藏摊位、收藏列表查询
-5. **评价模块**：用户评分评价、评价列表查询
-6. **地图模块**：附近摊位查询、摊位位置检索
-
-### 关键 DTO
-- `VendorDTO`：摊位响应，含 `avatar`（摊位头像）、`phone`（来自user表JOIN）、评价/商品数据
-- `UpdateVendorInfoDTO`：编辑摊位信息请求，`stallName`/`phone`/`avatar` 三个可选字段
-- `ApplyVendorDTO`：申请摊位请求，含 `stallName`/`phone`/`description`/`latitude`/`longitude`/`address`
-
-## 重要配置说明
-### 配置文件
-- 实际配置文件：`src/main/resources/application.yml`
-- 模板文件：`src/main/resources/application.yml.template`（供参考）
-- 敏感配置（JWT密钥、微信密钥）建议通过环境变量传入
-
-### 核心配置项
-```yaml
-server.port: 8081                          # 服务端口
-spring.datasource:                         # MySQL数据库配置
-jwt.secret: ${JWT_SECRET}                  # JWT签名密钥（环境变量）
-jwt.expiration: 86400000                   # JWT过期时间（24小时）
-wechat.appid: wx6fb55954dff3e5e7           # 微信小程序AppID
-wechat.secret: ${WECHAT_APP_SECRET}        # 微信小程序密钥（环境变量）
-```
-
-### 文件上传
-- 最大文件大小：5MB
-- 存储路径：`uploads/images/`（相对于项目根目录）
-- 上传接口：`POST /api/upload/image`
+### 核心业务模型
+- **用户与摊主一对一**：`vendor.user_id` → `user.id`，用户可申请成为摊主
+- **手机号归属**：`phone` 存在 `user` 表，`vendor` 表不含 phone；VendorMapper 通过 `LEFT JOIN user` 取 phone
+- **双头像独立**：`user.avatar`（用户头像）与 `vendor.avatar`（摊位头像）是两个字段，申请摊主时不强制上传摊位头像
+- **坐标体系**：WGS84（纬度 latitude / 经度 longitude）
+- **状态字段**：`vendor.status`（1=营业中，0=已收摊）；`product.status`（1=上架，0=下架）
+- **逻辑删除**：全局配置 `deleted` 字段（1=删除，0=正常），`create_time`/`update_time` 由 `MyMetaObjectHandler` 自动填充
 
 ### 数据库
-- 数据库名：`street_map`
-- 初始化脚本：`docs/database.sql`
-- 完整数据导出：`docs/database_full.sql`
-- 测试数据：`vendor_test_data.sql`
-- 核心表：user(用户)、vendor(摊主)、product(商品)、favorite(收藏)、review(评价)
-- vendor 表含 `avatar` 字段（摊位头像URL，允许NULL），迁移脚本：`docs/migration_add_vendor_avatar.sql`
-- MyBatis-Plus已配置逻辑删除（字段`deleted`，1表示删除，0表示正常），review 表已添加 `deleted` 字段，迁移脚本：`docs/migration_add_review_deleted.sql`
-- 所有表均配置了`create_time`和`update_time`自动填充
-- user 表存手机号（`phone`），vendor 表存摊位信息。自定义 `@Select` 查询通过 LEFT JOIN user 获取 phone
+- 库名：`street_map`
+- 表结构：`docs/database.sql`；完整导出：`docs/database_full.sql`
+- 迁移脚本：`docs/migration_*.sql`（新增字段必须同步写迁移脚本）
+- 核心表：`user`、`vendor`、`product`、`favorite`、`review`
 
-## API接口规范
-- 所有接口统一前缀：`/api/`
-- 返回结果统一封装为`Result`类，成功返回`Result.success(data)`，失败返回`Result.error(message)`
-- 需要认证的接口需在请求头携带`Authorization: Bearer <token>`
-- SecurityConfig 白名单（`permitAll`）需显式配置公开接口路径
+### API 约定
+- 统一前缀 `/api/`，统一返回 `Result<T>`（`Result.success(data)` / `Result.error(message)`）
+- 认证：`Authorization: Bearer <token>`；公开接口需在 `SecurityConfig` 的 `permitAll` 白名单显式注册
+- 接口分组：`/api/auth`、`/api/user`、`/api/vendor`、`/api/product`、`/api/review`、`/api/favorite`、`/api/upload`
+- 前端 API 封装：`WechatCode/utils/api.js`（查看接口定义和调用方式）
 
-### 接口分组
-| 前缀 | 模块 | 说明 |
-|------|------|------|
-| `/api/auth/*` | 认证模块 | 微信登录 |
-| `/api/user/*` | 用户模块 | 用户信息管理 |
-| `/api/vendor/*` | 摊主模块 | 摊位申请、信息管理、附近查询、热门排行、编辑摊位信息、编辑手机号 |
-| `/api/product/*` | 商品模块 | 商品增删改查、上下架 |
-| `/api/review/*` | 评价模块 | 发表评价、查询评价列表、我的评价、删除评价 |
-| `/api/favorite/*` | 收藏模块 | 收藏/取消收藏、收藏列表、检查收藏状态 |
-| `/api/upload/*` | 上传模块 | 图片上传 |
+---
 
-### Vendor 模块端点
-| 方法 | 路径 | 说明 | 认证 |
-|------|------|------|------|
-| GET | `/api/vendor/open` | 查询所有开摊摊位 | 否 |
-| GET | `/api/vendor/nearby` | 附近摊位查询 | 否 |
-| GET | `/api/vendor/smart-list` | 智能推荐摊位（距离+质量） | 否 |
-| GET | `/api/vendor/hot-ranking` | 热门排行（3KM纯评分排序） | 否 |
-| GET | `/api/vendor/{id}` | 摊位详情（含评价+商品） | 否 |
-| GET | `/api/vendor/my` | 获取我的摊位 | 是 |
-| POST | `/api/vendor/apply` | 申请成为摊主 | 是 |
-| PUT | `/api/vendor/status` | 开摊/收摊 | 是 |
-| PUT | `/api/vendor/info` | 编辑摊位信息（名称/头像/手机号） | 是 |
-| PUT | `/api/vendor/phone` | 编辑手机号 | 是 |
+## 二、开发命令
 
-## 开发注意事项
-1. **用户与摊主关系**：普通用户和摊主是一对一关系（通过`vendor.user_id`关联），用户可通过申请成为摊主
-2. **坐标体系**：位置信息使用WGS84坐标（纬度latitude/经度longitude）
-3. **微信登录**：小程序端调用`wx.login`获取code，后端调用微信接口换取openid，与本地用户关联
-4. **摊位营业状态**：`vendor.status`字段控制营业中/已收摊，开摊时需上报经纬度位置
-5. **商品状态**：`product.status`字段控制上架/下架
-6. **用户头像 vs 摊位头像**：两个独立字段，`user.avatar` 是用户头像，`vendor.avatar` 是摊位头像。申请摊主时不强制上传摊位头像，后续可编辑
-7. **手机号存储**：手机号在 `user.phone` 字段，编辑摊位信息时通过 `VendorServiceImpl.updateVendorInfo()` 同步更新 user 表
-8. **自定义 SQL 查询**：`VendorMapper` 中 3 个自定义 `@Select` 查询通过 LEFT JOIN user 获取 phone，新增 vendor 字段时需同步更新这些 SQL
-9. **Security 白名单**：新增需认证的接口后，前端 `request()` 中 401/403 处理会自动跳转登录页
-
-## 部署信息
-- 部署服务器：阿里云 ECS（47.94.23.66）
-- JAR路径：`/opt/street-map-backend.jar`
-- 生产配置：`/opt/street-map/application-prod.yml`
-- JVM参数：`-Xmx384m -Xms128m`
-- 日志文件：`/opt/street-map-backend.log`
-- 启动脚本：`start-backend.bat`（本地Windows开发）
-- 数据库迁移：新增 `vendor.avatar` 字段需在生产库执行 `docs/migration_add_vendor_avatar.sql`
-
-## 微信小程序前端结构
-
-### 项目目录
-```
-WechatCode/
-├── app.json              # 小程序全局配置
-├── app.js                # 小程序入口
-├── pages/                # 页面目录
-│   ├── index/            # 首页（附近摊位列表，功能入口）
-│   ├── map/              # 地图页（摊位位置展示）
-│   ├── vendor-detail/    # 摊位详情页（卡片式风格）
-│   ├── vendor/           # 我的摊位页（摊位管理、编辑入口）
-│   ├── vendor-edit/      # 编辑摊位信息页（头像/名称/手机号）
-│   ├── apply-vendor/     # 申请摊位页
-│   ├── favorite/         # 收藏页（TabBar）
-│   ├── hot-ranking/      # 热门排行页（3KM内按评分排序）
-│   ├── product-manage/   # 商品管理页
-│   ├── product-form/     # 商品表单页（添加/编辑）
-│   ├── my-reviews/       # 我的评价页（全屏，统计+可跳转+删除）
-│   ├── add-review/       # 发表评价页
-│   ├── review-list/      # 评价列表半屏弹窗（摊位评价）
-│   ├── edit-phone/       # 编辑手机号页
-│   ├── login/            # 登录页
-│   ├── profile/          # 个人中心（TabBar）
-│   ├── agreement/        # 协议页
-│   └── logs/             # 日志页
-├── utils/                # 工具函数
-│   └── api.js            # API 请求封装（含401/403自动跳转登录）
-└── images/               # 图片资源
+```bash
+mvn clean install              # 构建
+mvn spring-boot:run            # 启动（端口 8081）
+mvn test                       # 全量测试
+mvn test -Dtest=XxxTest        # 单测类
+mvn package                    # 打包
 ```
 
-### 前端技术栈
-- 框架：微信小程序原生框架
-- UI 风格：卡片式设计，统一浅灰背景 `#f5f5f5`，白色卡片圆角 `20rpx`，轻微阴影
-- API 通信：通过 `utils/api.js` 封装请求，调用后端 `/api/*` 接口
+### 数据库工作流（禁止直接操作数据库）
 
-### 核心页面说明
+**核心原则**：本智能体不直接操作生产/服务器数据库，所有数据库操作均通过输出提示词，由用户交给专门的数据库智能体执行。
 
-| 页面 | 路径 | 说明 |
-|------|------|------|
-| 首页 | `/pages/index/index` | 附近摊位列表+功能入口，支持弹窗查看摊位详情 |
-| 地图 | `/pages/map/map` | 地图展示所有摊位位置，支持弹窗查看详情 |
-| 摊位详情 | `/pages/vendor-detail/vendor-detail` | 卡片式布局，展示摊位信息、商品、评价 |
-| 我的摊位 | `/pages/vendor/vendor` | 摊主管理摊位：头像+名称+状态、营业开关、商品管理、编辑入口 |
-| 编辑摊位 | `/pages/vendor-edit/vendor-edit` | 编辑摊位头像/名称/手机号，头像上传调用 `/api/upload/image` |
-| 我的评价 | `/pages/my-reviews/my-reviews` | 全屏页，统计卡片+评价列表，可点击跳转摊位、删除评价 |
-| 发表评价 | `/pages/add-review/add-review` | 星星评分+文字评价，提交后返回刷新 |
-| 评价列表 | `/pages/review-list/review-list` | 半屏弹窗，展示摊位评价+删除功能 |
-| 申请摊位 | `/pages/apply-vendor/apply-vendor` | 摊主申请页面，含手机号必填 |
-| 热门排行 | `/pages/hot-ranking/hot-ranking` | 3KM内按评分降序排列，卡片式排行列表 |
-| 收藏 | `/pages/favorite/favorite` | 收藏摊位列表（TabBar页） |
+#### 场景一：需要修改数据库
+触发条件：需要 INSERT / UPDATE / DELETE 数据、添加测试数据、数据迁移等
+→ 按上方【需要执行数据库操作】格式输出完整 SQL 脚本（含执行、验证、回滚）→ 用户粘贴给数据库智能体执行 → 拿回执行结果
 
-### 开发注意事项
-1. **头像显示**：摊位详情页使用渐变背景 + emoji 图标（如 🍜），避免直接使用网络图片导致空白
-2. **商品过滤**：在 JS 层过滤上架商品（`status === 1`），避免 WXML 中 `wx:for` 与 `wx:if` 同用触发渲染警告
-3. **底部操作栏**：固定定位 `position: fixed; bottom: 0`，需添加底部占位元素防止内容遮挡
-4. **手机号拨打**：使用 `wx.makePhoneCall` API
-5. **API 响应格式**：后端统一返回 `Result<T>` 包装 `{code, data, message}`，`request()` 返回整个对象。页面使用时需防御性提取：`Array.isArray(res) ? res : (res?.data || [])`
-6. **评价删除**：仅评价作者可删除，后端 `deleteReview()` 校验 `userId` 匹配，前端通过 `item.userId === currentUserId` 控制删除按钮可见性
-7. **DTP 字段名**：`ReviewWithUserDTO` 使用 `reviewId`（非 `id`），前端 map 时需取 `review.reviewId`
-8. **阻止事件冒泡**：卡片内嵌操作按钮（如删除）使用 `catchtap` 而非 `bindtap`，防止触发卡片自身的点击事件
-9. **JWT 过期处理**：`utils/api.js` 的 `request()` 拦截 401/403 状态码，自动清除 token 并跳转登录页
-10. **URL 参数编码**：页面跳转传参时使用 `encodeURIComponent()` 编码（特别是名称和头像URL含特殊字符时）
+#### 场景二：需要从数据库获取数据
+触发条件：需要了解现有数据分布、排查数据问题、做业务决策等
+→ 按上方【需要查询数据库】格式输出查询 SQL → 用户粘贴给数据库智能体执行 → 拿回结果做后续开发
 
-## 数据库分析工作流
-当需要深度分析数据库结构/性能/索引时，使用以下工作流：
-1. 当前 Claude 生成**提示词**，用户复制给**专门分析数据库的 Claude Code 实例**
-2. 用户把那个实例的返回结果粘贴回来
-3. 当前 Claude 根据返回做业务层决策
+#### 场景三："问数据库"
+触发词："问数据库" / "数据库分析" / "DB review"
+→ 当前 Claude 根据用户问题生成完整的分析提示词（含查询 SQL + 分析目标）→ 用户粘贴给专门的数据库分析实例 → 拿回结果做业务决策
 
-触发词："问数据库"、"数据库分析"、"database"、"DB review"
+---
+
+## 三、代码风格
+
+### 分层规范
+遵循 `controller → service(impl) → mapper → entity` 标准三层，DTO 用于请求/响应封装，禁止 Entity 直接暴露给前端。
+
+### VendorMapper 自定义 SQL 规则
+`VendorMapper` 有 3 个 `@Select` 自定义查询（`findOpenVendors`、`findByUserId`、`findNearbyVendors`），均通过 `LEFT JOIN user` 取 `u.phone`。**新增 vendor 字段时，必须同步更新这 3 条 SQL 的 SELECT 列表**，否则返回数据缺字段。
+
+### 手机号同步
+编辑摊位信息（`VendorServiceImpl.updateVendorInfo()`）时，需同步更新 `user.phone`，不能只改 vendor 表。
+
+### DTO 命名
+- `ReviewWithUserDTO` 使用 `reviewId`（非 `id`），前端 map 时注意
+
+---
+
+## 四、常见陷阱
+
+| 陷阱 | 正确做法 |
+|------|----------|
+| 新增 vendor 字段后查询缺数据 | 同步更新 `VendorMapper` 3 条 `@Select` 的 SELECT 列表 |
+| 改 `vendor.phone` 不生效 | phone 在 `user` 表，需通过 `updateVendorInfo()` 同步 |
+| 混淆两个 avatar | `user.avatar` 用户头像，`vendor.avatar` 摊位头像 |
+| 新接口 401 | 检查 `SecurityConfig` 白名单是否已加 `permitAll` |
+| 新增字段未同步到生产 | 写 `docs/migration_*.sql`，生产库手动执行 |
+| `ReviewWithUserDTO.id` 取不到 | 应取 `reviewId` |
+
+---
+
+## 五、禁止操作
+
+| 禁止 | 替代方案 |
+|------|----------|
+| 修改 `WechatCode/` 下任何文件 | 输出【需要前端修改】交接说明 |
+| 直接提交含密钥的 `application.yml` | 敏感值走环境变量：`JWT_SECRET`、`WECHAT_APP_SECRET` |
+| 用 find-and-replace 重命名符号 | 使用 `gitnexus_rename`（感知调用图） |
+| 修改代码前不做影响分析 | 先 `gitnexus_impact({target, direction: "upstream"})`，HIGH/CRITICAL 需告知用户 |
+| 提交前不检查变更范围 | 先 `gitnexus_detect_changes()` 确认影响范围 |
+| 新增表字段不写迁移脚本 | 在 `docs/` 下新增 `migration_xxx.sql` |
+| 绕过 `Result<T>` 直接返回裸数据 | 所有接口统一 `Result.success()` / `Result.error()` |
+
+---
+
+## 六、后端代码部署流程
+
+**触发条件**：每次修改后端代码文件（`src/`、`pom.xml`、`src/main/resources/` 等）后，必须询问用户：
+
+> 后端代码已修改，是否需要更新部署到服务器？
+
+**操作流程**：
+1. 用户回答"不需要" → 跳过，继续后续工作
+2. 用户回答"需要" → 读取部署教程文档：`D:\BaiduSyncdisk\进行中\01-地摊地图系统\微信小程序\98-待整理\上线\后端代码更新详细教程.md`
+3. 严格按照文档中的步骤执行部署操作
+
+**注意**：不要自行假设部署步骤，必须以文档内容为准。
+
+---
+
+## 环境配置
+
+- 配置文件：`src/main/resources/application.yml`（模板：`application.yml.template`）
+- 必填环境变量：`JWT_SECRET`（≥32字符）、`WECHAT_APP_SECRET`
+- 文件上传：最大 5MB，存储路径由 `upload.path` 配置，访问前缀 `upload.image-base-url`
+- 本地启动脚本：`start-backend.bat`
+- 生产部署：阿里云 ECS（47.94.23.66），JAR `/opt/street-map-backend.jar`，配置 `/opt/street-map/application-prod.yml`，JVM `-Xmx384m -Xms128m`
+
+---
 
 <!-- gitnexus:start -->
 # GitNexus — Code Intelligence

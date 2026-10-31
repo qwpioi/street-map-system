@@ -54,3 +54,8 @@ mybatis-plus:
       logic-delete-field: deleted
       logic-delete-value: 1
       logic-not-delete-value: 0
+
+# 自定义上传配置
+upload:
+  path: /opt/upload/images/  # 生产环境上传文件存储路径
+  image-base-url: https://your-domain.com/images/  # 生产环境必须使用 HTTPS
