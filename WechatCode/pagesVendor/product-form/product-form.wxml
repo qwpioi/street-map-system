@@ -2,35 +2,44 @@
   <form bindsubmit="onSubmit">
     <view class="form-group">
       <text class="label">商品名称 *</text>
-      <input 
-        class="input" 
-        name="name" 
-        value="{{formData.name}}" 
-        placeholder="例如：招牌炒饭" 
+      <input
+        class="input {{focusedField === 'name' ? 'input-focus' : ''}}"
+        name="name"
+        value="{{formData.name}}"
+        placeholder="例如：招牌炒饭"
         maxlength="50"
+        bindfocus="onFieldFocus"
+        bindblur="onFieldBlur"
+        data-field="name"
       />
     </view>
 
     <view class="form-group">
       <text class="label">商品描述</text>
-      <textarea 
-        class="textarea" 
-        name="description" 
-        value="{{formData.description}}" 
-        placeholder="例如：蛋炒饭、扬州炒饭、蛋炒粉" 
+      <textarea
+        class="textarea {{focusedField === 'description' ? 'textarea-focus' : ''}}"
+        name="description"
+        value="{{formData.description}}"
+        placeholder="例如：蛋炒饭、扬州炒饭、蛋炒粉"
         maxlength="200"
         auto-height
+        bindfocus="onFieldFocus"
+        bindblur="onFieldBlur"
+        data-field="description"
       />
     </view>
 
     <view class="form-group">
       <text class="label">价格（元）*</text>
-      <input 
-        class="input" 
-        name="price" 
-        value="{{formData.price}}" 
-        placeholder="例如：12" 
+      <input
+        class="input {{focusedField === 'price' ? 'input-focus' : ''}}"
+        name="price"
+        value="{{formData.price}}"
+        placeholder="例如：12"
         type="digit"
+        bindfocus="onFieldFocus"
+        bindblur="onFieldBlur"
+        data-field="price"
       />
     </view>
 
@@ -39,25 +48,27 @@
       <text class="label">商品图片</text>
 
       <!-- 未选择时：显示选图按钮 -->
-      <view wx:if="{{!imageTempPath}}" class="image-picker" bindtap="onChooseImage">
-        <text class="picker-icon">📷</text>
+      <view wx:if="{{!imageTempPath}}" class="image-picker" bindtap="onChooseImage" hover-class="image-picker-hover">
+        <icon name="food" size="xl" color="var(--color-text-light)" />
         <text class="picker-text">点击选择图片</text>
       </view>
 
       <!-- 已选择时：显示预览 + 移除按钮 -->
       <view wx:else class="image-preview">
         <image class="preview-img" src="{{imageTempPath}}" mode="aspectFill" />
-        <view class="remove-btn" bindtap="onRemoveImage">✕</view>
+        <view class="remove-btn" bindtap="onRemoveImage" hover-class="remove-btn-hover">
+          <icon name="close" size="sm" color="#fff" />
+        </view>
       </view>
 
       <text class="hint">支持 jpg、png、gif、webp 格式，最大 5MB</text>
     </view>
 
     <view class="actions">
-      <button class="btn-submit" formType="submit" disabled="{{uploading}}">
+      <button class="btn-submit" formType="submit" disabled="{{uploading}}" hover-class="btn-submit-hover">
         {{uploading ? '上传中...' : (isEdit ? '保存修改' : '发布商品')}}
       </button>
-      <button class="btn-cancel" bindtap="onCancel">取消</button>
+      <button class="btn-cancel" bindtap="onCancel" hover-class="btn-cancel-hover">取消</button>
     </view>
   </form>
 </view>

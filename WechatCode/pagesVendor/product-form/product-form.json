@@ -1,3 +1,6 @@
 {
-  "navigationBarTitleText": "商品编辑"
+  "navigationBarTitleText": "商品编辑",
+  "usingComponents": {
+    "icon": "/components/icon/icon"
+  }
 }

@@ -13,7 +13,8 @@ Page({
       imageUrl: ''
     },
     imageTempPath: '',   // 临时图片路径（预览用）
-    uploading: false     // 是否正在上传
+    uploading: false,    // 是否正在上传
+    focusedField: ''     // 当前聚焦的输入框字段名
   },
 
   onLoad(options) {
@@ -179,6 +180,17 @@ Page({
       logger.error('保存商品失败:', err)
       wx.showToast({ title: '保存失败', icon: 'none' })
     }
+  },
+
+  // 输入框聚焦事件
+  onFieldFocus(e) {
+    const field = e.currentTarget.dataset.field;
+    this.setData({ focusedField: field });
+  },
+
+  // 输入框失焦事件
+  onFieldBlur() {
+    this.setData({ focusedField: '' });
   },
 
   onCancel() {
