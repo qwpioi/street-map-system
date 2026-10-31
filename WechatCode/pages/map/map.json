@@ -1,5 +1,9 @@
 {
   "navigationBarTitleText": "地图",
   "navigationBarBackgroundColor": "#FFD100",
-  "navigationBarTextStyle": "black"
+  "navigationBarTextStyle": "black",
+  "usingComponents": {
+    "icon": "/components/icon/icon",
+    "vendor-modal": "/components/vendor-modal/vendor-modal"
+  }
 }

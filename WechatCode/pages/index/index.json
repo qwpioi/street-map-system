@@ -1,4 +1,12 @@
 {
   "usingComponents": {
+    "icon": "/components/icon/icon",
+    "page-header": "/components/page-header/page-header",
+    "vendor-card": "/components/vendor-card/vendor-card",
+    "vendor-modal": "/components/vendor-modal/vendor-modal",
+    "section-header": "/components/section-header/section-header",
+    "empty-state": "/components/empty-state/empty-state",
+    "rating-stars": "/components/rating-stars/rating-stars",
+    "status-badge": "/components/status-badge/status-badge"
   }
 }

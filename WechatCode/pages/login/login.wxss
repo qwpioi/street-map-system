@@ -1,36 +1,57 @@
+/* CSS 变量 */
+page {
+  --color-primary: #FFB300;
+  --color-primary-light: #FFC940;
+  --color-white: #fff;
+  --color-text-dark: #333;
+  --color-text-gray: #666;
+  --color-text-light: rgba(255, 255, 255, 0.85);
+  --color-link: #576B95;
+  --radius-lg: 48rpx;
+  --radius-md: 24rpx;
+  --radius-pill: 50rpx;
+  --shadow-btn: 0 12rpx 40rpx rgba(255, 179, 0, 0.35);
+  --shadow-btn-hover: 0 6rpx 20rpx rgba(255, 179, 0, 0.25);
+  --shadow-modal: 0 16rpx 48rpx rgba(0, 0, 0, 0.18);
+}
+
 .login-container {
   min-height: 100vh;
-  background: linear-gradient(135deg, #FFD100 0%, #FFD100 100%);
+  background: linear-gradient(180deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
   padding: 60rpx 40rpx;
   display: flex;
   flex-direction: column;
   align-items: center;
 }
 
+/* Logo 区域 */
 .logo-section {
   margin-top: 80rpx;
   text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
 }
 
-.logo {
+.logo-icon {
   font-size: 120rpx;
-  display: block;
   margin-bottom: 20rpx;
 }
 
 .app-name {
   font-size: 48rpx;
   font-weight: bold;
-  color: #fff;
+  color: var(--color-white);
   display: block;
   margin-bottom: 16rpx;
 }
 
 .app-desc {
   font-size: 28rpx;
-  color: rgba(255, 255, 255, 0.9);
+  color: var(--color-text-light);
 }
 
+/* 欢迎文字 */
 .welcome-text {
   text-align: center;
   margin-bottom: 80rpx;
@@ -39,51 +60,59 @@
 
 .welcome-text text {
   font-size: 36rpx;
-  color: #fff;
+  color: var(--color-white);
   font-weight: bold;
   display: block;
 }
 
 .sub-text {
   font-size: 26rpx;
-  color: rgba(255, 255, 255, 0.85);
+  color: var(--color-text-light);
   margin-top: 12rpx;
   display: block;
 }
 
+/* 登录按钮 */
 .login-btn {
   width: 100%;
-  background-color: #fff !important;
-  color: #FFD100 !important;
+  background-color: var(--color-white) !important;
+  color: var(--color-primary) !important;
   font-size: 32rpx !important;
   font-weight: bold !important;
   padding: 32rpx 0 !important;
-  border-radius: 50rpx !important;
-  box-shadow: 0 10rpx 40rpx rgba(0,0,0,0.15);
+  border-radius: var(--radius-pill) !important;
+  box-shadow: var(--shadow-btn);
   border: none !important;
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: all 0.2s ease;
 }
 
 .login-btn::after {
   border: none;
 }
 
-.btn-icon {
-  margin-right: 12rpx;
-  font-size: 36rpx;
+.login-btn-hover {
+  transform: scale(0.97);
+  box-shadow: var(--shadow-btn-hover);
+  opacity: 0.9;
 }
 
+.btn-icon {
+  margin-right: 12rpx;
+}
+
+/* 提示文字 */
 .tips {
   margin-top: 80rpx;
   font-size: 24rpx;
-  color: rgba(255,255,255,0.8);
+  color: rgba(255, 255, 255, 0.8);
   text-align: center;
 }
 
 .link {
-  color: #fff;
+  color: var(--color-white);
   font-weight: bold;
   padding: 4rpx 8rpx;
 }
@@ -107,37 +136,37 @@
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
+  background: rgba(0, 0, 0, 0.45);
 }
 
 .privacy-content {
   position: relative;
   width: 85%;
   max-width: 600rpx;
-  background: #fff;
-  border-radius: 24rpx;
-  padding: 48rpx 40rpx;
-  box-shadow: 0 8rpx 32rpx rgba(0, 0, 0, 0.15);
+  background: var(--color-white);
+  border-radius: var(--radius-lg);
+  padding: 56rpx 44rpx 44rpx;
+  box-shadow: var(--shadow-modal);
 }
 
 .privacy-title {
-  font-size: 36rpx;
+  font-size: 38rpx;
   font-weight: bold;
-  color: #333;
+  color: var(--color-text-dark);
   text-align: center;
-  margin-bottom: 32rpx;
+  margin-bottom: 28rpx;
 }
 
 .privacy-desc {
   font-size: 28rpx;
-  color: #666;
-  line-height: 1.6;
+  color: var(--color-text-gray);
+  line-height: 1.7;
   margin-bottom: 48rpx;
   text-align: left;
 }
 
 .privacy-link {
-  color: #576B95;
+  color: var(--color-link);
   text-decoration: underline;
 }
 
@@ -149,13 +178,14 @@
 .privacy-btn {
   flex: 1;
   height: 88rpx;
-  border-radius: 44rpx;
+  border-radius: var(--radius-md);
   font-size: 32rpx;
   font-weight: bold;
   display: flex;
   align-items: center;
   justify-content: center;
   border: none;
+  transition: opacity 0.2s ease;
 }
 
 .privacy-btn::after {
@@ -164,10 +194,10 @@
 
 .privacy-btn.reject {
   background: #f5f5f5;
-  color: #666;
+  color: var(--color-text-gray);
 }
 
 .privacy-btn.agree {
-  background: #FFD100;
-  color: #fff;
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-light) 100%);
+  color: var(--color-white);
 }

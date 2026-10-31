@@ -1,4 +1,5 @@
 const { reviewApi, getUserId } = require('../../utils/api')
+const { formatRelativeTime } = require('../../utils/util')
 
 Page({
   data: {
@@ -55,7 +56,7 @@ Page({
           vendorName: review.vendorName || '未知摊位',
           rating: review.rating,
           content: review.content,
-          createTime: this.formatTime(review.createTime)
+          createTime: formatRelativeTime(review.createTime)
         }))
 
         this.setData({ reviews: formattedReviews, loading: false })
@@ -117,23 +118,5 @@ Page({
 
   goHome() {
     wx.switchTab({ url: '/pages/index/index' })
-  },
-
-  formatTime(timeStr) {
-    if (!timeStr) return ''
-    try {
-      const date = new Date(timeStr)
-      const now = new Date()
-      const diff = now - date
-
-      if (diff < 60000) return '刚刚'
-      if (diff < 3600000) return `${Math.floor(diff / 60000)}分钟前`
-      if (diff < 86400000) return `${Math.floor(diff / 3600000)}小时前`
-      if (diff < 604800000) return `${Math.floor(diff / 86400000)}天前`
-
-      return `${date.getMonth() + 1}/${date.getDate()}`
-    } catch (e) {
-      return timeStr
-    }
   }
 })

@@ -271,7 +271,7 @@ Page({
    * 点击摊位卡片 - 显示详情
    */
   async onVendorCardTap(e) {
-    const item = e.currentTarget.dataset.item
+    const item = e.detail?.vendor || e.currentTarget.dataset.item
     console.log('📍 点击摊位卡片:', item)
     
     this.setData({ selectedVendor: item })
@@ -376,7 +376,7 @@ Page({
    * 切换收藏状态
    */
   async onToggleFavorite(e) {
-    const item = e.currentTarget.dataset.item
+    const item = e.detail?.vendor || e.currentTarget.dataset.item
     
     if (!this.data.isLoggedIn) {
       wx.showModal({
@@ -441,7 +441,7 @@ Page({
    * 弹窗内切换收藏状态
    */
   async onToggleFavoriteInModal(e) {
-    const item = e.currentTarget.dataset.item
+    const item = e.detail?.vendor || e.currentTarget.dataset.item
     if (!item || !item.id) return
 
     if (!this.data.isLoggedIn) {
@@ -472,7 +472,7 @@ Page({
   },
 
   navigateToVendor(e) {
-    const item = e.currentTarget.dataset.item
+    const item = e.detail?.vendor || e.currentTarget.dataset.item
     
     wx.openLocation({
       latitude: item.latitude,
@@ -634,9 +634,15 @@ Page({
 
   // 跳转到摊主详情页（用户视角）
   goToVendorPage(e) {
-    const vendorId = e.currentTarget.dataset.vendorId;
+    const vendor = e.detail?.vendor || {}
+    const vendorId = vendor.id || e.currentTarget.dataset.vendorId
     wx.navigateTo({
       url: `/pagesOther/vendor-detail/vendor-detail?id=${vendorId}`
     });
+  },
+
+  // 区块标题"更多"点击
+  onMoreTap() {
+    // 可扩展：跳转到更多推荐页面
   }
 })

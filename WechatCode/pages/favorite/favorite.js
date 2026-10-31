@@ -114,7 +114,7 @@ Page({
    * 点击收藏项 — 打开详情弹窗
    */
   async onFavoriteItemTap(e) {
-    const item = e.currentTarget.dataset.item
+    const item = e.detail.vendor
     console.log('📍 点击收藏:', item)
 
     // 先用基础数据展示弹窗
@@ -173,7 +173,7 @@ Page({
    * 取消收藏
    */
   async onCancelFavorite(e) {
-    const item = e.currentTarget.dataset.item
+    const item = e.detail.vendor
     
     wx.showModal({
       title: '确认取消',
@@ -211,14 +211,14 @@ Page({
   },
 
   goToVendorPage(e) {
-    const vendorId = e.currentTarget.dataset.vendorId
+    const vendor = e.detail.vendor
     wx.navigateTo({
-      url: `/pagesOther/vendor-detail/vendor-detail?id=${vendorId}`
+      url: `/pagesOther/vendor-detail/vendor-detail?id=${vendor.id}`
     })
   },
 
   navigateToVendor(e) {
-    const item = e.currentTarget.dataset.item || this.data.selectedVendor
+    const item = e.detail.vendor || this.data.selectedVendor
     wx.openLocation({
       latitude: item.latitude,
       longitude: item.longitude,
@@ -235,7 +235,7 @@ Page({
   },
 
   async onToggleFavoriteInModal(e) {
-    const item = e.currentTarget.dataset.item
+    const item = e.detail.vendor
     if (!item || !item.id) return
 
     const isFavorite = item.isFavorite
@@ -287,24 +287,6 @@ Page({
     wx.navigateTo({
       url: `/pagesReview/review-list/review-list?vendorId=${this.data.selectedVendor.id}&vendorName=${this.data.selectedVendor.stallName}`
     })
-  },
-
-  formatTime(timeStr) {
-    if (!timeStr) return ''
-    try {
-      const date = new Date(timeStr)
-      const now = new Date()
-      const diff = now - date
-
-      if (diff < 60000) return '刚刚'
-      if (diff < 3600000) return `${Math.floor(diff / 60000)}分钟前`
-      if (diff < 86400000) return `${Math.floor(diff / 3600000)}小时前`
-      if (diff < 604800000) return `${Math.floor(diff / 86400000)}天前`
-
-      return `${date.getMonth() + 1}/${date.getDate()}`
-    } catch (e) {
-      return timeStr
-    }
   },
 
   /**

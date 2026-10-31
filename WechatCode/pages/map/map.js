@@ -9,6 +9,7 @@ Page({
     vendors: [],
     selectedVendor: null,
     lastLoadTime: 0, // 记录上次加载时间，用于节流
+    isLoggedIn: false, // 登录状态，用于 vendor-modal 组件
 
     // 摊位详情弹窗
     vendorDetailVisible: false,
@@ -184,14 +185,18 @@ Page({
   },
 
   goToVendorPage(e) {
-    const vendorId = e.currentTarget.dataset.vendorId
+    // 兼容 vendor-modal 组件的事件格式
+    const vendor = e.detail?.vendor || e.currentTarget?.dataset?.vendor || {}
+    const vendorId = vendor.id || e.currentTarget?.dataset?.vendorId
+    if (!vendorId) return
     wx.navigateTo({
       url: `/pagesOther/vendor-detail/vendor-detail?id=${vendorId}`
     })
   },
 
   async onToggleFavoriteInModal(e) {
-    const item = e.currentTarget.dataset.item
+    // 兼容 vendor-modal 组件的事件格式
+    const item = e.detail?.vendor || e.currentTarget?.dataset?.item
     if (!item || !item.id) return
 
     if (!getUserId()) {
@@ -245,7 +250,8 @@ Page({
   },
 
   navigateToVendor(e) {
-    const item = e.currentTarget.dataset.item || this.data.selectedVendor
+    // 兼容 vendor-modal 组件的事件格式
+    const item = e.detail?.vendor || e.currentTarget?.dataset?.item || this.data.selectedVendor
     wx.openLocation({
       latitude: item.latitude,
       longitude: item.longitude,

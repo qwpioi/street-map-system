@@ -1,6 +1,6 @@
 <view class="login-container">
   <view class="logo-section">
-    <text class="logo">🛒</text>
+    <icon name="shop" size="xl" color="#fff" class="logo-icon"></icon>
     <text class="app-name">地摊地图</text>
     <text class="app-desc">发现身边的特色摊位</text>
   </view>
@@ -10,8 +10,8 @@
     <text class="sub-text">发现身边的美味摊位</text>
   </view>
 
-  <button class="login-btn" type="primary" bindtap="wxLogin">
-    <text class="btn-icon">💚</text>
+  <button class="login-btn" type="primary" bindtap="wxLogin" hover-class="login-btn-hover">
+    <icon name="check" size="lg" color="#FFB300" class="btn-icon"></icon>
     <text>微信一键登录</text>
   </button>
 

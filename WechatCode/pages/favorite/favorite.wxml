@@ -1,17 +1,16 @@
 <view class="favorite-container">
   <!-- 加载状态 -->
-  <view class="loading-state" wx:if="{{loading}}">
-    <text class="loading-icon">⏳</text>
-    <text class="loading-text">加载中...</text>
-  </view>
+  <empty-state wx:if="{{loading}}" icon="⏳" text="加载中..." />
 
   <!-- 空状态 -->
-  <view class="empty-state" wx:elif="{{!loading && favorites.length === 0}}">
-    <text class="empty-icon">⭐</text>
-    <text class="empty-text">暂无收藏摊位</text>
-    <text class="empty-desc">去首页发现更多美食吧~</text>
-    <button class="go-home-btn" bindtap="goHome">去首页逛逛</button>
-  </view>
+  <empty-state
+    wx:elif="{{!loading && favorites.length === 0}}"
+    icon="⭐"
+    text="暂无收藏摊位"
+    desc="去首页发现更多美食吧~"
+    buttonText="去首页逛逛"
+    bind:action="goHome"
+  />
 
   <!-- 收藏列表 -->
   <view wx:else>
@@ -23,140 +22,32 @@
 
     <!-- 收藏卡片列表 -->
     <view class="fav-list">
-      <view
-        class="fav-card"
+      <vendor-card
         wx:for="{{favorites}}"
         wx:key="id"
-        data-item="{{item}}"
-        bindtap="onFavoriteItemTap"
-      >
-        <view class="fav-thumb">🍜</view>
-        <view class="fav-info">
-          <text class="fav-name">{{item.stallName}}</text>
-          <view class="fav-meta">
-            <text class="fav-address" wx:if="{{item.address}}">📍 {{item.address}}</text>
-            <text class="fav-products" wx:if="{{item.hotProducts}}">🔥 {{item.hotProducts}}</text>
-          </view>
-          <view class="fav-bottom-row">
-            <text class="fav-time">收藏于 {{item.createTime}}</text>
-            <view
-              class="fav-unfav-btn"
-              catchtap="onCancelFavorite"
-              data-item="{{item}}"
-            >
-              ❤️ 取消收藏
-            </view>
-          </view>
-        </view>
-      </view>
+        vendor="{{item}}"
+        show-distance="{{true}}"
+        show-favorite="{{true}}"
+        bind:tap="onFavoriteItemTap"
+        bind:favorite="onCancelFavorite"
+      />
     </view>
   </view>
 
   <!-- 摊位详情弹窗 -->
-  <view class="vendor-detail-modal" wx:if="{{vendorDetailVisible && selectedVendor}}">
-    <view class="modal-mask" bindtap="onCloseVendorDetail"></view>
-    <view class="modal-content">
-      <view class="close-btn" bindtap="onCloseVendorDetail">✕</view>
-
-      <view class="detail-header" bindtap="goToVendorPage" data-vendor-id="{{selectedVendor.id}}">
-        <view class="detail-avatar">🍜</view>
-        <view class="detail-info">
-          <view class="detail-name">
-            <view class="name-text">{{selectedVendor.stallName}}</view>
-            <view class="name-arrow">></view>
-          </view>
-          <view class="detail-rating" wx:if="{{averageRating > 0}}">
-            <view class="detail-rating-badge">
-              <text class="detail-star">★</text>
-              <text class="detail-score">{{averageRating.toFixed(1)}}</text>
-            </view>
-            <text class="review-count">{{reviewCount}}条评价</text>
-          </view>
-          <view class="detail-rating" wx:else>
-            <text class="no-rating">暂无评分</text>
-          </view>
-          <view class="modal-favorite-wrapper" catchtap="onToggleFavoriteInModal" data-item="{{selectedVendor}}">
-            <text class="modal-heart-icon">{{selectedVendor.isFavorite ? '❤️' : '🤍'}}</text>
-            <text class="modal-favorite-text">{{selectedVendor.isFavorite ? '已收藏' : '点击收藏'}}</text>
-          </view>
-        </view>
-      </view>
-
-      <view class="detail-body">
-        <view class="detail-info-grid">
-          <view class="detail-info-cell" wx:if="{{selectedVendor.address}}">
-            <text class="dic-icon">📍</text>
-            <text class="dic-val">{{selectedVendor.address}}</text>
-          </view>
-          <view class="detail-info-cell" wx:if="{{selectedVendor.distance}}">
-            <text class="dic-icon">📏</text>
-            <text class="dic-val distance-val">{{selectedVendor.distance}}</text>
-          </view>
-          <view class="detail-info-cell" wx:if="{{selectedVendor.phone}}" bindtap="callPhone">
-            <text class="dic-icon">📞</text>
-            <text class="dic-val phone-val">{{selectedVendor.phone}}</text>
-          </view>
-        </view>
-      </view>
-
-      <!-- 商品列表 -->
-      <view class="modal-section" wx:if="{{vendorProducts.length > 0}}">
-        <view class="modal-section-title">
-          🥘 全部商品
-          <text class="modal-badge">{{vendorProducts.length}}</text>
-        </view>
-        <view class="modal-product-list">
-          <block wx:for="{{vendorProducts}}" wx:key="id" wx:if="{{index < 5}}">
-            <view class="modal-product-card">
-              <image class="modal-product-img" src="{{item.imageUrl || '/images/product-placeholder.svg'}}" mode="aspectFill" lazy-load />
-              <view class="modal-product-info">
-                <view class="modal-product-name">{{item.name}}</view>
-                <view class="modal-product-desc" wx:if="{{item.description}}">{{item.description}}</view>
-                <view class="modal-product-price">
-                  <text class="price-symbol">¥</text>
-                  <text class="price-value">{{item.price}}</text>
-                </view>
-              </view>
-            </view>
-          </block>
-        </view>
-      </view>
-
-      <!-- 评价列表 -->
-      <view class="modal-section" wx:if="{{recentReviews.length > 0}}">
-        <view class="modal-section-header">
-          <text class="modal-section-title">💬 最新评价</text>
-          <text class="view-all" bindtap="onViewAllReviews">查看全部 ></text>
-        </view>
-        <view class="modal-review-list">
-          <view class="modal-review-item" wx:for="{{recentReviews}}" wx:key="id">
-            <view class="modal-review-top">
-              <image class="modal-review-avatar" src="{{item.userAvatar || '/images/avatar-placeholder.svg'}}" mode="aspectFill" lazy-load />
-              <text class="modal-review-user">{{item.userName || '匿名用户'}}</text>
-              <view class="modal-review-stars">
-                <text wx:for="{{stars}}" wx:for-item="star" wx:key="*this" wx:if="{{star <= item.rating}}">★</text>
-                <text wx:for="{{stars}}" wx:for-item="star" wx:key="*this" wx:if="{{star > item.rating}}">☆</text>
-              </view>
-              <text class="modal-review-time">{{item.createTime}}</text>
-            </view>
-            <view class="modal-review-content" wx:if="{{item.content}}">{{item.content}}</view>
-          </view>
-        </view>
-      </view>
-
-      <view class="empty-reviews" wx:else>
-        <text class="empty-icon">😢</text>
-        <text class="empty-text">暂无评价，快来成为第一个评价的人吧！</text>
-      </view>
-
-      <view class="modal-actions">
-        <button class="modal-action-btn secondary" bindtap="onAddReview">
-          <text>📝 发表评价</text>
-        </button>
-        <button class="modal-action-btn primary" catchtap="navigateToVendor" data-item="{{selectedVendor}}">
-          <text>🧭 导航前往</text>
-        </button>
-      </view>
-    </view>
-  </view>
+  <vendor-modal
+    visible="{{vendorDetailVisible}}"
+    vendor="{{selectedVendor}}"
+    products="{{vendorProducts}}"
+    reviews="{{recentReviews}}"
+    is-logged-in="{{isLoggedIn}}"
+    average-rating="{{averageRating}}"
+    review-count="{{reviewCount}}"
+    bind:close="onCloseVendorDetail"
+    bind:navigate="navigateToVendor"
+    bind:toggle-favorite="onToggleFavoriteInModal"
+    bind:review="onAddReview"
+    bind:view-all-reviews="onViewAllReviews"
+    bind:view-vendor="goToVendorPage"
+  />
 </view>

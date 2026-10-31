@@ -1,5 +1,11 @@
 {
   "navigationBarTitleText": "我的收藏",
   "navigationBarBackgroundColor": "#FFD100",
-  "navigationBarTextStyle": "black"
+  "navigationBarTextStyle": "black",
+  "usingComponents": {
+    "icon": "/components/icon/icon",
+    "vendor-card": "/components/vendor-card/vendor-card",
+    "vendor-modal": "/components/vendor-modal/vendor-modal",
+    "empty-state": "/components/empty-state/empty-state"
+  }
 }

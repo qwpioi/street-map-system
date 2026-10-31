@@ -1,59 +1,53 @@
 <view class="container">
-  <!-- 黄色头部：定位 + 搜索 -->
-  <view class="home-header">
-    <view class="location-row">
-      <view class="location-left" bindtap="onLocationTap">
-        <text class="location-pin">📍</text>
-        <text class="location-text">{{address || '定位中...'}}</text>
-        <text class="location-arrow">▾</text>
-      </view>
-      <text class="weather-badge">☀️ 发现好摊</text>
-    </view>
-    <view class="search-bar">
-      <text class="s-icon">🔍</text>
-      <text class="s-text">搜索摊位、商品、地址...</text>
-    </view>
-  </view>
+  <!-- 页面头部：定位 + 搜索 -->
+  <page-header
+    address="{{address}}"
+    show-search="{{true}}"
+    bind:locationtap="onLocationTap"
+  />
 
   <!-- 运营 Banner -->
   <view class="banner-card">
     <view class="banner-title">发现身边好摊位</view>
     <view class="banner-sub">3公里内精选美食摊位</view>
-    <text class="banner-tag">🔥 今日热门</text>
+    <view class="banner-tag">
+      <icon name="fire" size="xs" color="#fff" />
+      <text class="banner-tag-text">今日热门</text>
+    </view>
   </view>
 
   <!-- 功能入口网格 4×2 -->
   <view class="category-grid">
-    <view class="cat-item" bindtap="goNearby">
-      <view class="cat-icon c1"><text>🏪</text></view>
+    <view class="cat-item" hover-class="cat-item-hover" bindtap="goNearby">
+      <view class="cat-icon c1"><icon name="shop" size="md" /></view>
       <text class="cat-text">附近摊位</text>
     </view>
-    <view class="cat-item" bindtap="goMap">
-      <view class="cat-icon c2"><text>🗺️</text></view>
+    <view class="cat-item" hover-class="cat-item-hover" bindtap="goMap">
+      <view class="cat-icon c2"><icon name="map" size="md" /></view>
       <text class="cat-text">地图找摊</text>
     </view>
-    <view class="cat-item" bindtap="goHotList">
-      <view class="cat-icon c3"><text>🔥</text></view>
+    <view class="cat-item" hover-class="cat-item-hover" bindtap="goHotList">
+      <view class="cat-icon c3"><icon name="fire" size="md" /></view>
       <text class="cat-text">热门排行</text>
     </view>
-    <view class="cat-item" bindtap="goFavorite">
-      <view class="cat-icon c4"><text>⭐</text></view>
+    <view class="cat-item" hover-class="cat-item-hover" bindtap="goFavorite">
+      <view class="cat-icon c4"><icon name="heart-filled" size="md" /></view>
       <text class="cat-text">我的收藏</text>
     </view>
-    <view class="cat-item" bindtap="goCategories">
-      <view class="cat-icon c5"><text>🍜</text></view>
+    <view class="cat-item" hover-class="cat-item-hover" bindtap="goCategories">
+      <view class="cat-icon c5"><icon name="food" size="md" /></view>
       <text class="cat-text">美食小吃</text>
     </view>
-    <view class="cat-item" bindtap="goAllServices">
-      <view class="cat-icon c6"><text>🎨</text></view>
+    <view class="cat-item" hover-class="cat-item-hover" bindtap="goAllServices">
+      <view class="cat-icon c6"><icon name="star" size="md" /></view>
       <text class="cat-text">手工文创</text>
     </view>
-    <view class="cat-item" bindtap="goComments">
-      <view class="cat-icon c7"><text>💬</text></view>
+    <view class="cat-item" hover-class="cat-item-hover" bindtap="goComments">
+      <view class="cat-icon c7"><icon name="review" size="md" /></view>
       <text class="cat-text">我的评价</text>
     </view>
-    <view class="cat-item" bindtap="goBecomeVendor">
-      <view class="cat-icon c8"><text>📝</text></view>
+    <view class="cat-item" hover-class="cat-item-hover" bindtap="goBecomeVendor">
+      <view class="cat-icon c8"><icon name="edit" size="md" /></view>
       <text class="cat-text">成为摊主</text>
     </view>
   </view>
@@ -68,175 +62,55 @@
       <text class="qc-dot hot"></text>
       <text>排行榜更新</text>
     </view>
-    <view class="quick-chip" bindtap="goBecomeVendor">
-      <text>📝 成为摊主</text>
+    <view class="quick-chip" hover-class="quick-chip-hover" bindtap="goBecomeVendor">
+      <icon name="edit" size="xs" color="#666" />
+      <text>成为摊主</text>
     </view>
   </view>
 
   <!-- 推荐摊位列表 -->
   <view class="vendor-section">
-    <view class="section-header">
-      <text class="section-title">推荐摊位</text>
-      <text class="section-more">智能排序 ›</text>
-    </view>
+    <section-header
+      title="推荐摊位"
+      more-text="智能排序"
+      bind:more="onMoreTap"
+    />
 
     <view class="vendor-list">
-      <view
-        class="vendor-card-mt"
+      <vendor-card
         wx:for="{{vendors}}"
         wx:key="id"
-        bindtap="onVendorCardTap"
-        data-item="{{item}}"
-      >
-        <view class="vcm-top">
-          <!-- 缩略图 + 营业状态角标 -->
-          <view class="vcm-thumb">
-            <text class="vcm-emoji">🍜</text>
-            <view class="vcm-open-badge {{item.status === 1 ? '' : 'closed'}}">
-              {{item.status === 1 ? '营业中' : '已收摊'}}
-            </view>
-          </view>
-          <!-- 右侧信息 -->
-          <view class="vcm-info">
-            <text class="vcm-name">{{item.stallName}}</text>
-            <view class="vcm-rating-row">
-              <view class="vcm-stars">
-                <text wx:for="{{[1,2,3,4,5]}}" wx:for-item="star" wx:key="*this" wx:if="{{star <= item.averageRating}}" class="vcm-star filled">★</text>
-                <text wx:for="{{[1,2,3,4,5]}}" wx:for-item="star" wx:key="*this" wx:if="{{star > item.averageRating}}" class="vcm-star empty">★</text>
-              </view>
-              <text class="vcm-score" wx:if="{{item.averageRating > 0}}">{{item.averageRating}}</text>
-              <text class="vcm-review-count" wx:if="{{item.reviewCount > 0}}">{{item.reviewCount}}条</text>
-            </view>
-            <view class="vcm-tags-row" wx:if="{{item.hotProducts}}">
-              <text class="vcm-tag">{{item.hotProducts}}</text>
-            </view>
-          </view>
-        </view>
-        <view class="vcm-bottom">
-          <text class="vcm-address" wx:if="{{item.address}}">📍 {{item.address}} · {{item.distanceText}}</text>
-          <view class="vcm-actions">
-            <view class="vcm-btn nav-btn" catchtap="navigateToVendor" data-item="{{item}}">🧭</view>
-            <view class="vcm-btn fav-btn" wx:if="{{isLoggedIn}}" catchtap="onToggleFavorite" data-item="{{item}}">
-              <text wx:if="{{item.isFavorite}}">❤️</text>
-              <text wx:else>🤍</text>
-            </view>
-          </view>
-        </view>
-      </view>
+        vendor="{{item}}"
+        show-distance="{{true}}"
+        show-favorite="{{isLoggedIn}}"
+        bind:tap="onVendorCardTap"
+        bind:favorite="onToggleFavorite"
+        bind:navigate="navigateToVendor"
+      />
     </view>
 
     <!-- 空状态 -->
-    <view class="empty-state" wx:if="{{vendors.length === 0 && location}}">
-      <text class="empty-icon">😢</text>
-      <text class="empty-text">附近暂无摊位</text>
-    </view>
+    <empty-state
+      wx:if="{{vendors.length === 0 && location}}"
+      icon="😢"
+      text="附近暂无摊位"
+    />
   </view>
 
   <!-- 摊位详情弹窗 -->
-  <view class="vendor-detail-modal" wx:if="{{vendorDetailVisible && selectedVendor}}">
-    <view class="modal-mask" bindtap="onCloseVendorDetail"></view>
-    <view class="modal-content">
-      <view class="close-btn" bindtap="onCloseVendorDetail">✕</view>
-
-      <view class="detail-header" bindtap="goToVendorPage" data-vendor-id="{{selectedVendor.id}}">
-        <view class="detail-avatar">🍜</view>
-        <view class="detail-info">
-          <view class="detail-name">
-            <view class="name-text">{{selectedVendor.stallName}}</view>
-            <view class="name-arrow">></view>
-          </view>
-          <view class="detail-rating" wx:if="{{averageRating > 0}}">
-            <view class="detail-rating-badge">
-              <text class="detail-star">★</text>
-              <text class="detail-score">{{averageRating.toFixed(1)}}</text>
-            </view>
-            <text class="review-count">{{reviewCount}}条评价</text>
-          </view>
-          <view class="detail-rating" wx:else>
-            <text class="no-rating">暂无评分</text>
-          </view>
-          <view class="modal-favorite-wrapper" catchtap="onToggleFavoriteInModal" data-item="{{selectedVendor}}">
-            <text class="modal-heart-icon">{{selectedVendor.isFavorite ? '❤️' : '🤍'}}</text>
-            <text class="modal-favorite-text">{{selectedVendor.isFavorite ? '已收藏' : '点击收藏'}}</text>
-          </view>
-        </view>
-      </view>
-
-      <view class="detail-body">
-        <view class="detail-info-grid">
-          <view class="detail-info-cell" wx:if="{{selectedVendor.address}}">
-            <text class="dic-icon">📍</text>
-            <text class="dic-val">{{selectedVendor.address}}</text>
-          </view>
-          <view class="detail-info-cell">
-            <text class="dic-icon">📏</text>
-            <text class="dic-val distance-val">{{selectedVendor.distance}}</text>
-          </view>
-          <view class="detail-info-cell" wx:if="{{selectedVendor.phone}}" bindtap="callPhone">
-            <text class="dic-icon">📞</text>
-            <text class="dic-val phone-val">{{selectedVendor.phone}}</text>
-          </view>
-        </view>
-      </view>
-
-      <!-- 商品列表 -->
-      <view class="modal-section" wx:if="{{vendorProducts.length > 0 || selectedVendor.products.length > 0}}">
-        <view class="modal-section-title">
-          🥘 全部商品
-          <text class="modal-badge">{{vendorProducts.length || selectedVendor.products.length}}</text>
-        </view>
-        <view class="modal-product-list">
-          <block wx:for="{{vendorProducts}}" wx:key="id" wx:if="{{index < 5}}">
-            <view class="modal-product-card">
-              <image class="modal-product-img" src="{{item.imageUrl || '/images/product-placeholder.svg'}}" mode="aspectFill" lazy-load />
-              <view class="modal-product-info">
-                <view class="modal-product-name">{{item.name}}</view>
-                <view class="modal-product-desc" wx:if="{{item.description}}">{{item.description}}</view>
-                <view class="modal-product-price">
-                  <text class="price-symbol">¥</text>
-                  <text class="price-value">{{item.price}}</text>
-                </view>
-              </view>
-            </view>
-          </block>
-        </view>
-      </view>
-
-      <!-- 评价列表 -->
-      <view class="modal-section" wx:if="{{recentReviews.length > 0}}">
-        <view class="modal-section-header">
-          <text class="modal-section-title">💬 最新评价</text>
-          <text class="view-all" bindtap="onViewAllReviews">查看全部 ></text>
-        </view>
-        <view class="modal-review-list">
-          <view class="modal-review-item" wx:for="{{recentReviews}}" wx:key="id">
-            <view class="modal-review-top">
-              <image class="modal-review-avatar" src="{{item.userAvatar || '/images/avatar-placeholder.svg'}}" mode="aspectFill" lazy-load />
-              <text class="modal-review-user">{{item.userName || '匿名用户'}}</text>
-              <view class="modal-review-stars">
-                <text wx:for="{{stars}}" wx:for-item="star" wx:key="*this" wx:if="{{star <= item.rating}}">★</text>
-                <text wx:for="{{stars}}" wx:for-item="star" wx:key="*this" wx:if="{{star > item.rating}}">☆</text>
-              </view>
-              <text class="modal-review-time">{{item.createTime}}</text>
-            </view>
-            <view class="modal-review-content" wx:if="{{item.content}}">{{item.content}}</view>
-          </view>
-        </view>
-      </view>
-
-      <view class="empty-reviews" wx:else>
-        <text class="empty-icon">😢</text>
-        <text class="empty-text">暂无评价，快来成为第一个评价的人吧！</text>
-      </view>
-
-      <view class="modal-actions">
-        <button class="modal-action-btn secondary" bindtap="onAddReview">
-          <text>📝 发表评价</text>
-        </button>
-        <button class="modal-action-btn primary" catchtap="navigateToVendor" data-item="{{selectedVendor}}">
-          <text>🧭 导航前往</text>
-        </button>
-      </view>
-    </view>
-  </view>
+  <vendor-modal
+    visible="{{vendorDetailVisible}}"
+    vendor="{{selectedVendor}}"
+    products="{{vendorProducts}}"
+    reviews="{{recentReviews}}"
+    is-logged-in="{{isLoggedIn}}"
+    average-rating="{{averageRating}}"
+    review-count="{{reviewCount}}"
+    bind:close="onCloseVendorDetail"
+    bind:navigate="navigateToVendor"
+    bind:toggleFavorite="onToggleFavoriteInModal"
+    bind:review="onAddReview"
+    bind:viewAllReviews="onViewAllReviews"
+    bind:viewVendor="goToVendorPage"
+  />
 </view>
