@@ -75,21 +75,20 @@ Page({
   },
 
   checkLogin() {
-    const token = wx.getStorageSync('token')
+    const userId = getUserId()
     const userInfo = wx.getStorageSync('userInfo')
-    
-    if (token && userInfo) {
-      this.setData({ 
+
+    if (userId && userInfo) {
+      this.setData({
         isLoggedIn: true,
         userInfo: userInfo
       })
       app.globalData.userInfo = userInfo
-      app.globalData.token = token
-      
+
       // 加载收藏状态
       this.loadFavoriteIds()
     } else {
-      this.setData({ 
+      this.setData({
         isLoggedIn: false,
         userInfo: null,
         favoriteVendorIds: []

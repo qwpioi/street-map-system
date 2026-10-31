@@ -39,10 +39,9 @@ Page({
    */
   checkLogin() {
     const userId = getUserId()
-    const token = wx.getStorageSync('token')
-    
-    if (token && userId) {
-      this.setData({ 
+
+    if (userId) {
+      this.setData({
         isLoggedIn: true
       })
       this.loadFavorites()
@@ -267,8 +266,7 @@ Page({
   onAddReview() {
     if (!this.data.selectedVendor) return
 
-    const token = wx.getStorageSync('token')
-    if (!token) {
+    if (!getUserId()) {
       wx.showModal({
         title: '提示',
         content: '请先登录再评价',

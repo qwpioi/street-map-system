@@ -25,9 +25,7 @@ Page({
   },
 
   checkLogin() {
-    const userId = getUserId()
-    const token = wx.getStorageSync('token')
-    const loggedIn = !!(userId && token)
+    const loggedIn = !!getUserId()
     this.setData({ isLoggedIn: loggedIn })
 
     if (!loggedIn) {

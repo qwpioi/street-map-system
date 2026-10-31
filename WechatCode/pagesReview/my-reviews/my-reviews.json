@@ -1,6 +1,10 @@
 {
   "navigationBarTitleText": "我的评价",
-  "navigationBarBackgroundColor": "#FFD100",
+  "navigationBarBackgroundColor": "#FFB300",
   "navigationBarTextStyle": "black",
-  "usingComponents": {}
+  "usingComponents": {
+    "icon": "/components/icon/icon",
+    "rating-stars": "/components/rating-stars/rating-stars",
+    "empty-state": "/components/empty-state/empty-state"
+  }
 }

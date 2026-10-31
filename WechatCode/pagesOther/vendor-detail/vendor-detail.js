@@ -1,4 +1,4 @@
-const { vendorApi, productApi, reviewApi, favoriteApi } = require('../../utils/api')
+const { vendorApi, productApi, reviewApi, favoriteApi, getUserId } = require('../../utils/api')
 const logger = require('../../utils/logger')
 const app = getApp()
 Page({
@@ -35,10 +35,10 @@ Page({
   },
   // 检查登录状态
   checkLogin() {
-    const token = wx.getStorageSync('token')
+    const userId = getUserId()
     const userInfo = wx.getStorageSync('userInfo')
     this.setData({
-      isLoggedIn: !!(token && userInfo)
+      isLoggedIn: !!(userId && userInfo)
     })
   },
   // 加载所有数据

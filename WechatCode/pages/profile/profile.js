@@ -1,4 +1,4 @@
-const { vendorApi } = require('../../utils/api');
+const { vendorApi, getUserId } = require('../../utils/api');
 
 Page({
   data: {
@@ -15,10 +15,10 @@ Page({
   },
 
   checkLoginStatus() {
-    const token = wx.getStorageSync('token')
+    const userId = getUserId()
     const userInfo = wx.getStorageSync('userInfo')
-    
-    if (token && userInfo) {
+
+    if (userId && userInfo) {
       this.setData({
         isLoggedIn: true,
         userInfo: userInfo
@@ -84,8 +84,7 @@ Page({
   },
 
   goComments() {
-    const token = wx.getStorageSync('token')
-    if (!token) {
+    if (!getUserId()) {
       wx.showToast({
         title: '请先登录',
         icon: 'none'

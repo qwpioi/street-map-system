@@ -1,17 +1,21 @@
 <view class="my-reviews-container">
 
   <!-- 加载状态 -->
-  <view class="loading-state" wx:if="{{loading}}">
-    <text class="loading-text">加载中...</text>
-  </view>
+  <empty-state
+    wx:if="{{loading}}"
+    icon="⏳"
+    text="加载中..."
+  ></empty-state>
 
   <!-- 空状态 -->
-  <view class="empty-state" wx:elif="{{!loading && reviews.length === 0}}">
-    <text class="empty-icon">💬</text>
-    <text class="empty-text">暂无评价</text>
-    <text class="empty-desc">去逛逛摊位，留下你的评价吧</text>
-    <button class="go-home-btn" bindtap="goHome">去逛逛</button>
-  </view>
+  <empty-state
+    wx:elif="{{!loading && reviews.length === 0}}"
+    icon="💬"
+    text="暂无评价"
+    desc="去逛逛摊位，留下你的评价吧"
+    buttonText="去逛逛"
+    bind:action="goHome"
+  ></empty-state>
 
   <!-- 数据态 -->
   <view wx:else>
@@ -26,10 +30,7 @@
       <view class="stat-item">
         <text class="stat-value">{{stats.averageRating}}</text>
         <text class="stat-label">平均评分</text>
-        <view class="stat-stars">
-          <text wx:for="{{stars}}" wx:key="*this" wx:if="{{item <= stats.averageRating}}">⭐</text>
-          <text wx:for="{{stars}}" wx:key="*this" wx:if="{{item > stats.averageRating}}">☆</text>
-        </view>
+        <rating-stars rating="{{stats.averageRating}}" size="sm" readonly="{{true}}"></rating-stars>
       </view>
     </view>
 
@@ -41,19 +42,22 @@
         wx:key="id"
         data-vendor-id="{{item.vendorId}}"
         bindtap="onReviewTap"
+        hover-class="hover-review-card"
       >
         <view class="card-header">
           <text class="vendor-name">{{item.vendorName}}</text>
-          <text class="card-arrow">›</text>
-          <text
+          <icon name="arrow-right" size="sm" color="#ccc"></icon>
+          <view
             class="delete-btn"
             catchtap="deleteReview"
             data-review-id="{{item.id}}"
-          >删除</text>
+            hover-class="hover-delete"
+          >
+            <icon name="close" size="xs" color="#e74c3c"></icon>
+          </view>
         </view>
         <view class="card-rating">
-          <text wx:for="{{stars}}" wx:for-item="s" wx:key="*this" wx:if="{{s <= item.rating}}">⭐</text>
-          <text wx:for="{{stars}}" wx:for-item="s" wx:key="*this" wx:if="{{s > item.rating}}">☆</text>
+          <rating-stars rating="{{item.rating}}" size="sm" readonly="{{true}}"></rating-stars>
         </view>
         <text class="card-content" wx:if="{{item.content}}">{{item.content}}</text>
         <view class="card-footer">

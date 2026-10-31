@@ -1,4 +1,4 @@
-const { API_BASE_URL } = require('../../utils/config')
+const { request, getUserId } = require('../../utils/api')
 const logger = require('../../utils/logger')
 
 Page({
@@ -8,8 +8,7 @@ Page({
   },
 
   onLoad() {
-    const token = wx.getStorageSync('token')
-    if (token) {
+    if (getUserId()) {
       logger.info('✅ 已登录，直接跳转到首页')
       wx.reLaunch({
         url: '/pages/index/index'
@@ -109,58 +108,53 @@ Page({
 
   loginToServer(code) {
     wx.showLoading({ title: '登录中...', mask: true })
-    
-    wx.request({
-      url: `${API_BASE_URL}/auth/wechat-login`,
+
+    request({
+      url: '/auth/wechat-login',
       method: 'POST',
       data: {
         code: code
-      },
-      header: {
-        'Content-Type': 'application/json'
-      },
-      success: (res) => {
-        wx.hideLoading()
-        logger.debug('🔑 登录响应:', res.data)
-        
-        if (res.data && res.data.code === 200) {
-          const { token, user } = res.data.data
-          
-          // 存储 token 和用户信息
-          wx.setStorageSync('token', token)
-          wx.setStorageSync('userInfo', user)
-          
-          // 更新全局状态
-          const app = getApp()
-          app.globalData.token = token
-          app.globalData.userInfo = user
-          
-          wx.showToast({
-            title: '登录成功',
-            icon: 'success'
-          })
-          
-          // 跳转首页
-          setTimeout(() => {
-            wx.reLaunch({
-              url: '/pages/index/index'
-            })
-          }, 1000)
-        } else {
-          wx.showToast({
-            title: res.data.message || '登录失败',
-            icon: 'none'
-          })
-        }
-      },
-      fail: (err) => {
-        wx.hideLoading()
-        logger.error('❌ 登录请求失败:', err)
+      }
+    }).then(res => {
+      wx.hideLoading()
+      logger.debug('🔑 登录响应:', res)
+
+      if (res && res.code === 200) {
+        const { token, user } = res.data
+
+        // 存储 token 与用户信息
+        wx.setStorageSync('token', token)
+        wx.setStorageSync('userInfo', user)
+
+        // 更新全局状态
+        const app = getApp()
+        app.globalData.token = token
+        app.globalData.userInfo = user
+
         wx.showToast({
-          title: '网络错误，请稍后重试',
+          title: '登录成功',
+          icon: 'success'
+        })
+
+        // 跳转首页
+        setTimeout(() => {
+          wx.reLaunch({
+            url: '/pages/index/index'
+          })
+        }, 1000)
+      } else {
+        wx.showToast({
+          title: res.message || '登录失败',
           icon: 'none'
         })
       }
+    }).catch(err => {
+      wx.hideLoading()
+      logger.error('❌ 登录请求失败:', err)
+      wx.showToast({
+        title: '网络错误，请稍后重试',
+        icon: 'none'
+      })
     })
   }
 })

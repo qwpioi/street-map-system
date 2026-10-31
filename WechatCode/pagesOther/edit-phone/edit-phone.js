@@ -1,4 +1,5 @@
-const { API_BASE_URL, getToken } = require('../../utils/api')
+const { request } = require('../../utils/api')
+const logger = require('../../utils/logger')
 
 Page({
   data: {
@@ -20,29 +21,23 @@ Page({
     if (!/^1[3-9]\d{9}$/.test(phone)) return wx.showToast({ title: '手机号格式不正确', icon: 'error' })
 
     this.setData({ saving: true })
-    const token = getToken()
 
-    wx.request({
-      url: `${API_BASE_URL}/vendor/phone`,
+    request({
+      url: '/vendor/phone',
       method: 'PUT',
-      header: {
-        'Content-Type': 'application/json',
-        'Authorization': `Bearer ${token}`
-      },
-      data: { phone },
-      success: (res) => {
-        this.setData({ saving: false })
-        if (res.data.code === 200) {
-          wx.showToast({ title: '保存成功', icon: 'success' })
-          setTimeout(() => { wx.navigateBack() }, 1000)
-        } else {
-          wx.showModal({ title: '失败', content: res.data.message, showCancel: false })
-        }
-      },
-      fail: () => {
-        this.setData({ saving: false })
-        wx.showToast({ title: '网络错误', icon: 'error' })
+      data: { phone }
+    }).then(res => {
+      this.setData({ saving: false })
+      if (res.code === 200) {
+        wx.showToast({ title: '保存成功', icon: 'success' })
+        setTimeout(() => { wx.navigateBack() }, 1000)
+      } else {
+        wx.showModal({ title: '失败', content: res.message, showCancel: false })
       }
+    }).catch(err => {
+      this.setData({ saving: false })
+      logger.error('修改手机号失败:', err)
+      wx.showToast({ title: '网络错误', icon: 'error' })
     })
   }
 })
