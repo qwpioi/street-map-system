@@ -2,7 +2,10 @@
   <!-- 头部 -->
   <view class="pm-header">
     <text class="pm-title">商品管理</text>
-    <view class="pm-add-btn" bindtap="onAdd">+ 添加</view>
+    <view class="pm-add-btn" bindtap="onAdd" hover-class="hover-add-btn">
+      <icon name="check" size="xs" color="#fff"></icon>
+      <text>添加</text>
+    </view>
   </view>
 
   <!-- 商品列表 -->
@@ -10,7 +13,9 @@
     <view class="pm-card" wx:for="{{products}}" wx:key="id" hover-class="pm-card-hover">
       <view class="pm-img-wrap">
         <image class="pm-img" src="{{item.imageUrl}}" mode="aspectFill" lazy-load />
-        <text wx:if="{{!item.imageUrl}}" class="pm-placeholder">🍳</text>
+        <view wx:if="{{!item.imageUrl}}" class="pm-placeholder">
+          <icon name="food" size="xl" color="#ccc"></icon>
+        </view>
       </view>
       <view class="pm-info">
         <text class="pm-name">{{item.name}}</text>
@@ -21,16 +26,22 @@
         </view>
       </view>
       <view class="pm-actions">
-        <view class="pm-edit" bindtap="onEdit" data-id="{{item.id}}">编辑</view>
-        <view class="pm-delete" bindtap="onDelete" data-id="{{item.id}}" data-name="{{item.name}}">删除</view>
+        <view class="pm-edit" bindtap="onEdit" data-id="{{item.id}}" hover-class="hover-edit">
+          <icon name="edit" size="xs" color="#FFB300"></icon>
+        </view>
+        <view class="pm-delete" bindtap="onDelete" data-id="{{item.id}}" data-name="{{item.name}}" hover-class="hover-delete">
+          <icon name="close" size="xs" color="#e74c3c"></icon>
+        </view>
       </view>
     </view>
   </view>
 
   <!-- 空状态 -->
-  <view class="pm-empty" wx:else>
-    <text class="pm-empty-icon">📦</text>
-    <text class="pm-empty-text">还没有商品</text>
-    <view class="pm-empty-btn" bindtap="onAdd">+ 添加商品</view>
-  </view>
+  <empty-state
+    wx:if="{{!loading && products.length === 0}}"
+    icon="📦"
+    text="还没有商品"
+    buttonText="+ 添加商品"
+    bind:action="onAdd"
+  ></empty-state>
 </view>

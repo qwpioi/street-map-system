@@ -63,26 +63,26 @@
       {
         "pagePath": "pages/index/index",
         "text": "首页",
-        "iconPath": "assets/icons/tab-home.svg",
-        "selectedIconPath": "assets/icons/tab-home-active.svg"
+        "iconPath": "assets/icons/tab-home.png",
+        "selectedIconPath": "assets/icons/tab-home-active.png"
       },
       {
         "pagePath": "pages/map/map",
         "text": "地图",
-        "iconPath": "assets/icons/tab-map.svg",
-        "selectedIconPath": "assets/icons/tab-map-active.svg"
+        "iconPath": "assets/icons/tab-map.png",
+        "selectedIconPath": "assets/icons/tab-map-active.png"
       },
       {
         "pagePath": "pages/favorite/favorite",
         "text": "收藏",
-        "iconPath": "assets/icons/tab-fav.svg",
-        "selectedIconPath": "assets/icons/tab-fav-active.svg"
+        "iconPath": "assets/icons/tab-fav.png",
+        "selectedIconPath": "assets/icons/tab-fav-active.png"
       },
       {
         "pagePath": "pages/profile/profile",
         "text": "我的",
-        "iconPath": "assets/icons/tab-profile.svg",
-        "selectedIconPath": "assets/icons/tab-profile-active.svg"
+        "iconPath": "assets/icons/tab-profile.png",
+        "selectedIconPath": "assets/icons/tab-profile-active.png"
       }
     ]
   },
