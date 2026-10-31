@@ -1,4 +1,5 @@
 const { vendorApi, reviewApi, productApi, favoriteApi, getUserId } = require('../../utils/api')
+const logger = require('../../utils/logger')
 const { fixDevLocation, calculateDistance, formatRelativeTime } = require('../../utils/util')
 
 Page({

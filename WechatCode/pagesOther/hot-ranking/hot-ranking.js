@@ -1,4 +1,5 @@
 const { vendorApi } = require('../../utils/api')
+const logger = require('../../utils/logger')
 
 Page({
   data: {

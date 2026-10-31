@@ -1,4 +1,5 @@
 const { reviewApi, getUserId } = require('../../utils/api')
+const logger = require('../../utils/logger')
 const { formatRelativeTime } = require('../../utils/util')
 
 Page({

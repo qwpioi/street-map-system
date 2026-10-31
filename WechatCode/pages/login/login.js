@@ -1,4 +1,5 @@
 const { API_BASE_URL } = require('../../utils/config')
+const logger = require('../../utils/logger')
 
 Page({
   data: {

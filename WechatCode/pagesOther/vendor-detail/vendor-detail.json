@@ -1,4 +1,9 @@
 {
   "navigationBarTitleText": "摊位详情",
-  "usingComponents": {}
+  "usingComponents": {
+    "icon": "/components/icon/icon",
+    "rating-stars": "/components/rating-stars/rating-stars",
+    "status-badge": "/components/status-badge/status-badge",
+    "bottom-action-bar": "/components/bottom-action-bar/bottom-action-bar"
+  }
 }
