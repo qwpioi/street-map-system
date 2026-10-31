@@ -6,7 +6,9 @@ Page({
     stallName: '',
     phone: '',
     avatar: '',
-    saving: false
+    saving: false,
+    focusName: false,
+    focusPhone: false
   },
 
   onLoad(options) {
@@ -56,6 +58,22 @@ Page({
 
   onCancel() {
     wx.navigateBack()
+  },
+
+  onFocusName() {
+    this.setData({ focusName: true })
+  },
+
+  onBlurName() {
+    this.setData({ focusName: false })
+  },
+
+  onFocusPhone() {
+    this.setData({ focusPhone: true })
+  },
+
+  onBlurPhone() {
+    this.setData({ focusPhone: false })
   },
 
   onInputName(e) {

@@ -3,7 +3,7 @@ page {
 }
 
 .container {
-  padding: 30rpx 20rpx;
+  padding: var(--space-lg) var(--space-md);
   height: auto;
   display: block;
   align-items: initial;
@@ -13,44 +13,76 @@ page {
 
 .form-group {
   background-color: #fff;
-  border-radius: 12rpx;
-  padding: 24rpx;
-  margin-bottom: 20rpx;
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  margin-bottom: var(--space-md);
+  box-shadow: var(--shadow-sm);
+}
+
+.label-row {
+  display: flex;
+  align-items: center;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-sm);
 }
 
 .label {
-  display: block;
-  font-size: 28rpx;
+  font-size: var(--font-size-md);
   color: #333;
   font-weight: bold;
-  margin-bottom: 16rpx;
+}
+
+.required {
+  color: #e74c3c;
+  font-size: var(--font-size-md);
 }
 
 .input {
   width: 100%;
   height: 88rpx;
   line-height: 88rpx;
-  font-size: 28rpx;
-  padding: 0 20rpx;
+  font-size: var(--font-size-md);
+  padding: 0 var(--space-md);
   background-color: #f9f9f9;
-  border-radius: 8rpx;
+  border-radius: var(--radius-md);
   box-sizing: border-box;
+  border: 2rpx solid transparent;
+  transition: all 0.2s;
+}
+
+.input-focus {
+  background-color: #fff;
+  border-color: var(--color-primary);
+  box-shadow: 0 0 0 4rpx rgba(255, 179, 0, 0.1);
 }
 
 .actions {
-  margin-top: 40rpx;
+  margin-top: var(--space-xl);
   display: flex;
   flex-direction: column;
-  gap: 20rpx;
+  gap: var(--space-md);
 }
 
 .btn-submit {
   width: 100%;
-  background-color: #07C160;
-  color: #fff;
-  border-radius: 30rpx;
-  font-size: 30rpx;
-  padding: 24rpx;
+  background-color: var(--color-primary) !important;
+  color: #fff !important;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-lg);
+  padding: var(--space-md);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  box-shadow: 0 4rpx 16rpx rgba(255, 179, 0, 0.3);
+  transition: all 0.2s;
+  border: none !important;
+}
+
+.hover-submit {
+  background-color: var(--color-primary-dark) !important;
+  transform: translateY(-2rpx);
+  box-shadow: 0 6rpx 20rpx rgba(255, 179, 0, 0.4);
 }
 
 .btn-submit::after {
@@ -59,16 +91,27 @@ page {
 
 .btn-cancel {
   width: 100%;
-  background-color: #fff;
-  color: #999;
-  border: 2rpx solid #ddd;
-  border-radius: 30rpx;
-  font-size: 30rpx;
-  padding: 24rpx;
+  background-color: #fff !important;
+  color: #999 !important;
+  border: 2rpx solid #ddd !important;
+  border-radius: var(--radius-full);
+  font-size: var(--font-size-lg);
+  padding: var(--space-md);
+  transition: all 0.2s;
+}
+
+.hover-cancel {
+  background-color: #f5f5f5 !important;
+  border-color: #ccc !important;
 }
 
 .btn-cancel::after {
   border: none;
+}
+
+/* 头像容器 */
+.avatar-wrapper {
+  margin-top: var(--space-xs);
 }
 
 /* 图片选择按钮 */
@@ -79,18 +122,20 @@ page {
   justify-content: center;
   height: 200rpx;
   border: 2rpx dashed #ddd;
-  border-radius: 12rpx;
+  border-radius: var(--radius-lg);
   background: #fafafa;
+  transition: all 0.2s;
 }
 
-.picker-icon {
-  font-size: 60rpx;
-  margin-bottom: 10rpx;
+.hover-picker {
+  border-color: var(--color-primary);
+  background: var(--color-primary-light);
 }
 
 .picker-text {
-  font-size: 26rpx;
+  font-size: var(--font-size-sm);
   color: #999;
+  margin-top: var(--space-xs);
 }
 
 /* 图片预览 */
@@ -98,7 +143,7 @@ page {
   position: relative;
   width: 200rpx;
   height: 200rpx;
-  border-radius: 12rpx;
+  border-radius: var(--radius-lg);
   overflow: hidden;
 }
 
@@ -114,10 +159,13 @@ page {
   width: 44rpx;
   height: 44rpx;
   background: rgba(0, 0, 0, 0.6);
-  color: #fff;
-  font-size: 24rpx;
   display: flex;
   align-items: center;
   justify-content: center;
-  border-radius: 0 12rpx 0 12rpx;
+  border-radius: 0 var(--radius-lg) 0 var(--radius-lg);
+  transition: background-color 0.2s;
+}
+
+.hover-remove {
+  background: rgba(231, 76, 60, 0.8);
 }
