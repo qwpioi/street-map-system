@@ -29,7 +29,7 @@ page {
   right: 0;
   bottom: 0;
   background-color: #fff;
-  border-radius: 24rpx 24rpx 0 0;
+  border-radius: var(--radius-xl) var(--radius-xl) 0 0;
   z-index: 1000;
   transform: translateY(100%);
   transition: transform 0.3s ease;
@@ -37,6 +37,7 @@ page {
   display: flex;
   flex-direction: column;
   pointer-events: none;
+  box-shadow: 0 -4rpx 24rpx rgba(0, 0, 0, 0.1);
 }
 
 .review-modal.show {
@@ -46,7 +47,7 @@ page {
 
 /* 顶部拖动条 */
 .modal-drag-bar {
-  padding: 20rpx;
+  padding: var(--space-md);
   display: flex;
   justify-content: center;
   align-items: center;
@@ -57,7 +58,7 @@ page {
   width: 80rpx;
   height: 8rpx;
   background-color: #e0e0e0;
-  border-radius: 4rpx;
+  border-radius: var(--radius-sm);
 }
 
 /* 标题栏 */
@@ -65,7 +66,7 @@ page {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 20rpx 30rpx;
+  padding: var(--space-md) var(--space-lg);
   border-bottom: 1rpx solid #f0f0f0;
   flex-shrink: 0;
 }
@@ -77,10 +78,16 @@ page {
 }
 
 .close-btn {
-  font-size: 40rpx;
-  color: #999;
-  padding: 10rpx;
-  line-height: 1;
+  padding: var(--space-xs);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--radius-full);
+  transition: background-color 0.2s;
+}
+
+.hover-close {
+  background-color: rgba(0, 0, 0, 0.05);
 }
 
 /* 平均评分 */
@@ -88,8 +95,8 @@ page {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 30rpx;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: var(--space-lg);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 100%);
   color: #fff;
   flex-shrink: 0;
 }
@@ -100,15 +107,10 @@ page {
   line-height: 1;
 }
 
-.average-stars {
-  font-size: 32rpx;
-  margin: 10rpx 0;
-}
-
 .average-text {
   font-size: 24rpx;
-  opacity: 0.8;
-  margin-top: 8rpx;
+  opacity: 0.9;
+  margin-top: var(--space-xs);
 }
 
 /* 评价列表滚动区域 */
@@ -120,18 +122,28 @@ page {
 
 .review-list {
   min-height: 300rpx;
+  padding: var(--space-sm) 0;
 }
 
 .review-item {
-  padding: 30rpx;
-  border-bottom: 1rpx solid #f0f0f0;
+  padding: var(--space-lg);
+  margin: 0 var(--space-sm) var(--space-sm) var(--space-sm);
+  background-color: #fff;
+  border-radius: var(--radius-md);
+  box-shadow: 0 2rpx 12rpx rgba(0, 0, 0, 0.06);
+  transition: all 0.2s;
+}
+
+.hover-review-item {
+  background-color: #f9f9f9;
+  transform: scale(0.98);
 }
 
 .review-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16rpx;
+  margin-bottom: var(--space-sm);
 }
 
 .review-user {
@@ -143,7 +155,7 @@ page {
 .review-header-right {
   display: flex;
   align-items: center;
-  gap: 16rpx;
+  gap: var(--space-sm);
 }
 
 .review-time {
@@ -152,14 +164,19 @@ page {
 }
 
 .delete-btn {
-  font-size: 24rpx;
-  color: #e74c3c;
-  padding: 4rpx 12rpx;
+  padding: var(--space-xs) var(--space-sm);
+  border-radius: var(--radius-sm);
+  transition: background-color 0.2s;
+  display: flex;
+  align-items: center;
+}
+
+.hover-delete {
+  background-color: rgba(231, 76, 60, 0.1);
 }
 
 .review-rating {
-  margin-bottom: 16rpx;
-  font-size: 28rpx;
+  margin-bottom: var(--space-sm);
 }
 
 .review-content {
@@ -168,52 +185,40 @@ page {
   line-height: 1.6;
 }
 
-/* 空状态 */
-.empty-state {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding: 100rpx 0;
-}
-
-.empty-icon {
-  font-size: 100rpx;
-  margin-bottom: 20rpx;
-}
-
-.empty-text {
-  font-size: 28rpx;
-  color: #999;
-}
-
-/* 加载状态 */
-.loading {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 50rpx;
-  color: #999;
-  font-size: 28rpx;
-}
-
 /* 底部按钮 */
 .modal-footer {
-  padding: 30rpx;
+  padding: var(--space-lg);
   border-top: 1rpx solid #f0f0f0;
   flex-shrink: 0;
 }
 
 .add-review-btn {
   width: 100%;
-  background-color: #FFD100 !important;
+  background-color: var(--color-primary) !important;
   color: #fff !important;
   font-size: 28rpx;
-  padding: 24rpx 0;
-  border-radius: 30rpx;
+  padding: var(--space-md) 0;
+  border-radius: var(--radius-full);
   border: none !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: var(--space-xs);
+  box-shadow: 0 4rpx 16rpx rgba(255, 179, 0, 0.3);
+  transition: all 0.2s;
+}
+
+.hover-btn {
+  background-color: var(--color-primary-dark) !important;
+  transform: translateY(-2rpx);
+  box-shadow: 0 6rpx 20rpx rgba(255, 179, 0, 0.4);
 }
 
 .add-review-btn::after {
   border: none;
+}
+
+.btn-text {
+  font-size: 28rpx;
+  color: #fff;
 }

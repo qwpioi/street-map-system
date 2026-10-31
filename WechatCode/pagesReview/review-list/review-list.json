@@ -1,5 +1,9 @@
 {
-  "usingComponents": {},
+  "usingComponents": {
+    "icon": "/components/icon/icon",
+    "rating-stars": "/components/rating-stars/rating-stars",
+    "empty-state": "/components/empty-state/empty-state"
+  },
   "navigationBarTitleText": "评价列表",
   "navigationStyle": "custom"
 }
