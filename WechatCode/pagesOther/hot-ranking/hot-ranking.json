@@ -1,4 +1,9 @@
 {
   "navigationBarTitleText": "热门排行",
-  "usingComponents": {}
+  "usingComponents": {
+    "icon": "/components/icon/icon",
+    "vendor-card": "/components/vendor-card/vendor-card",
+    "rating-stars": "/components/rating-stars/rating-stars",
+    "empty-state": "/components/empty-state/empty-state"
+  }
 }

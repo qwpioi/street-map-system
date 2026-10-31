@@ -46,7 +46,7 @@ Page({
   },
 
   onVendorTap(e) {
-    const vendor = e.currentTarget.dataset.vendor
+    const vendor = e.detail?.vendor || e.currentTarget.dataset.vendor
     wx.navigateTo({
       url: `/pagesOther/vendor-detail/vendor-detail?id=${vendor.id}`
     })

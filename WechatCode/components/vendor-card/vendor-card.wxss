@@ -22,19 +22,20 @@
   justify-content: center;
   font-size: 40rpx;
   font-weight: bold;
-  margin-right: 16rpx;
+  margin-right: var(--space-md);
   flex-shrink: 0;
-  border-radius: 16rpx;
+  border-radius: var(--radius-md);
 }
 
 .rank-badge.rank-top {
-  background: linear-gradient(135deg, #FF6633, #FF3366);
+  background: linear-gradient(135deg, var(--color-primary), var(--color-warning));
   font-size: 50rpx;
+  box-shadow: var(--shadow-md);
 }
 
 .rank-badge.rank-normal {
-  background: #F0F0F0;
-  color: #999999;
+  background: var(--color-divider);
+  color: var(--color-text-tertiary);
   font-size: 32rpx;
 }
 
