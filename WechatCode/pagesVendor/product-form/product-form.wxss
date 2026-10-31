@@ -34,7 +34,7 @@ page {
 }
 
 .input-focus {
-  border-color: var(--color-primary, #07C160);
+  border-color: var(--color-primary, #FFB300);
   background-color: #fff;
 }
 
@@ -51,7 +51,7 @@ page {
 }
 
 .textarea-focus {
-  border-color: var(--color-primary, #07C160);
+  border-color: var(--color-primary, #FFB300);
   background-color: #fff;
 }
 
@@ -70,20 +70,20 @@ page {
 }
 
 .btn-submit {
-  background-color: var(--color-primary, #07C160);
+  background-color: var(--color-primary, #FFB300);
   color: #fff;
   border-radius: var(--radius-pill, 30rpx);
   font-size: var(--font-size-lg, 30rpx);
   padding: var(--space-md, 20rpx);
   font-weight: 600;
-  box-shadow: 0 4rpx 12rpx rgba(7, 193, 96, 0.3);
+  box-shadow: 0 4rpx 12rpx rgba(255, 179, 0, 0.3);
   transition: all 0.2s ease;
 }
 
 .btn-submit-hover {
   opacity: 0.85;
   transform: scale(0.98);
-  box-shadow: 0 2rpx 8rpx rgba(7, 193, 96, 0.2);
+  box-shadow: 0 2rpx 8rpx rgba(255, 179, 0, 0.2);
 }
 
 .btn-cancel {
@@ -115,8 +115,8 @@ page {
 }
 
 .image-picker-hover {
-  border-color: var(--color-primary, #07C160);
-  background-color: rgba(7, 193, 96, 0.05);
+  border-color: var(--color-primary, #FFB300);
+  background-color: rgba(255, 179, 0, 0.05);
   transform: scale(0.98);
 }
 

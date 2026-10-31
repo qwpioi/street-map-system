@@ -1,5 +1,6 @@
 {
   "navigationBarTitleText": "商品编辑",
+  "navigationBarBackgroundColor": "#FFB300",
   "usingComponents": {
     "icon": "/components/icon/icon"
   }
