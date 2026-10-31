@@ -1,0 +1,22 @@
+<!-- 统一图标组件 -->
+<view class="icon icon-{{name}} icon-{{size}}" style="color: {{color}}; font-size: {{sizeMap[size]}}rpx;">
+  <block wx:if="{{name === 'location'}}">📍</block>
+  <block wx:elif="{{name === 'search'}}">🔍</block>
+  <block wx:elif="{{name === 'star'}}">★</block>
+  <block wx:elif="{{name === 'star-empty'}}">☆</block>
+  <block wx:elif="{{name === 'heart'}}">♡</block>
+  <block wx:elif="{{name === 'heart-filled'}}">♥</block>
+  <block wx:elif="{{name === 'phone'}}">📞</block>
+  <block wx:elif="{{name === 'distance'}}">📏</block>
+  <block wx:elif="{{name === 'nav'}}">🧭</block>
+  <block wx:elif="{{name === 'fire'}}">🔥</block>
+  <block wx:elif="{{name === 'shop'}}">🏪</block>
+  <block wx:elif="{{name === 'map'}}">🗺️</block>
+  <block wx:elif="{{name === 'review'}}">💬</block>
+  <block wx:elif="{{name === 'edit'}}">📝</block>
+  <block wx:elif="{{name === 'close'}}">✕</block>
+  <block wx:elif="{{name === 'arrow-right'}}">›</block>
+  <block wx:elif="{{name === 'check'}}">✓</block>
+  <block wx:elif="{{name === 'food'}}">🍜</block>
+  <block wx:else>•</block>
+</view>

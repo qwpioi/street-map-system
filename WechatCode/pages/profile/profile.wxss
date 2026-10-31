@@ -1,5 +1,18 @@
 page {
-  background: #F5F5F5;
+  --color-primary: #FFD100;
+  --color-primary-dark: #FFC107;
+  --color-accent: #FF6633;
+  --color-danger: #FF3366;
+  --color-bg: #F5F5F5;
+  --color-text: #1A1A1A;
+  --color-text-secondary: #666;
+  --color-text-muted: #999;
+  --color-border: #F5F5F5;
+  --radius-card: 20rpx;
+  --shadow-card: 0 4rpx 20rpx rgba(0, 0, 0, 0.06);
+  --shadow-menu: 0 2rpx 12rpx rgba(0, 0, 0, 0.04);
+
+  background: var(--color-bg);
   font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', sans-serif;
 }
 
@@ -10,20 +23,29 @@ view, text, image, button {
 .profile-container {
   width: 750rpx;
   min-height: 100vh;
-  background: #F5F5F5;
+  background: var(--color-bg);
 }
 
 /* ========== 用户头部 ========== */
 .profile-header {
   width: 750rpx;
-  background: linear-gradient(180deg, #FFD100 0%, #FFC107 100%);
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-primary-dark) 50%, #FFB300 100%);
   padding: 40rpx 30rpx 56rpx;
+  position: relative;
+}
+
+.profile-header::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 20rpx;
+  background: linear-gradient(180deg, transparent, rgba(0, 0, 0, 0.03));
 }
 
 .profile-user-row {
-  display: -webkit-flex;
   display: flex;
-  -webkit-align-items: center;
   align-items: center;
 }
 
@@ -31,76 +53,64 @@ view, text, image, button {
   width: 100rpx;
   height: 100rpx;
   border-radius: 50%;
-  border: 4rpx solid rgba(255,255,255,0.8);
-  -webkit-flex-shrink: 0;
+  border: 4rpx solid rgba(255, 255, 255, 0.8);
   flex-shrink: 0;
   margin-right: 24rpx;
 }
 
 .default-avatar {
-  background: rgba(255,255,255,0.5);
-  display: -webkit-flex;
+  background: rgba(255, 255, 255, 0.5);
   display: flex;
-  -webkit-align-items: center;
   align-items: center;
-  -webkit-justify-content: center;
   justify-content: center;
 }
 
-.avatar-emoji {
-  font-size: 48rpx;
-}
-
 .profile-user-info {
-  -webkit-flex: 1;
   flex: 1;
 }
 
 .profile-nickname {
   font-size: 36rpx;
   font-weight: 700;
-  color: #1A1A1A;
+  color: var(--color-text);
   display: block;
   margin-bottom: 6rpx;
 }
 
 .profile-desc {
   font-size: 24rpx;
-  color: #666;
+  color: var(--color-text-secondary);
 }
 
 /* ========== 统计卡片 ========== */
 .stats-card {
-  display: -webkit-flex;
   display: flex;
   background: #fff;
   margin: -28rpx 30rpx 0;
-  border-radius: 20rpx;
+  border-radius: var(--radius-card);
   padding: 28rpx 0;
-  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.06);
+  box-shadow: var(--shadow-card);
   position: relative;
   z-index: 1;
 }
 
 .stat-item {
-  -webkit-flex: 1;
   flex: 1;
-  display: -webkit-flex;
   display: flex;
-  -webkit-flex-direction: column;
   flex-direction: column;
-  -webkit-align-items: center;
   align-items: center;
 }
 
 .stat-num {
   font-size: 36rpx;
+  font-weight: 600;
+  color: var(--color-text);
   margin-bottom: 8rpx;
 }
 
 .stat-label {
   font-size: 22rpx;
-  color: #999;
+  color: var(--color-text-muted);
 }
 
 /* ========== 登录按钮 ========== */
@@ -114,13 +124,13 @@ view, text, image, button {
 .login-btn {
   width: 690rpx;
   background: #fff !important;
-  color: #FF6633 !important;
+  color: var(--color-accent) !important;
   font-size: 30rpx;
   font-weight: 600;
   padding: 24rpx 0;
-  border-radius: 20rpx;
-  border: 2rpx solid #FFD100 !important;
-  box-shadow: 0 4rpx 20rpx rgba(0,0,0,0.06);
+  border-radius: var(--radius-card);
+  border: 2rpx solid var(--color-primary) !important;
+  box-shadow: var(--shadow-card);
 }
 
 .login-btn::after { border: none; }
@@ -130,35 +140,34 @@ view, text, image, button {
   width: 690rpx;
   background: #fff;
   margin: 20rpx 30rpx;
-  border-radius: 20rpx;
+  border-radius: var(--radius-card);
   overflow: hidden;
-  box-shadow: 0 2rpx 12rpx rgba(0,0,0,0.04);
+  box-shadow: var(--shadow-menu);
 }
 
 .menu-item {
-  display: -webkit-flex;
   display: flex;
-  -webkit-align-items: center;
   align-items: center;
   padding: 28rpx 24rpx;
-  border-bottom: 1rpx solid #F5F5F5;
+  border-bottom: 1rpx solid var(--color-border);
+  transition: background-color 0.2s;
 }
 
 .menu-item:last-child {
   border-bottom: none;
 }
 
+.menu-item-hover {
+  background-color: #F9F9F9;
+}
+
 .pmi-icon {
   width: 56rpx;
   height: 56rpx;
   border-radius: 14rpx;
-  display: -webkit-flex;
   display: flex;
-  -webkit-align-items: center;
   align-items: center;
-  -webkit-justify-content: center;
   justify-content: center;
-  font-size: 28rpx;
   margin-right: 20rpx;
 }
 
@@ -169,15 +178,9 @@ view, text, image, button {
 .pmi-icon.gray { background: #ECEFF1; }
 
 .pmi-text {
-  -webkit-flex: 1;
   flex: 1;
   font-size: 28rpx;
   color: #333;
-}
-
-.pmi-arrow {
-  font-size: 32rpx;
-  color: #CCC;
 }
 
 /* ========== 退出登录 ========== */
@@ -188,12 +191,12 @@ view, text, image, button {
 .logout-btn {
   width: 690rpx;
   background: #fff !important;
-  color: #FF3366 !important;
+  color: var(--color-danger) !important;
   font-size: 28rpx;
   font-weight: 600;
   padding: 24rpx 0;
-  border-radius: 20rpx;
-  border: 2rpx solid #FF3366 !important;
+  border-radius: var(--radius-card);
+  border: 2rpx solid var(--color-danger) !important;
 }
 
 .logout-btn::after { border: none; }

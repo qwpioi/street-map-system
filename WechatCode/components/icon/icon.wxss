@@ -1,0 +1,20 @@
+.icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  line-height: 1;
+}
+
+/* 尺寸 */
+.icon-xs { font-size: 24rpx; }
+.icon-sm { font-size: 32rpx; }
+.icon-md { font-size: 40rpx; }
+.icon-lg { font-size: 48rpx; }
+.icon-xl { font-size: 64rpx; }
+
+/* 特定图标颜色 */
+.icon-star { color: #FFB300; }
+.icon-heart-filled { color: #F44336; }
+.icon-fire { color: #FF9800; }
+.icon-nav { color: #4CAF50; }
+.icon-distance { color: #2196F3; }

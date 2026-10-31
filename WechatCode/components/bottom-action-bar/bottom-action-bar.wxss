@@ -1,0 +1,79 @@
+/* 底部操作栏组件 */
+.bottom-action-bar {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #FFFFFF;
+  padding: 16rpx 24rpx;
+  padding-bottom: calc(16rpx + env(safe-area-inset-bottom));
+  box-shadow: 0 -2rpx 12rpx rgba(0, 0, 0, 0.08);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  z-index: 100;
+}
+
+/* 左侧图标按钮组 */
+.action-icons {
+  display: flex;
+  align-items: center;
+  gap: 32rpx;
+}
+
+.icon-btn {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 8rpx 0;
+}
+
+.icon-btn-text {
+  font-size: 20rpx;
+  color: #666666;
+  margin-top: 4rpx;
+}
+
+/* 右侧文字按钮组 */
+.action-buttons {
+  display: flex;
+  align-items: center;
+  gap: 16rpx;
+  flex: 1;
+  margin-left: 24rpx;
+}
+
+.action-btn {
+  flex: 1;
+  height: 64rpx;
+  border-radius: 32rpx;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 26rpx;
+  border: none;
+  padding: 0;
+  margin: 0;
+}
+
+.action-btn icon {
+  margin-right: 6rpx;
+}
+
+.action-btn.secondary {
+  background: #FFF8E1;
+  color: #FF6633;
+  border: 1rpx solid #FFD100;
+}
+
+.action-btn.primary {
+  background: linear-gradient(135deg, #FFD100, #FFC107);
+  color: #1A1A1A;
+  font-weight: 600;
+  box-shadow: 0 4rpx 12rpx rgba(255, 209, 0, 0.3);
+}
+
+.action-btn::after {
+  border: none;
+}

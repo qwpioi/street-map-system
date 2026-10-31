@@ -1,7 +1,8 @@
-const { favoriteApi, vendorApi, reviewApi, productApi, API_BASE_URL, getUserId } = require('../../utils/api')
+const { favoriteApi, vendorApi, reviewApi, productApi, getUserId } = require('../../utils/api')
+const { QQ_MAP_KEY } = require('../../utils/config')
 const QQMapWX = require('../../utils/qqmap-wx-jssdk.min')
 const { fixDevLocation, calculateDistance } = require('../../utils/util')
-const qqmapsdk = new QQMapWX({ key: '3DYBZ-NF2CN-XNYF2-SE3HN-NMFMS-T2BMO' })
+const qqmapsdk = new QQMapWX({ key: QQ_MAP_KEY })
 
 const app = getApp()
 
@@ -15,6 +16,7 @@ Page({
     isLoggedIn: false,
     userInfo: null,
     favoriteVendorIds: [],
+    lastLoadTime: 0, // 记录上次加载时间，用于节流
     // 摊位详情
     selectedVendor: null,
     vendorDetailVisible: false,
@@ -56,14 +58,19 @@ Page({
   },
 
   /**
-   * 更新摊位列表的收藏状态
+   * 更新摊位列表的收藏状态（优化 setData，使用路径更新）
    */
   updateVendorFavoriteStatus() {
-    const vendors = this.data.vendors.map(v => ({
-      ...v,
-      isFavorite: this.data.favoriteVendorIds.includes(v.id)
-    }))
-    this.setData({ vendors })
+    const updates = {}
+    this.data.vendors.forEach((v, index) => {
+      const isFavorite = this.data.favoriteVendorIds.includes(v.id)
+      if (v.isFavorite !== isFavorite) {
+        updates[`vendors[${index}].isFavorite`] = isFavorite
+      }
+    })
+    if (Object.keys(updates).length > 0) {
+      this.setData(updates)
+    }
   },
 
   checkLogin() {
@@ -94,8 +101,10 @@ Page({
 
     // 每次回到首页都刷新推荐列表，保证新增摊位/营业状态变化实时可见
     // （首次进入时坐标为空，由 getLocation 成功回调负责首载，不会重复请求）
-    const { latitude, longitude } = this.data
-    if (latitude && longitude) {
+    // 添加 30 秒节流，避免频繁切换页面时重复请求
+    const { latitude, longitude, lastLoadTime } = this.data
+    const now = Date.now()
+    if (latitude && longitude && (now - lastLoadTime > 30000)) {
       this.loadVendors(latitude, longitude, { silent: true })
     }
   },
@@ -160,6 +169,9 @@ Page({
    */
   loadVendors(latitude, longitude, options = {}) {
     const silent = !!options.silent
+
+    // 更新加载时间戳（用于节流）
+    this.setData({ lastLoadTime: Date.now() })
 
     vendorApi.getSmartRecommendedVendors(latitude, longitude)
       .then(res => {

@@ -1,0 +1,8 @@
+{
+  "component": true,
+  "usingComponents": {
+    "rating-stars": "../rating-stars/rating-stars",
+    "status-badge": "../status-badge/status-badge",
+    "icon": "../icon/icon"
+  }
+}

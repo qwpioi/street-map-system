@@ -1,0 +1,12 @@
+<!-- 区块标题组件 -->
+<view class="section-header">
+  <view class="section-title-wrap">
+    <icon wx:if="{{icon}}" name="{{icon}}" size="sm" color="#FFB300" />
+    <text class="section-title">{{title}}</text>
+    <text wx:if="{{subtitle}}" class="section-subtitle">{{subtitle}}</text>
+  </view>
+  <view wx:if="{{moreText}}" class="section-more" hover-class="section-more-hover" bindtap="onMoreTap">
+    <text>{{moreText}}</text>
+    <icon name="arrow-right" size="xs" color="#999" />
+  </view>
+</view>

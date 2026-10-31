@@ -4,7 +4,7 @@
     <view class="profile-user-row">
       <image wx:if="{{isLoggedIn && (userInfo.avatarUrl || userInfo.avatar)}}" class="profile-avatar" src="{{userInfo.avatarUrl || userInfo.avatar}}" mode="aspectFill"></image>
       <view wx:else class="profile-avatar default-avatar">
-        <text class="avatar-emoji">😊</text>
+        <icon name="shop" size="lg" color="#666" />
       </view>
       <view class="profile-user-info">
         <text class="profile-nickname">{{isLoggedIn ? (userInfo.nickName || userInfo.username || '摊友') : '未登录'}}</text>
@@ -16,19 +16,19 @@
   <!-- 数据统计卡片 -->
   <view class="stats-card" wx:if="{{isLoggedIn}}">
     <view class="stat-item" bindtap="goFavorite">
-      <text class="stat-num">⭐</text>
+      <text class="stat-num">{{favoritesCount || 0}}</text>
       <text class="stat-label">收藏</text>
     </view>
     <view class="stat-item" bindtap="goComments">
-      <text class="stat-num">💬</text>
+      <text class="stat-num">{{commentsCount || 0}}</text>
       <text class="stat-label">评价</text>
     </view>
     <view class="stat-item" bindtap="goVendor">
-      <text class="stat-num">🏪</text>
+      <text class="stat-num">{{vendorCount || 0}}</text>
       <text class="stat-label">摊位</text>
     </view>
     <view class="stat-item" bindtap="goBecomeVendor">
-      <text class="stat-num">📝</text>
+      <icon name="edit" size="sm" color="#999" />
       <text class="stat-label">成为摊主</text>
     </view>
   </view>
@@ -40,39 +40,47 @@
 
   <!-- 功能菜单 -->
   <view class="menu-section">
-    <view class="menu-item" bindtap="goFavorite">
-      <view class="pmi-icon orange">⭐</view>
+    <view class="menu-item" hover-class="menu-item-hover" bindtap="goFavorite">
+      <view class="pmi-icon orange">
+        <icon name="heart-filled" size="sm" color="#FF9800" />
+      </view>
       <text class="pmi-text">我的收藏</text>
-      <text class="pmi-arrow">›</text>
+      <icon name="arrow-right" size="sm" color="#CCC" />
     </view>
-    <view class="menu-item" bindtap="goVendor">
-      <view class="pmi-icon green">🏪</view>
+    <view class="menu-item" hover-class="menu-item-hover" bindtap="goVendor">
+      <view class="pmi-icon green">
+        <icon name="shop" size="sm" color="#4CAF50" />
+      </view>
       <text class="pmi-text">我的摊位</text>
-      <text class="pmi-arrow">›</text>
+      <icon name="arrow-right" size="sm" color="#CCC" />
     </view>
-    <view class="menu-item" bindtap="goComments">
-      <view class="pmi-icon blue">💬</view>
+    <view class="menu-item" hover-class="menu-item-hover" bindtap="goComments">
+      <view class="pmi-icon blue">
+        <icon name="review" size="sm" color="#2196F3" />
+      </view>
       <text class="pmi-text">我的评价</text>
-      <text class="pmi-arrow">›</text>
+      <icon name="arrow-right" size="sm" color="#CCC" />
     </view>
-    <view class="menu-item" bindtap="goBecomeVendor">
-      <view class="pmi-icon purple">📝</view>
+    <view class="menu-item" hover-class="menu-item-hover" bindtap="goBecomeVendor">
+      <view class="pmi-icon purple">
+        <icon name="edit" size="sm" color="#9C27B0" />
+      </view>
       <text class="pmi-text">成为摊主</text>
-      <text class="pmi-arrow">›</text>
+      <icon name="arrow-right" size="sm" color="#CCC" />
     </view>
   </view>
 
   <!-- 设置 -->
   <view class="menu-section">
-    <view class="menu-item" bindtap="goSettings">
+    <view class="menu-item" hover-class="menu-item-hover" bindtap="goSettings">
       <view class="pmi-icon gray">⚙️</view>
       <text class="pmi-text">设置</text>
-      <text class="pmi-arrow">›</text>
+      <icon name="arrow-right" size="sm" color="#CCC" />
     </view>
-    <view class="menu-item" bindtap="goAbout">
+    <view class="menu-item" hover-class="menu-item-hover" bindtap="goAbout">
       <view class="pmi-icon gray">ℹ️</view>
       <text class="pmi-text">关于我们</text>
-      <text class="pmi-arrow">›</text>
+      <icon name="arrow-right" size="sm" color="#CCC" />
     </view>
   </view>
 

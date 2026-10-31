@@ -1,4 +1,4 @@
-const API_BASE_URL = 'https://api.ditan.asia/api'
+const { API_BASE_URL } = require('../../utils/config')
 
 Page({
   data: {

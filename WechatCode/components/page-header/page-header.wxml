@@ -1,0 +1,15 @@
+<!-- 页面头部组件 -->
+<view class="page-header">
+  <view class="location-row">
+    <view class="location-left" bindtap="onLocationTap">
+      <icon name="location" size="sm" color="#1A1A1A" />
+      <text class="location-text">{{address || '定位中...'}}</text>
+      <text class="location-arrow">▾</text>
+    </view>
+    <text class="weather-badge">☀️ 发现好摊</text>
+  </view>
+  <view wx:if="{{showSearch}}" class="search-bar" bindtap="onSearchTap">
+    <icon name="search" size="sm" color="#999" />
+    <text class="search-placeholder">搜索摊位、商品、地址...</text>
+  </view>
+</view>

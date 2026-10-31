@@ -3,9 +3,7 @@
  * 封装所有后端接口调用
  */
 
-// 生产环境：指向服务器后端（HTTPS）
-// 本地开发时改为：'http://192.168.1.5:8081/api'（需勾选"不校验合法域名"）
-const API_BASE_URL = 'https://api.ditan.asia/api'
+const { API_BASE_URL } = require('./config')
 
 /**
  * 获取存储的 token

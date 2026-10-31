@@ -1,0 +1,33 @@
+.rating-stars {
+  display: inline-flex;
+  align-items: center;
+}
+
+.stars-container {
+  display: flex;
+  align-items: center;
+}
+
+.star {
+  margin-right: 4rpx;
+  transition: transform 0.15s ease;
+}
+
+.star.filled {
+  color: #FFB300;
+}
+
+.star.empty {
+  color: #E0E0E0;
+}
+
+.star:active {
+  transform: scale(1.2);
+}
+
+.rating-text {
+  margin-left: 8rpx;
+  font-size: 24rpx;
+  color: #FFB300;
+  font-weight: 600;
+}

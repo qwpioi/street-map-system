@@ -79,7 +79,7 @@
         <view class="modal-product-list">
           <block wx:for="{{vendorProducts}}" wx:key="id" wx:if="{{index < 5}}">
             <view class="modal-product-card">
-              <image class="modal-product-img" src="{{item.imageUrl || 'https://via.placeholder.com/150x150?text=Product'}}" mode="aspectFill" />
+              <image class="modal-product-img" src="{{item.imageUrl || '/images/product-placeholder.svg'}}" mode="aspectFill" lazy-load />
               <view class="modal-product-info">
                 <view class="modal-product-name">{{item.name}}</view>
                 <view class="modal-product-desc" wx:if="{{item.description}}">{{item.description}}</view>
@@ -102,7 +102,7 @@
         <view class="modal-review-list">
           <view class="modal-review-item" wx:for="{{recentReviews}}" wx:key="id">
             <view class="modal-review-top">
-              <image class="modal-review-avatar" src="{{item.userAvatar || 'https://via.placeholder.com/100x100?text=Avatar'}}" mode="aspectFill" />
+              <image class="modal-review-avatar" src="{{item.userAvatar || '/images/avatar-placeholder.svg'}}" mode="aspectFill" lazy-load />
               <text class="modal-review-user">{{item.userName || '匿名用户'}}</text>
               <view class="modal-review-stars">
                 <text wx:for="{{stars}}" wx:for-item="star" wx:key="*this" wx:if="{{star <= item.rating}}">★</text>

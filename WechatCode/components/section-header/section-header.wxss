@@ -1,0 +1,44 @@
+/* 区块标题组件 */
+.section-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20rpx 0 16rpx;
+}
+
+.section-title-wrap {
+  display: flex;
+  align-items: center;
+}
+
+.section-title {
+  font-size: 30rpx;
+  font-weight: 700;
+  color: #1A1A1A;
+  margin-left: 8rpx;
+}
+
+.section-subtitle {
+  font-size: 22rpx;
+  color: #999999;
+  margin-left: 12rpx;
+}
+
+.section-more {
+  display: flex;
+  align-items: center;
+  padding: 4rpx 0;
+}
+
+.section-more text {
+  font-size: 24rpx;
+  color: #999999;
+}
+
+.section-more icon {
+  margin-left: 4rpx;
+}
+
+.section-more-hover {
+  opacity: 0.7;
+}

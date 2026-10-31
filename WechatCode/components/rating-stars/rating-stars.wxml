@@ -1,0 +1,20 @@
+<!-- 评分星星组件 -->
+<view class="rating-stars">
+  <view class="stars-container">
+    <view 
+      wx:for="{{max}}" 
+      wx:key="index"
+      class="star {{index < rating ? 'filled' : 'empty'}}"
+      style="font-size: {{sizeMap[size]}}rpx;"
+      bindtap="onStarTap"
+      data-star="{{index + 1}}"
+    >
+      <text wx:if="{{index < rating}}">★</text>
+      <text wx:else>☆</text>
+    </view>
+  </view>
+  
+  <text wx:if="{{showText && rating > 0}}" class="rating-text">
+    {{rating.toFixed(1)}}分
+  </text>
+</view>

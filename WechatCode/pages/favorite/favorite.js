@@ -1,4 +1,5 @@
 const { favoriteApi, vendorApi, reviewApi, productApi, getUserId } = require('../../utils/api')
+const { formatRelativeTime } = require('../../utils/util')
 
 Page({
   data: {
@@ -144,7 +145,7 @@ Page({
       const allReviews = Array.isArray(reviewsRes) ? reviewsRes : (reviewsRes?.data || [])
       const recentReviews = allReviews.slice(0, 3).map(r => ({
         ...r,
-        createTime: this.formatTime(r.createTime)
+        createTime: formatRelativeTime(r.createTime)
       }))
 
       // 获取商品列表

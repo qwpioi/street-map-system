@@ -1,0 +1,62 @@
+<!-- 摊位卡片组件 -->
+<view class="vendor-card layout-{{layout}}" hover-class="hover-scale" bindtap="onTap">
+  <!-- 排名徽章（排行榜用） -->
+  <view wx:if="{{showRank && vendor.rank}}" class="rank-badge rank-{{vendor.rank <= 3 ? 'top' : 'normal'}}">
+    <text wx:if="{{vendor.rank === 1}}">🥇</text>
+    <text wx:elif="{{vendor.rank === 2}}">🥈</text>
+    <text wx:elif="{{vendor.rank === 3}}">🥉</text>
+    <text wx:else>{{vendor.rank}}</text>
+  </view>
+
+  <!-- 缩略图 -->
+  <view class="card-thumb">
+    <image wx:if="{{vendor.imageUrl}}" class="thumb-img" src="{{vendor.imageUrl}}" mode="aspectFill" />
+    <view wx:else class="thumb-placeholder">
+      <icon name="food" size="lg" />
+    </view>
+    
+    <!-- 营业状态角标 -->
+    <status-badge status="{{vendor.status}}" size="sm" class="thumb-badge" />
+  </view>
+
+  <!-- 卡片内容 -->
+  <view class="card-content">
+    <!-- 顶部：名称 + 收藏按钮 -->
+    <view class="card-header">
+      <text class="card-name">{{vendor.stallName}}</text>
+      <view wx:if="{{showFavorite}}" class="card-fav-btn" catchtap="onFavorite">
+        <icon name="{{vendor.isFavorite ? 'heart-filled' : 'heart'}}" size="md" />
+      </view>
+    </view>
+
+    <!-- 评分行 -->
+    <view class="card-rating" wx:if="{{vendor.averageRating > 0}}">
+      <rating-stars rating="{{vendor.averageRating}}" size="sm" readonly />
+      <text class="rating-score">{{vendor.averageRating.toFixed(1)}}</text>
+      <text class="rating-count" wx:if="{{vendor.reviewCount > 0}}">({{vendor.reviewCount}}条)</text>
+    </view>
+    <view class="card-rating" wx:else>
+      <text class="rating-empty">暂无评分</text>
+    </view>
+
+    <!-- 标签行 -->
+    <view class="card-tags" wx:if="{{vendor.hotProducts}}">
+      <text class="tag-item">{{vendor.hotProducts}}</text>
+    </view>
+
+    <!-- 底部：地址 + 操作按钮 -->
+    <view class="card-footer">
+      <view class="footer-left">
+        <icon name="location" size="xs" color="#999" />
+        <text class="footer-address">{{vendor.address || '暂无地址'}}</text>
+        <text wx:if="{{showDistance && vendor.distanceText}}" class="footer-distance">{{vendor.distanceText}}</text>
+      </view>
+      
+      <view class="footer-actions">
+        <view class="action-btn nav-btn" catchtap="onNavigate">
+          <icon name="nav" size="sm" />
+        </view>
+      </view>
+    </view>
+  </view>
+</view>

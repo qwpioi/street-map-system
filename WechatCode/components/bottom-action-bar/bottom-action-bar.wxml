@@ -1,0 +1,26 @@
+<!-- 底部操作栏组件 -->
+<view class="bottom-action-bar">
+  <!-- 左侧图标按钮组 -->
+  <view class="action-icons">
+    <view wx:if="{{showPhone && phone}}" class="icon-btn" bindtap="onCallPhone">
+      <icon name="phone" size="md" color="#FF6633" />
+      <text class="icon-btn-text">电话</text>
+    </view>
+    <view wx:if="{{showFavorite}}" class="icon-btn" bindtap="onToggleFavorite">
+      <icon name="{{isFavorite ? 'heart-filled' : 'heart'}}" size="md" color="{{isFavorite ? '#F44336' : '#999'}}" />
+      <text class="icon-btn-text">{{isFavorite ? '已收藏' : '收藏'}}</text>
+    </view>
+  </view>
+
+  <!-- 右侧文字按钮组 -->
+  <view class="action-buttons">
+    <button class="action-btn secondary" bindtap="onReview">
+      <icon name="edit" size="sm" color="#FF6633" />
+      <text>评价</text>
+    </button>
+    <button class="action-btn primary" bindtap="onNavigate">
+      <icon name="nav" size="sm" color="#1A1A1A" />
+      <text>导航</text>
+    </button>
+  </view>
+</view>

@@ -1,0 +1,53 @@
+/* 页面头部组件 */
+.page-header {
+  width: 750rpx;
+  background: #FFD100;
+  padding: 20rpx 30rpx 28rpx;
+}
+
+.location-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 20rpx;
+}
+
+.location-left {
+  display: flex;
+  align-items: center;
+}
+
+.location-text {
+  font-size: 28rpx;
+  font-weight: 600;
+  color: #1A1A1A;
+  margin-left: 6rpx;
+}
+
+.location-arrow {
+  font-size: 20rpx;
+  color: #666666;
+  margin-left: 4rpx;
+}
+
+.weather-badge {
+  font-size: 22rpx;
+  color: #666666;
+  background: rgba(255, 255, 255, 0.5);
+  padding: 6rpx 18rpx;
+  border-radius: 20rpx;
+}
+
+.search-bar {
+  display: flex;
+  align-items: center;
+  background: #FFFFFF;
+  border-radius: 36rpx;
+  padding: 16rpx 24rpx;
+}
+
+.search-placeholder {
+  font-size: 26rpx;
+  color: #BBBBBB;
+  margin-left: 12rpx;
+}

@@ -1,0 +1,5 @@
+<!-- 营业状态标签 -->
+<view class="status-badge status-{{status === 1 ? 'open' : 'closed'}} size-{{size}}">
+  <view class="status-dot"></view>
+  <text class="status-text">{{status === 1 ? '营业中' : '已收摊'}}</text>
+</view>

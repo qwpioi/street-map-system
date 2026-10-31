@@ -8,6 +8,7 @@ Page({
     markers: [],
     vendors: [],
     selectedVendor: null,
+    lastLoadTime: 0, // 记录上次加载时间，用于节流
 
     // 摊位详情弹窗
     vendorDetailVisible: false,
@@ -26,8 +27,10 @@ Page({
   onShow() {
     // 每次回到地图页都刷新摊位数据，保证开摊/收摊等状态变化实时反映到标记
     // （首次进入时坐标为空，由 getLocation 成功回调负责首载，不会重复请求）
-    const { latitude, longitude } = this.data
-    if (latitude && longitude) {
+    // 添加 30 秒节流，避免频繁切换页面时重复请求
+    const { latitude, longitude, lastLoadTime } = this.data
+    const now = Date.now()
+    if (latitude && longitude && (now - lastLoadTime > 30000)) {
       this.loadVendors(latitude, longitude)
     }
 
@@ -63,6 +66,9 @@ Page({
   },
 
   loadVendors(latitude, longitude) {
+    // 更新加载时间戳（用于节流）
+    this.setData({ lastLoadTime: Date.now() })
+    
     vendorApi.getOpenVendors()
       .then(res => {
         if (res && res.code === 200) {
