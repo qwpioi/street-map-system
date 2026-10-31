@@ -1,0 +1,40 @@
+/**
+ * 全局重置样式
+ * 统一盒模型、清除默认样式
+ */
+
+/* 全局盒模型统一 */
+view, text, image, button, scroll-view, input, textarea, navigator {
+  box-sizing: border-box;
+}
+
+/* 清除按钮默认样式 */
+button {
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 0;
+}
+
+button::after {
+  border: none;
+}
+
+/* 清除输入框默认样式 */
+input, textarea {
+  margin: 0;
+  padding: 0;
+  border: none;
+  outline: none;
+}
+
+/* 图片默认样式 */
+image {
+  display: block;
+}
+
+/* 滚动容器 */
+scroll-view {
+  -webkit-overflow-scrolling: touch;
+}

@@ -1,0 +1,59 @@
+/**
+ * 设计系统变量
+ * 统一色彩、间距、圆角、阴影、字体规范
+ */
+
+/* ===== 色彩系统 ===== */
+/* 主色 - 暖黄 */
+--color-primary: #FFB300;
+--color-primary-light: #FFF8E1;
+--color-primary-dark: #E6A000;
+--color-primary-bg: #FFFBF0;
+
+/* 功能色 */
+--color-success: #4CAF50;
+--color-warning: #FF9800;
+--color-danger: #F44336;
+--color-info: #2196F3;
+
+/* 中性色 */
+--color-text-primary: #1A1A1A;
+--color-text-secondary: #666666;
+--color-text-tertiary: #999999;
+--color-text-placeholder: #CCCCCC;
+--color-border: #EEEEEE;
+--color-divider: #F5F5F5;
+--color-bg-page: #F7F8FA;
+--color-bg-card: #FFFFFF;
+
+/* ===== 间距系统（8rpx 基础单位）===== */
+--space-xs: 8rpx;
+--space-sm: 16rpx;
+--space-md: 24rpx;
+--space-lg: 32rpx;
+--space-xl: 48rpx;
+
+/* ===== 圆角系统 ===== */
+--radius-sm: 8rpx;    /* 标签、小按钮 */
+--radius-md: 16rpx;   /* 输入框、卡片内元素 */
+--radius-lg: 24rpx;   /* 卡片 */
+--radius-xl: 32rpx;   /* 弹窗、底部抽屉 */
+--radius-full: 999rpx; /* 圆形 */
+
+/* ===== 阴影系统 ===== */
+--shadow-sm: 0 2rpx 8rpx rgba(0,0,0,0.04);
+--shadow-md: 0 4rpx 16rpx rgba(0,0,0,0.08);
+--shadow-lg: 0 8rpx 32rpx rgba(0,0,0,0.12);
+
+/* ===== 字体系统 ===== */
+--font-size-xs: 20rpx;
+--font-size-sm: 24rpx;
+--font-size-md: 28rpx;
+--font-size-lg: 32rpx;
+--font-size-xl: 36rpx;
+--font-size-xxl: 44rpx;
+
+/* ===== 动效 ===== */
+--transition-fast: 150ms ease;
+--transition-normal: 250ms ease;
+--transition-slow: 350ms ease;

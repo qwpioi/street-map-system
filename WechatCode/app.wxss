@@ -1,5 +1,140 @@
-/**app.wxss**/
-/* 全局盒模型统一：避免各页面元素宽度/内边距计算不一致 */
-view, text, image, button, scroll-view, input, textarea, navigator {
+/**
+ * 全局样式
+ * 引入设计系统变量 + 重置样式
+ */
+
+@import './styles/reset.wxss';
+
+/* ===== 全局页面样式 ===== */
+page {
+  width: 100%;
+  margin: 0;
+  padding: 0;
+  background-color: #F7F8FA;
+  font-family: -apple-system, BlinkMacSystemFont, 'PingFang SC', 'Helvetica Neue', sans-serif;
+  color: #1A1A1A;
+  font-size: 28rpx;
+  line-height: 1.5;
+}
+
+view, text, image, button, scroll-view {
   box-sizing: border-box;
+}
+
+/* ===== 设计变量（CSS 变量在小程序中通过 page 选择器定义）===== */
+page {
+  /* 主色 - 暖黄 */
+  --color-primary: #FFB300;
+  --color-primary-light: #FFF8E1;
+  --color-primary-dark: #E6A000;
+  --color-primary-bg: #FFFBF0;
+
+  /* 功能色 */
+  --color-success: #4CAF50;
+  --color-warning: #FF9800;
+  --color-danger: #F44336;
+  --color-info: #2196F3;
+
+  /* 中性色 */
+  --color-text-primary: #1A1A1A;
+  --color-text-secondary: #666666;
+  --color-text-tertiary: #999999;
+  --color-text-placeholder: #CCCCCC;
+  --color-border: #EEEEEE;
+  --color-divider: #F5F5F5;
+  --color-bg-page: #F7F8FA;
+  --color-bg-card: #FFFFFF;
+
+  /* 间距 */
+  --space-xs: 8rpx;
+  --space-sm: 16rpx;
+  --space-md: 24rpx;
+  --space-lg: 32rpx;
+  --space-xl: 48rpx;
+
+  /* 圆角 */
+  --radius-sm: 8rpx;
+  --radius-md: 16rpx;
+  --radius-lg: 24rpx;
+  --radius-xl: 32rpx;
+  --radius-full: 999rpx;
+
+  /* 阴影 */
+  --shadow-sm: 0 2rpx 8rpx rgba(0,0,0,0.04);
+  --shadow-md: 0 4rpx 16rpx rgba(0,0,0,0.08);
+  --shadow-lg: 0 8rpx 32rpx rgba(0,0,0,0.12);
+
+  /* 字体 */
+  --font-size-xs: 20rpx;
+  --font-size-sm: 24rpx;
+  --font-size-md: 28rpx;
+  --font-size-lg: 32rpx;
+  --font-size-xl: 36rpx;
+  --font-size-xxl: 44rpx;
+
+  /* 动效 */
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+  --transition-slow: 350ms ease;
+}
+
+/* ===== 通用工具类 ===== */
+.text-ellipsis {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.flex-center {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.safe-bottom {
+  padding-bottom: constant(safe-area-inset-bottom);
+  padding-bottom: env(safe-area-inset-bottom);
+}
+
+/* 点击态 */
+.hover-opacity:active {
+  opacity: 0.7;
+}
+
+.hover-scale:active {
+  transform: scale(0.98);
+}
+
+/* 加载动画 */
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loading-spinner {
+  width: 40rpx;
+  height: 40rpx;
+  border: 4rpx solid #EEEEEE;
+  border-top-color: #FFB300;
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+/* 骨架屏动画 */
+@keyframes shimmer {
+  0% { background-position: -200rpx 0; }
+  100% { background-position: 200rpx 0; }
+}
+
+.skeleton-bg {
+  background: linear-gradient(90deg, #F0F0F0 25%, #E8E8E8 50%, #F0F0F0 75%);
+  background-size: 400rpx 100%;
+  animation: shimmer 1.5s ease-in-out infinite;
+  border-radius: 8rpx;
 }
