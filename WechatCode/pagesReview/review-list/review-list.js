@@ -20,7 +20,7 @@ Page({
   },
 
   onLoad(options) {
-    console.log('📍 评价页参数:', options)
+    logger.debug('📍 评价页参数:', options)
 
     const uid = getUserId()
     this.setData({ currentUserId: uid ? String(uid) : null })
@@ -90,7 +90,7 @@ Page({
         })
       })
       .catch(err => {
-        console.error('❌ 加载评价失败:', err)
+        logger.error('❌ 加载评价失败:', err)
         this.setData({ loading: false })
         wx.showToast({
           title: '加载失败',
@@ -122,7 +122,7 @@ Page({
               this.setData({ reviews })
             })
             .catch(err => {
-              console.error('删除评价失败:', err)
+              logger.error('删除评价失败:', err)
               wx.showToast({ title: '删除失败', icon: 'none' })
             })
         }

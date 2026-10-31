@@ -73,7 +73,7 @@ Page({
     
     favoriteApi.getFavorites()
       .then(res => {
-        console.log('✅ 收藏列表响应:', res)
+        logger.debug('✅ 收藏列表响应:', res)
         
         // ✅ 修复：先判断 res.code，再取 res.data
         if (res.code !== 200 || !res.data) {
@@ -103,7 +103,7 @@ Page({
         })
       })
       .catch(err => {
-        console.error('❌ 加载收藏失败:', err)
+        logger.error('❌ 加载收藏失败:', err)
         this.setData({ 
           favorites: [],
           loading: false
@@ -116,7 +116,7 @@ Page({
    */
   async onFavoriteItemTap(e) {
     const item = e.detail.vendor
-    console.log('📍 点击收藏:', item)
+    logger.debug('📍 点击收藏:', item)
 
     // 先用基础数据展示弹窗
     this.setData({ selectedVendor: item })
@@ -162,7 +162,7 @@ Page({
         vendorDetailVisible: true
       })
     } catch (err) {
-      console.error('❌ 加载摊位详情失败:', err)
+      logger.error('❌ 加载摊位详情失败:', err)
       // 降级：用基础数据打开弹窗
       this.setData({
         vendorDetailVisible: true
@@ -197,7 +197,7 @@ Page({
             this.setData({ favorites })
           } catch (err) {
             wx.hideLoading()
-            console.error('❌ 取消收藏失败:', err)
+            logger.error('❌ 取消收藏失败:', err)
           }
         }
       }
@@ -260,7 +260,7 @@ Page({
         })
       }
     } catch (err) {
-      console.error('❌ 弹窗收藏操作失败:', err)
+      logger.error('❌ 弹窗收藏操作失败:', err)
     }
   },
 

@@ -14,7 +14,7 @@
       <text class="label">摊位地址 <text class="required">*</text></text>
       <view class="location-row">
         <input class="input flex-1" placeholder="点击获取定位" value="{{address}}" disabled />
-        <button class="btn-loc" bindtap="getLocation">📍 定位</button>
+        <button class="btn-loc" bindtap="getLocation"><icon name="location" size="sm" color="#fff" /> 定位</button>
       </view>
     </view>
 

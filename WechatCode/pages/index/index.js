@@ -1,4 +1,5 @@
 const { favoriteApi, vendorApi, reviewApi, productApi, getUserId } = require('../../utils/api')
+const logger = require('../../utils/logger')
 const { QQ_MAP_KEY } = require('../../utils/config')
 const QQMapWX = require('../../utils/qqmap-wx-jssdk.min')
 const { fixDevLocation, calculateDistance } = require('../../utils/util')
@@ -46,14 +47,14 @@ Page({
           return
         }
         const favoriteIds = res.data.map(f => f.vendorId)
-        console.log('✅ 已收藏的摊位 ID:', favoriteIds)
+        logger.info('✅ 已收藏的摊位 ID:', favoriteIds)
         this.setData({ favoriteVendorIds: favoriteIds })
         
         // 更新摊位列表的收藏状态
         this.updateVendorFavoriteStatus()
       })
       .catch(err => {
-        console.error('❌ 加载收藏 ID 失败:', err)
+        logger.error('❌ 加载收藏 ID 失败:', err)
       })
   },
 
@@ -116,13 +117,13 @@ Page({
       type: 'gcj02',
       success: (res) => {
         let { latitude, longitude } = res
-        console.log('✅ 原始定位:', latitude, longitude)
+        logger.debug('✅ 原始定位:', latitude, longitude)
 
         // 开发者工具 IP 定位偏差检测
         const fixed = fixDevLocation(latitude, longitude)
         latitude = fixed.latitude
         longitude = fixed.longitude
-        console.log('✅ 使用定位:', latitude, longitude)
+        logger.debug('✅ 使用定位:', latitude, longitude)
 
         // 先保存坐标，立即开始加载摊位（不阻塞）
         this.setData({ latitude, longitude })
@@ -139,17 +140,17 @@ Page({
             // 截取详细地址（去掉省市区前缀）
             const detailAddress = this.extractDetailAddress(fullAddress)
             this.setData({ address: detailAddress })
-            console.log('✅ 地址解析:', detailAddress)
+            logger.debug('✅ 地址解析:', detailAddress)
           },
           fail: (err) => {
-            console.warn('⚠️ 逆地址解析失败，回退显示:', err)
+            logger.warn('⚠️ 逆地址解析失败，回退显示:', err)
             this.setData({ address: '定位成功' })
           },
           complete: () => wx.hideLoading()
         })
       },
       fail: (err) => {
-        console.error('❌ 定位失败:', err)
+        logger.error('❌ 定位失败:', err)
         this.setData({ address: '定位失败，请重试' })
         wx.hideLoading()
       }
@@ -175,7 +176,7 @@ Page({
 
     vendorApi.getSmartRecommendedVendors(latitude, longitude)
       .then(res => {
-        console.log('✅ 智能推荐返回:', res)
+        logger.debug('✅ 智能推荐返回:', res)
 
         if (res && res.code === 200) {
           const vendors = res.data.map(vendor => {
@@ -204,10 +205,10 @@ Page({
             }
           })
 
-          console.log('📊 处理后的摊位数据:', vendors)
+          logger.debug('📊 处理后的摊位数据:', vendors)
 
           const markers = this.createMarkers(vendors)
-          console.log(' 地图标记:', markers)
+          logger.debug(' 地图标记:', markers)
 
           this.setData({ vendors, markers })
 
@@ -229,7 +230,7 @@ Page({
         }
       })
       .catch(err => {
-        console.error('❌ 加载摊位失败:', err)
+        logger.error('❌ 加载摊位失败:', err)
         if (!silent) {
           wx.showToast({
             title: '加载失败',
@@ -272,7 +273,7 @@ Page({
    */
   async onVendorCardTap(e) {
     const item = e.detail?.vendor || e.currentTarget.dataset.item
-    console.log('📍 点击摊位卡片:', item)
+    logger.debug('📍 点击摊位卡片:', item)
     
     this.setData({ selectedVendor: item })
     
@@ -294,7 +295,7 @@ Page({
       // 获取该摊位的完整商品列表
       const productsRes = await productApi.getProducts(item.id)
       const products = productsRes?.data || productsRes || []
-      console.log('📦 拿到的商品原始数据:', products)
+      logger.debug('📦 拿到的商品原始数据:', products)
 
       this.setData({
         averageRating,
@@ -306,10 +307,10 @@ Page({
         vendorProducts: products               // 扁平化变量
       })
 
-      console.log('✅ 评价和商品数据加载成功:', { averageRating, reviewCount, recentReviews: recentReviews.length, products: products.length })
+      logger.info('✅ 评价和商品数据加载成功:', { averageRating, reviewCount, recentReviews: recentReviews.length, products: products.length })
     } catch (err) {
-      console.error('❌ 加载数据异常详情:', err)
-      console.error('❌ 加载评价失败:', err)
+      logger.error('❌ 加载数据异常详情:', err)
+      logger.error('❌ 加载评价失败:', err)
       this.setData({
         averageRating: 0,
         reviewCount: 0,
@@ -433,7 +434,7 @@ Page({
         })
       }
     } catch (err) {
-      console.error('❌ 收藏操作失败:', err)
+      logger.error('❌ 收藏操作失败:', err)
     }
   },
 
@@ -467,7 +468,7 @@ Page({
           : [...this.data.favoriteVendorIds, item.id]
       })
     } catch (err) {
-      console.error('❌ 弹窗收藏操作失败:', err)
+      logger.error('❌ 弹窗收藏操作失败:', err)
     }
   },
 

@@ -53,7 +53,7 @@ Page({
         }
       }
     } catch (err) {
-      console.error('加载失败:', err);
+      logger.error('加载失败:', err);
       wx.showToast({ title: '加载失败', icon: 'none' });
     } finally {
       wx.hideLoading();

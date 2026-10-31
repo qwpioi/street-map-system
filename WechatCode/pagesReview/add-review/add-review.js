@@ -22,6 +22,11 @@ Page({
     this.setData({ rating: star });
   },
 
+  onRatingChange(e) {
+    const star = e.detail.rating;
+    this.setData({ rating: star });
+  },
+
   onContentInput(e) {
     this.setData({ content: e.detail.value });
   },

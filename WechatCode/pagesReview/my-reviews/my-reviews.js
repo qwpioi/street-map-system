@@ -64,7 +64,7 @@ Page({
         this.computeStats(formattedReviews)
       })
       .catch(err => {
-        console.error('加载我的评价失败:', err)
+        logger.error('加载我的评价失败:', err)
         this.setData({ loading: false })
         wx.showToast({ title: '加载失败', icon: 'none' })
       })
@@ -109,7 +109,7 @@ Page({
               this.computeStats(reviews)
             })
             .catch(err => {
-              console.error('删除评价失败:', err)
+              logger.error('删除评价失败:', err)
               wx.showToast({ title: '删除失败', icon: 'none' })
             })
         }

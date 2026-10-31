@@ -10,7 +10,7 @@ Page({
   onLoad() {
     const token = wx.getStorageSync('token')
     if (token) {
-      console.log('✅ 已登录，直接跳转到首页')
+      logger.info('✅ 已登录，直接跳转到首页')
       wx.reLaunch({
         url: '/pages/index/index'
       })
@@ -26,14 +26,14 @@ Page({
   checkPrivacyAuth() {
     wx.getPrivacySetting({
       success: res => {
-        console.log('隐私授权状态:', res)
+        logger.debug('隐私授权状态:', res)
         if (res.needAuthorization) {
           // 需要授权，显示隐私弹窗
           this.setData({ showPrivacy: true })
         }
       },
       fail: err => {
-        console.error('获取隐私设置失败:', err)
+        logger.error('获取隐私设置失败:', err)
       }
     })
   },
@@ -44,11 +44,11 @@ Page({
   onPrivacyAgree() {
     wx.requirePrivacyAuthorize({
       success: () => {
-        console.log('✅ 用户同意隐私协议')
+        logger.info('✅ 用户同意隐私协议')
         this.setData({ showPrivacy: false })
       },
       fail: err => {
-        console.error('隐私授权失败:', err)
+        logger.error('隐私授权失败:', err)
       }
     })
   },
@@ -74,7 +74,7 @@ Page({
     wx.login({
       success: (res) => {
         if (res.code) {
-          console.log('✅ 获取 code 成功:', res.code)
+          logger.debug('✅ 获取 code 成功:', res.code)
           this.loginToServer(res.code)
         } else {
           wx.showToast({
@@ -85,7 +85,7 @@ Page({
         }
       },
       fail: (err) => {
-        console.error('❌ wx.login 失败:', err)
+        logger.error('❌ wx.login 失败:', err)
         wx.showToast({
           title: '网络错误',
           icon: 'none'
@@ -121,7 +121,7 @@ Page({
       },
       success: (res) => {
         wx.hideLoading()
-        console.log('🔑 登录响应:', res.data)
+        logger.debug('🔑 登录响应:', res.data)
         
         if (res.data && res.data.code === 200) {
           const { token, user } = res.data.data
@@ -155,7 +155,7 @@ Page({
       },
       fail: (err) => {
         wx.hideLoading()
-        console.error('❌ 登录请求失败:', err)
+        logger.error('❌ 登录请求失败:', err)
         wx.showToast({
           title: '网络错误，请稍后重试',
           icon: 'none'

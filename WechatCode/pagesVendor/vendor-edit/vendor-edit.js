@@ -1,4 +1,5 @@
 const { vendorApi, uploadApi, API_BASE_URL } = require('../../utils/api')
+const logger = require('../../utils/logger')
 
 Page({
   data: {
@@ -42,7 +43,7 @@ Page({
           })
           .catch(err => {
             wx.hideLoading()
-            console.error('上传失败:', err)
+            logger.error('上传失败:', err)
             wx.showToast({ title: '上传失败', icon: 'none' })
           })
       }
@@ -96,7 +97,7 @@ Page({
       })
       .catch(err => {
         this.setData({ saving: false })
-        console.error('保存失败:', err)
+        logger.error('保存失败:', err)
         wx.showToast({ title: '网络错误', icon: 'none' })
       })
   }

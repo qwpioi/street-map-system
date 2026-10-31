@@ -40,7 +40,7 @@ Page({
         this.setData({ vendors, loading: false })
       })
       .catch(err => {
-        console.error('加载热门排行失败:', err)
+        logger.error('加载热门排行失败:', err)
         this.setData({ loading: false })
       })
   },

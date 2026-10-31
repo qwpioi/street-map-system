@@ -1,4 +1,5 @@
 const { vendorApi, productApi, reviewApi, favoriteApi } = require('../../utils/api')
+const logger = require('../../utils/logger')
 const app = getApp()
 Page({
   data: {
@@ -74,7 +75,7 @@ Page({
       })
       wx.hideLoading()
     } catch (err) {
-      console.error('加载详情失败:', err)
+      logger.error('加载详情失败:', err)
       wx.hideLoading()
       wx.showToast({
         title: err.message || '加载失败',
@@ -102,7 +103,7 @@ Page({
         reviews
       })
     } catch (err) {
-      console.error('加载评价失败:', err)
+      logger.error('加载评价失败:', err)
       this.setData({
         averageRating: 0,
         reviewCount: 0,
@@ -122,7 +123,7 @@ Page({
         })
       }
     } catch (err) {
-      console.error('加载收藏状态失败:', err)
+      logger.error('加载收藏状态失败:', err)
     }
   },
   // 切换收藏
@@ -153,7 +154,7 @@ Page({
       wx.hideLoading()
     } catch (err) {
       wx.hideLoading()
-      console.error('收藏操作失败:', err)
+      logger.error('收藏操作失败:', err)
       wx.showToast({ title: '操作失败', icon: 'none' })
     }
   },

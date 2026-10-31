@@ -1,5 +1,6 @@
 // 引入你项目已经封装好的接口
 const { vendorApi } = require('../../utils/api.js')
+const logger = require('../../utils/logger')
 const { fixDevLocation } = require('../../utils/util')
 
 Page({
@@ -54,7 +55,7 @@ Page({
         })
       }
     } catch (err) {
-      console.error('地址解析失败', err)
+      logger.error('地址解析失败', err)
       const v = this.data.vendor
       this.setData({
         resolvingAddress: false,
@@ -87,7 +88,7 @@ Page({
         this.setData({ vendor: null })
       }
     } catch (err) {
-      console.error('获取摊位信息失败', err)
+      logger.error('获取摊位信息失败', err)
       wx.showToast({ title: '加载失败', icon: 'none' })
       this.setData({ vendor: null })
     } finally {

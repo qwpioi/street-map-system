@@ -1,5 +1,8 @@
 {
   "navigationBarTitleText": "申请摊位",
   "navigationBarBackgroundColor": "#FFD100",
-  "navigationBarTextStyle": "black"
+  "navigationBarTextStyle": "black",
+  "usingComponents": {
+    "icon": "/components/icon/icon"
+  }
 }

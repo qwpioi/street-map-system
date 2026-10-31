@@ -49,19 +49,19 @@ Page({
       type: 'gcj02',
       success: (res) => {
         let { latitude, longitude } = res
-        console.log('✅ 原始定位:', latitude, longitude)
+        logger.debug('✅ 原始定位:', latitude, longitude)
 
         const fixed = fixDevLocation(latitude, longitude)
         latitude = fixed.latitude
         longitude = fixed.longitude
-        console.log('✅ 使用定位:', latitude, longitude)
+        logger.debug('✅ 使用定位:', latitude, longitude)
 
         this.setData({ latitude, longitude })
         this.loadVendors(latitude, longitude)
         wx.hideLoading()
       },
       fail: (err) => {
-        console.error('定位失败:', err)
+        logger.error('定位失败:', err)
         wx.hideLoading()
       }
     })
@@ -94,16 +94,16 @@ Page({
 
           const markers = this.createMarkers(vendors)
 
-          console.log('🗺️ 摊位数量:', vendors.length)
-          console.log('🗺️ 第一个摊位:', vendors[0])
-          console.log('🗺️ markers 数量:', markers.length)
-          console.log('🗺️ 第一个 marker:', markers[0])
+          logger.info('🗺️ 摊位数量:', vendors.length)
+          logger.debug('🗺️ 第一个摊位:', vendors[0])
+          logger.debug('🗺️ markers 数量:', markers.length)
+          logger.debug('🗺️ 第一个 marker:', markers[0])
 
           this.setData({ vendors, markers })
         }
       })
       .catch(err => {
-        console.error('❌ 加载摊位失败:', err)
+        logger.error('❌ 加载摊位失败:', err)
       })
   },
 
@@ -165,9 +165,9 @@ Page({
         vendorProducts: products
       })
 
-      console.log('✅ 评价数据加载成功:', { averageRating, reviewCount, recentReviews: recentReviews.length })
+      logger.info('✅ 评价数据加载成功:', { averageRating, reviewCount, recentReviews: recentReviews.length })
     } catch (err) {
-      console.error('❌ 加载评价失败:', err)
+      logger.error('❌ 加载评价失败:', err)
       this.setData({
         averageRating: 0,
         reviewCount: 0,
@@ -220,7 +220,7 @@ Page({
         vendors: this.data.vendors.map(v => v.id === item.id ? { ...v, isFavorite: !isFavorite } : v)
       })
     } catch (err) {
-      console.error('❌ 弹窗收藏操作失败:', err)
+      logger.error('❌ 弹窗收藏操作失败:', err)
     }
   },
 

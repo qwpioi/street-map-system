@@ -1,4 +1,7 @@
 {
-  "usingComponents": {},
+  "usingComponents": {
+    "icon": "/components/icon/icon",
+    "rating-stars": "/components/rating-stars/rating-stars"
+  },
   "navigationBarTitleText": "添加评价"
 }
