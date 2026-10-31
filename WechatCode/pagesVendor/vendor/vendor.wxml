@@ -27,7 +27,8 @@
     </view>
     <view class="stat-divider"></view>
     <view class="vendor-stat-item">
-      <text class="vendor-stat-num vendor-stat-rating">{{vendor.averageRating || '暂无'}}</text>
+      <rating-stars wx:if="{{vendor.averageRating > 0}}" rating="{{vendor.averageRating}}" size="sm" readonly="{{true}}"></rating-stars>
+      <text wx:else class="vendor-stat-num vendor-stat-rating">暂无</text>
       <text class="vendor-stat-label">店铺评分</text>
     </view>
   </view>
